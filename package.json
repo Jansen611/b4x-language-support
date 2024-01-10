@@ -1,0 +1,25 @@
+{
+  "name": "b4x-language-support",
+  "displayName": "B4X Language Support",
+  "description": "B4x Language Support",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [{
+      "id": "b4x",
+      "aliases": ["B4X", "b4x"],
+      "extensions": [".bas"],
+      "configuration": "./language-configuration.json"
+    }],
+    "grammars": [{
+      "language": "b4x",
+      "scopeName": "source.b4x",
+      "path": "./syntaxes/b4x.tmLanguage.json"
+    }]
+  }
+}
