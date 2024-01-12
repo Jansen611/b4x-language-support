@@ -30,7 +30,7 @@
     "snippets": [
 			{
 				"language": "b4x",
-				"path": "./snippets.json"
+				"path": "./snippets/snippets.code-snippets"
 			}
 		]
   },

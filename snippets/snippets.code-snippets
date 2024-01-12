@@ -1,0 +1,56 @@
+{
+	"Create A Quick Subroutine": {
+		"prefix": "sub",
+		"body": [
+			"Sub $1($2)",
+			"\t$3",
+            "End Sub"
+		],
+		"description": "Create a quick subroutine"
+	},
+	"Create A Quick Function": {
+		"prefix": "function",
+		"body": [
+			"Sub $1($2) As $3",
+			"\t$4",
+            "End Sub"
+		],
+		"description": "Create a function"
+	},
+	"Create A Private Subroutine": {
+		"prefix": "private sub",
+		"body": [
+			"Private Sub $1($2)",
+			"\t$3",
+            "End Sub"
+		],
+		"description": "Create a private subroutine"
+	},
+	"Create A Private Function": {
+		"prefix": "private function",
+		"body": [
+			"Private Sub $1($2) As $3",
+			"\t$4",
+            "End Sub"
+		],
+		"description": "Create a private function"
+	},
+	"Create A Public Subroutine": {
+		"prefix": "public sub",
+		"body": [
+			"Public Sub $1($2)",
+			"\t$3",
+            "End Sub"
+		],
+		"description": "Create a public subroutine"
+	},
+	"Create A Public Function": {
+		"prefix": "public function",
+		"body": [
+			"Public Sub $1($2) As $3",
+			"\t$4",
+            "End Sub"
+		],
+		"description": "Create a public function"
+	}
+}
