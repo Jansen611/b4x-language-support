@@ -8,15 +8,6 @@
 		],
 		"description": "Create a quick subroutine"
 	},
-	"Create A Quick Function": {
-		"prefix": "function",
-		"body": [
-			"Sub $1($2) As $3",
-			"\t$4",
-            "End Sub"
-		],
-		"description": "Create a function"
-	},
 	"Create A Private Subroutine": {
 		"prefix": "private sub",
 		"body": [
@@ -25,15 +16,6 @@
             "End Sub"
 		],
 		"description": "Create a private subroutine"
-	},
-	"Create A Private Function": {
-		"prefix": "private function",
-		"body": [
-			"Private Sub $1($2) As $3",
-			"\t$4",
-            "End Sub"
-		],
-		"description": "Create a private function"
 	},
 	"Create A Public Subroutine": {
 		"prefix": "public sub",
@@ -44,6 +26,25 @@
 		],
 		"description": "Create a public subroutine"
 	},
+
+	"Create A Quick Function": {
+		"prefix": "function",
+		"body": [
+			"Sub $1($2) As $3",
+			"\t$4",
+            "End Sub"
+		],
+		"description": "Create a function"
+	},
+	"Create A Private Function": {
+		"prefix": "private function",
+		"body": [
+			"Private Sub $1($2) As $3",
+			"\t$4",
+            "End Sub"
+		],
+		"description": "Create a private function"
+	},
 	"Create A Public Function": {
 		"prefix": "public function",
 		"body": [
@@ -52,5 +53,55 @@
             "End Sub"
 		],
 		"description": "Create a public function"
+	},
+
+	"Create A Private Property": {
+		"prefix": "private property",
+		"body": [
+			"Private Sub get$1 As $2",
+			"\t$4",
+			"\tReturn fProperties.GetDefault(\"$1\", $3)"
+            "End Sub",
+			"Private Sub set$1(aValue As $2)",
+			"\t$5",
+			"\tfProperties.Put(\"$1\", aValue)"
+            "End Sub"
+		],
+		"description": "Create a private property"
+	},
+	"Create A Public Property": {
+		"prefix": "public property",
+		"body": [
+			"Public Sub get$1 As $2",
+			"\t$4",
+			"\tReturn fProperties.GetDefault(\"$1\", $3)"
+            "End Sub",
+			"Public Sub set$1(aValue As $2)",
+			"\t$5",
+			"\tfProperties.Put(\"$1\", aValue)"
+            "End Sub"
+		],
+		"description": "Create a private property"
+	},
+
+	"Create A If Statement With Else": {
+		"prefix": "if else",
+		"body": [
+			"If $1 Then",
+			"\t$2",
+			"Else",
+			"\t$3",
+            "End If"
+		],
+		"description": "Create a if-statment with else"
+	},
+	"Create A If Statement Without Else": {
+		"prefix": "if",
+		"body": [
+			"If $1 Then",
+			"\t$2",
+            "End If"
+		],
+		"description": "Create a if-statment without else"
 	}
 }
