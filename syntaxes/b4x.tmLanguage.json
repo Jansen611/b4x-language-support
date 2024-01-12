@@ -7,13 +7,20 @@
 		},
 		{
 			"include": "#strings"
+		},
+		{
+			"include": "source.asp.vb.net"
 		}
 	],
 	"repository": {
 		"keywords": {
 			"patterns": [{
 				"name": "keyword.control.b4x",
-				"match": "\\b(if|while|for|return)\\b"
+				"match": "(?i)\\b(if|then|else|elseif|end if|while|loop|for|to|return)\\b"
+			},
+			{
+				"name": "keyword.operator.b4x",
+				"match": "(?i)\\b(Mod|And|Not|Or|Xor|as|Is|Eqv)\\b"
 			}]
 		},
 		"strings": {

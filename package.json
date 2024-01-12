@@ -1,14 +1,20 @@
 {
-  "name": "b4x-language-support",
-  "displayName": "B4X Language Support",
+  "name": "b4x-vscode",
+  "displayName": "B4X",
   "description": "B4x Language Support",
   "version": "0.0.1",
+  "publisher": "Jansen",
+	"icon": "assets/Logo.jpg",
   "engines": {
     "vscode": "^1.85.0"
   },
   "categories": [
     "Programming Languages"
   ],
+  "keywords": [
+		"b4x",
+		"B4X"
+	],
   "contributes": {
     "languages": [{
       "id": "b4x",
@@ -20,6 +26,31 @@
       "language": "b4x",
       "scopeName": "source.b4x",
       "path": "./syntaxes/b4x.tmLanguage.json"
-    }]
+    }],
+    "snippets": [
+			{
+				"language": "b4x",
+				"path": "./snippets.json"
+			}
+		]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0",
+    "@types/mocha": "^10.0.6",
+    "@types/node": "18.x",
+    "@typescript-eslint/eslint-plugin": "^6.15.0",
+    "@typescript-eslint/parser": "^6.15.0",
+    "eslint": "^8.56.0",
+    "typescript": "^5.3.3",
+    "@vscode/test-cli": "^0.0.4",
+    "@vscode/test-electron": "^2.3.8"
   }
 }
