@@ -2,7 +2,7 @@
   "name": "b4x-vscode",
   "displayName": "B4X",
   "description": "B4x Language Support",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "publisher": "Jansen",
 	"icon": "assets/Logo.jpg",
   "engines": {
@@ -36,8 +36,8 @@
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
-    "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./",
+    "compile": "",
+    "watch": "",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
     "test": "vscode-test"

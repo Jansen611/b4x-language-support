@@ -55,33 +55,133 @@
 		"description": "Create a public function"
 	},
 
-	"Create A Private Property": {
-		"prefix": "private property",
+	"Create A Private Object Property": {
+		"prefix": "private object property",
 		"body": [
 			"Private Sub get$1 As $2",
-			"\t$4",
-			"\tReturn fProperties.GetDefault(\"$1\", $3)"
+			"\tDim ObjectToReturn As $2 : ObjectToReturn.initialize",
+			"\tObjectToReturn.fProperties = fProperties.GetDefault(\"$1\", ObjectToReturn)",
+			"\tReturn ObjectToReturn",
             "End Sub",
 			"Private Sub set$1(aValue As $2)",
-			"\t$5",
-			"\tfProperties.Put(\"$1\", aValue)"
+			"\tfProperties.Put(\"$1\", aValue.fproperties)",
             "End Sub"
 		],
-		"description": "Create a private property"
+		"description": "Create a private object property"
 	},
-	"Create A Public Property": {
-		"prefix": "public property",
+	"Create A Public Object Property": {
+		"prefix": "public object property",
 		"body": [
 			"Public Sub get$1 As $2",
-			"\t$4",
-			"\tReturn fProperties.GetDefault(\"$1\", $3)"
+			"\tDim ObjectToReturn As $2 : ObjectToReturn.initialize",
+			"\tObjectToReturn.fProperties = fProperties.GetDefault(\"$1\", ObjectToReturn)",
+			"\tReturn ObjectToReturn",
             "End Sub",
 			"Public Sub set$1(aValue As $2)",
-			"\t$5",
+			"\tfProperties.Put(\"$1\", aValue.fproperties)",
+            "End Sub"
+		],
+		"description": "Create a public object property"
+	},
+
+	"Create A Private String Property": {
+		"prefix": "private string property",
+		"body": [
+			"Private Sub get$1 As String",
+			"\tReturn fProperties.GetDefault(\"$1\", \"\")",
+            "End Sub",
+			"Private Sub set$1(aValue As String)",
+			"\tfProperties.Put(\"$1\", aValue)",
+            "End Sub"
+		],
+		"description": "Create a private string property"
+	},
+	"Create A Public String Property": {
+		"prefix": "public string property",
+		"body": [
+			"Public Sub get$1 As String",
+			"\tReturn fProperties.GetDefault(\"$1\", \"\")"
+            "End Sub",
+			"Public Sub set$1(aValue As String)",
 			"\tfProperties.Put(\"$1\", aValue)"
             "End Sub"
 		],
-		"description": "Create a private property"
+		"description": "Create a public string property"
+	},
+
+	"Create A Private Integer Property": {
+		"prefix": "private int property",
+		"body": [
+			"Private Sub get$1 As Int",
+			"\tReturn fProperties.GetDefault(\"$1\", 0)",
+            "End Sub",
+			"Private Sub set$1(aValue As Int)",
+			"\tfProperties.Put(\"$1\", aValue)",
+            "End Sub"
+		],
+		"description": "Create a private int property"
+	},
+	"Create A Public Integer Property": {
+		"prefix": "public int property",
+		"body": [
+			"Public Sub get$1 As Int",
+			"\tReturn fProperties.GetDefault(\"$1\", 0)"
+            "End Sub",
+			"Public Sub set$1(aValue As Int)",
+			"\tfProperties.Put(\"$1\", aValue)"
+            "End Sub"
+		],
+		"description": "Create a public int property"
+	},
+
+	"Create A Private Double Property": {
+		"prefix": "private double property",
+		"body": [
+			"Private Sub get$1 As Double",
+			"\tReturn fProperties.GetDefault(\"$1\", 0)",
+            "End Sub",
+			"Private Sub set$1(aValue As Double)",
+			"\tfProperties.Put(\"$1\", aValue)",
+            "End Sub"
+		],
+		"description": "Create a private double property"
+	},
+	"Create A Public Double Property": {
+		"prefix": "public double property",
+		"body": [
+			"Public Sub get$1 As Double",
+			"\tReturn fProperties.GetDefault(\"$1\", 0)"
+            "End Sub",
+			"Public Sub set$1(aValue As Double)",
+			"\tfProperties.Put(\"$1\", aValue)"
+            "End Sub"
+		],
+		"description": "Create a public double property"
+	},
+
+	"Create A Private Boolean Property": {
+		"prefix": "private bool property",
+		"body": [
+			"Private Sub get$1 As Boolean",
+			"\tReturn fProperties.GetDefault(\"$1\", False)",
+            "End Sub",
+			"Private Sub set$1(aValue As Boolean)",
+			"\tfProperties.Put(\"$1\", aValue)",
+            "End Sub"
+		],
+		"description": "Create a private bool property"
+	},
+	"Create A Public Boolean Property": {
+		"prefix": "public bool property",
+		"body": [
+			"Public Sub get$1 As Boolean",
+			"\tReturn fProperties.GetDefault(\"$1\", False)"
+            "End Sub",
+			"Public Sub set$1(aValue As Boolean)",
+			"\tfProperties.Put(\"$1\", aValue)"
+            "End Sub"
+		],
+		"description": "Create a public bool property"
 	},
 
 	"Create A If Statement With Else": {
