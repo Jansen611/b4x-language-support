@@ -59,8 +59,12 @@
 		"prefix": "private object property",
 		"body": [
 			"Private Sub get$1 As $2",
+			"\tDim mObject As $2 : mObject.initialize",
+			"\tIf Not(fProperties.ContainsKey(\"$1\")) Then",
+			"\t\tfProperties.Put(\"$1\", mObject.fProperties)",
+			"\tEnd If",
 			"\tDim ObjectToReturn As $2 : ObjectToReturn.initialize",
-			"\tObjectToReturn.fProperties = fProperties.GetDefault(\"$1\", ObjectToReturn)",
+			"\tObjectToReturn.fProperties = fProperties.Get(\"$1\")",
 			"\tReturn ObjectToReturn",
             "End Sub",
 			"Private Sub set$1(aValue As $2)",
@@ -73,8 +77,12 @@
 		"prefix": "public object property",
 		"body": [
 			"Public Sub get$1 As $2",
+			"\tDim mObject As $2 : mObject.initialize",
+			"\tIf Not(fProperties.ContainsKey(\"$1\")) Then",
+			"\t\tfProperties.Put(\"$1\", mObject.fProperties)",
+			"\tEnd If",
 			"\tDim ObjectToReturn As $2 : ObjectToReturn.initialize",
-			"\tObjectToReturn.fProperties = fProperties.GetDefault(\"$1\", ObjectToReturn)",
+			"\tObjectToReturn.fProperties = fProperties.Get(\"$1\")",
 			"\tReturn ObjectToReturn",
             "End Sub",
 			"Public Sub set$1(aValue As $2)",
@@ -84,11 +92,47 @@
 		"description": "Create a public object property"
 	},
 
+	"Create A Private List Property": {
+		"prefix": "private list property",
+		"body": [
+			"Private Sub get$1 As List",
+			"\tDim EmptyList As List : EmptyList.initialize",
+			"\tIf Not(fProperties.ContainsKey(\"$1\")) Then",
+			"\t\tfProperties.Put(\"$1\", EmptyList)",
+			"\tEnd If",
+			"\tReturn fProperties.Get(\"$1\")",
+            "End Sub",
+			"Private Sub set$1(aValue As List)",
+			"\tfProperties.Put(\"$1\", aValue.fproperties)",
+            "End Sub"
+		],
+		"description": "Create a private list property"
+	},
+	"Create A Public List Property": {
+		"prefix": "public list property",
+		"body": [
+			"Public Sub get$1 As List",
+			"\tDim EmptyList As List : EmptyList.initialize",
+			"\tIf Not(fProperties.ContainsKey(\"$1\")) Then",
+			"\t\tfProperties.Put(\"$1\", EmptyList)",
+			"\tEnd If",
+			"\tReturn fProperties.Get(\"$1\")",
+            "End Sub",
+			"Public Sub set$1(aValue As List)",
+			"\tfProperties.Put(\"$1\", aValue.fproperties)",
+            "End Sub"
+		],
+		"description": "Create a public list property"
+	},
+
 	"Create A Private String Property": {
 		"prefix": "private string property",
 		"body": [
 			"Private Sub get$1 As String",
-			"\tReturn fProperties.GetDefault(\"$1\", \"\")",
+			"\tIf Not(fProperties.ContainsKey(\"$1\")) Then",
+			"\t\tfProperties.Put(\"$1\", \"\")",
+			"\tEnd If",
+			"\tReturn fProperties.Get(\"$1\")",
             "End Sub",
 			"Private Sub set$1(aValue As String)",
 			"\tfProperties.Put(\"$1\", aValue)",
@@ -100,10 +144,13 @@
 		"prefix": "public string property",
 		"body": [
 			"Public Sub get$1 As String",
-			"\tReturn fProperties.GetDefault(\"$1\", \"\")"
+			"\tIf Not(fProperties.ContainsKey(\"$1\")) Then",
+			"\t\tfProperties.Put(\"$1\", \"\")",
+			"\tEnd If",
+			"\tReturn fProperties.Get(\"$1\")",
             "End Sub",
 			"Public Sub set$1(aValue As String)",
-			"\tfProperties.Put(\"$1\", aValue)"
+			"\tfProperties.Put(\"$1\", aValue)",
             "End Sub"
 		],
 		"description": "Create a public string property"
@@ -113,7 +160,10 @@
 		"prefix": "private int property",
 		"body": [
 			"Private Sub get$1 As Int",
-			"\tReturn fProperties.GetDefault(\"$1\", 0)",
+			"\tIf Not(fProperties.ContainsKey(\"$1\")) Then",
+			"\t\tfProperties.Put(\"$1\", 0)",
+			"\tEnd If",
+			"\tReturn fProperties.Get(\"$1\")",
             "End Sub",
 			"Private Sub set$1(aValue As Int)",
 			"\tfProperties.Put(\"$1\", aValue)",
@@ -125,10 +175,13 @@
 		"prefix": "public int property",
 		"body": [
 			"Public Sub get$1 As Int",
-			"\tReturn fProperties.GetDefault(\"$1\", 0)"
+			"\tIf Not(fProperties.ContainsKey(\"$1\")) Then",
+			"\t\tfProperties.Put(\"$1\", 0)",
+			"\tEnd If",
+			"\tReturn fProperties.Get(\"$1\")",
             "End Sub",
 			"Public Sub set$1(aValue As Int)",
-			"\tfProperties.Put(\"$1\", aValue)"
+			"\tfProperties.Put(\"$1\", aValue)",
             "End Sub"
 		],
 		"description": "Create a public int property"
@@ -138,7 +191,10 @@
 		"prefix": "private double property",
 		"body": [
 			"Private Sub get$1 As Double",
-			"\tReturn fProperties.GetDefault(\"$1\", 0)",
+			"\tIf Not(fProperties.ContainsKey(\"$1\")) Then",
+			"\t\tfProperties.Put(\"$1\", 0)",
+			"\tEnd If",
+			"\tReturn fProperties.Get(\"$1\")",
             "End Sub",
 			"Private Sub set$1(aValue As Double)",
 			"\tfProperties.Put(\"$1\", aValue)",
@@ -150,10 +206,13 @@
 		"prefix": "public double property",
 		"body": [
 			"Public Sub get$1 As Double",
-			"\tReturn fProperties.GetDefault(\"$1\", 0)"
+			"\tIf Not(fProperties.ContainsKey(\"$1\")) Then",
+			"\t\tfProperties.Put(\"$1\", 0)",
+			"\tEnd If",
+			"\tReturn fProperties.Get(\"$1\")",
             "End Sub",
 			"Public Sub set$1(aValue As Double)",
-			"\tfProperties.Put(\"$1\", aValue)"
+			"\tfProperties.Put(\"$1\", aValue)",
             "End Sub"
 		],
 		"description": "Create a public double property"
@@ -163,7 +222,10 @@
 		"prefix": "private bool property",
 		"body": [
 			"Private Sub get$1 As Boolean",
-			"\tReturn fProperties.GetDefault(\"$1\", False)",
+			"\tIf Not(fProperties.ContainsKey(\"$1\")) Then",
+			"\t\tfProperties.Put(\"$1\", False)",
+			"\tEnd If",
+			"\tReturn fProperties.Get(\"$1\")",
             "End Sub",
 			"Private Sub set$1(aValue As Boolean)",
 			"\tfProperties.Put(\"$1\", aValue)",
@@ -175,10 +237,13 @@
 		"prefix": "public bool property",
 		"body": [
 			"Public Sub get$1 As Boolean",
-			"\tReturn fProperties.GetDefault(\"$1\", False)"
+			"\tIf Not(fProperties.ContainsKey(\"$1\")) Then",
+			"\t\tfProperties.Put(\"$1\", False)",
+			"\tEnd If",
+			"\tReturn fProperties.Get(\"$1\")",
             "End Sub",
 			"Public Sub set$1(aValue As Boolean)",
-			"\tfProperties.Put(\"$1\", aValue)"
+			"\tfProperties.Put(\"$1\", aValue)",
             "End Sub"
 		],
 		"description": "Create a public bool property"
