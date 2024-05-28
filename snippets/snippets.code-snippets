@@ -103,7 +103,7 @@
 			"\tReturn fProperties.Get(\"$1\")",
             "End Sub",
 			"Private Sub set$1(aValue As List)",
-			"\tfProperties.Put(\"$1\", aValue.fproperties)",
+			"\tfProperties.Put(\"$1\", aValue)",
             "End Sub"
 		],
 		"description": "Create a private list property"
@@ -119,7 +119,7 @@
 			"\tReturn fProperties.Get(\"$1\")",
             "End Sub",
 			"Public Sub set$1(aValue As List)",
-			"\tfProperties.Put(\"$1\", aValue.fproperties)",
+			"\tfProperties.Put(\"$1\", aValue)",
             "End Sub"
 		],
 		"description": "Create a public list property"
