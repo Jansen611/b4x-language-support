@@ -223,7 +223,7 @@
 		"body": [
 			"Private Sub get$1 As Boolean",
 			"\tIf Not(fProperties.ContainsKey(\"$1\")) Then",
-			"\t\tfProperties.Put(\"$1\", False)",
+			"\t\tfProperties.Put(\"$1\", False.As(Boolean))",
 			"\tEnd If",
 			"\tReturn fProperties.Get(\"$1\")",
             "End Sub",
@@ -238,7 +238,7 @@
 		"body": [
 			"Public Sub get$1 As Boolean",
 			"\tIf Not(fProperties.ContainsKey(\"$1\")) Then",
-			"\t\tfProperties.Put(\"$1\", False)",
+			"\t\tfProperties.Put(\"$1\", False.As(Boolean))",
 			"\tEnd If",
 			"\tReturn fProperties.Get(\"$1\")",
             "End Sub",
