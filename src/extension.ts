@@ -65,16 +65,15 @@ function findDefinition(document: vscode.TextDocument, word: string): vscode.Pos
     // 遍历文档的每一行
     for (let line: number = 0; line < document.lineCount; line++) 
     {
-        const text: string = document.lineAt(line).text.toLowerCase();
+        const text: string = document.lineAt(line).text
+        const lowerCaseText: String = text.toLowerCase();
         
         // 检查是否包含目标单词
         const isEventFound: boolean = text.includes(`Sub ${word}_`.toLowerCase());
         if (isEventFound) {continue}
         
-        const isFunctionFound: boolean = text.includes(`Sub ${word}`.toLowerCase());
-        const isVariableFound: boolean = text.includes(`Private ${word} As`.toLowerCase()) ||
-                                         text.includes(`Public ${word} As`.toLowerCase()) ||
-                                         text.includes(`Dim ${word} As`.toLowerCase());
+        const isFunctionFound: boolean = lowerCaseText.includes(`Sub ${word}`.toLowerCase());
+        const isVariableFound: boolean = lowerCaseText.includes(`${word} As`.toLowerCase())
         if (isFunctionFound || isVariableFound) 
         {
             // 返回定义的位置
@@ -100,7 +99,7 @@ function findLocalVariableDeclaration(document: vscode.TextDocument, word: strin
         const text: string = document.lineAt(line).text;
         
         // checking if local declaration matches
-        if (text.toLowerCase().includes(`Dim ${word}`.toLowerCase())) 
+        if (text.toLowerCase().includes(`${word} As`.toLowerCase())) 
         {
             // found the local variable, returning the position
             return new vscode.Position(line, text.indexOf(word));

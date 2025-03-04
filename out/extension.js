@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deactivate = exports.activate = void 0;
+exports.activate = activate;
+exports.deactivate = deactivate;
 const vscode = require("vscode");
 function activate(context) {
     console.log('扩展已激活！');
@@ -8,12 +9,10 @@ function activate(context) {
     const definitionProvider = new B4XDefinitionProvider();
     context.subscriptions.push(vscode.languages.registerDefinitionProvider('b4x', definitionProvider));
 }
-exports.activate = activate;
 // 扩展停用时调用
 function deactivate() {
     console.log('扩展已停用！');
 }
-exports.deactivate = deactivate;
 class B4XDefinitionProvider {
     provideDefinition(document, position, token) {
         const wordRange = document.getWordRangeAtPosition(position);
@@ -50,16 +49,15 @@ class B4XDefinitionProvider {
 function findDefinition(document, word) {
     // 遍历文档的每一行
     for (let line = 0; line < document.lineCount; line++) {
-        const text = document.lineAt(line).text.toLowerCase();
+        const text = document.lineAt(line).text;
+        const lowerCaseText = text.toLowerCase();
         // 检查是否包含目标单词
         const isEventFound = text.includes(`Sub ${word}_`.toLowerCase());
         if (isEventFound) {
             continue;
         }
-        const isFunctionFound = text.includes(`Sub ${word}`.toLowerCase());
-        const isVariableFound = text.includes(`Private ${word} As`.toLowerCase()) ||
-            text.includes(`Public ${word} As`.toLowerCase()) ||
-            text.includes(`Dim ${word} As`.toLowerCase());
+        const isFunctionFound = lowerCaseText.includes(`Sub ${word}`.toLowerCase());
+        const isVariableFound = lowerCaseText.includes(`${word} As`.toLowerCase());
         if (isFunctionFound || isVariableFound) {
             // 返回定义的位置
             return new vscode.Position(line, text.indexOf(word));
@@ -77,7 +75,7 @@ function findLocalVariableDeclaration(document, word, localSubBoundary) {
     for (let line = localSubBoundary[0]; line < localSubBoundary[1]; line++) {
         const text = document.lineAt(line).text;
         // checking if local declaration matches
-        if (text.toLowerCase().includes(`Dim ${word}`.toLowerCase())) {
+        if (text.toLowerCase().includes(`${word} As`.toLowerCase())) {
             // found the local variable, returning the position
             return new vscode.Position(line, text.indexOf(word));
         }
