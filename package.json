@@ -6,7 +6,7 @@
   "publisher": "Jansen",
   "icon": "assets/Logo.jpg",
   "engines": {
-    "vscode": "^1.85.0"
+    "vscode": "^1.97.0"
   },
   "categories": [
     "Programming Languages"
@@ -44,8 +44,7 @@
     ]
   },
   "main": "out/extension.js",
-  "activationEvents": [
-  ],
+  "activationEvents": [],
   "scripts": {
     "vscode:prepublish": "npm run compile",
     "compile": "",
@@ -57,7 +56,7 @@
   "devDependencies": {
     "@types/mocha": "^10.0.6",
     "@types/node": "18.x",
-    "@types/vscode": "^1.85.0",
+    "@types/vscode": "^1.97.0",
     "@typescript-eslint/eslint-plugin": "^6.15.0",
     "@typescript-eslint/parser": "^6.15.0",
     "@vscode/test-cli": "^0.0.5",

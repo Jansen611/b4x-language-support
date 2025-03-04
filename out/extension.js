@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.activate = activate;
-exports.deactivate = deactivate;
+exports.deactivate = exports.activate = void 0;
 const vscode = require("vscode");
 function activate(context) {
     console.log('扩展已激活！');
@@ -9,10 +8,12 @@ function activate(context) {
     const definitionProvider = new B4XDefinitionProvider();
     context.subscriptions.push(vscode.languages.registerDefinitionProvider('b4x', definitionProvider));
 }
+exports.activate = activate;
 // 扩展停用时调用
 function deactivate() {
     console.log('扩展已停用！');
 }
+exports.deactivate = deactivate;
 class B4XDefinitionProvider {
     provideDefinition(document, position, token) {
         const wordRange = document.getWordRangeAtPosition(position);
@@ -49,10 +50,16 @@ class B4XDefinitionProvider {
 function findDefinition(document, word) {
     // 遍历文档的每一行
     for (let line = 0; line < document.lineCount; line++) {
-        const text = document.lineAt(line).text;
+        const text = document.lineAt(line).text.toLowerCase();
         // 检查是否包含目标单词
-        const isFunctionFound = text.toLowerCase().includes(`Sub ${word}`.toLowerCase());
-        const isVariableFound = text.toLowerCase().includes(`Private ${word} As`.toLowerCase()) || text.toLowerCase().includes(`Public ${word} As`.toLowerCase());
+        const isEventFound = text.includes(`Sub ${word}_`.toLowerCase());
+        if (isEventFound) {
+            continue;
+        }
+        const isFunctionFound = text.includes(`Sub ${word}`.toLowerCase());
+        const isVariableFound = text.includes(`Private ${word} As`.toLowerCase()) ||
+            text.includes(`Public ${word} As`.toLowerCase()) ||
+            text.includes(`Dim ${word} As`.toLowerCase());
         if (isFunctionFound || isVariableFound) {
             // 返回定义的位置
             return new vscode.Position(line, text.indexOf(word));
