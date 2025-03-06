@@ -1,13 +1,13 @@
 import * as vscode from 'vscode';
-import { b4xDefinitionProvider } from './b4xDefinitionProvider';
+import * as b4xDefinitionProvider from './b4xDefinitionProvider';
 
 export class b4xHoverProvider implements vscode.HoverProvider 
 {
     provideHover(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken): vscode.ProviderResult<vscode.Hover>
     {
-        const wordRange = document.getWordRangeAtPosition(position);
-        const word = document.getText(wordRange);
-        const lineNo: number = position.line
+        const wordRange: vscode.Range | undefined = document.getWordRangeAtPosition(position);
+        const word: string = wordRange? document.getText(wordRange) : '';
+        const lineNo: number = position.line;
 
         if (word) 
         {
@@ -19,7 +19,7 @@ export class b4xHoverProvider implements vscode.HoverProvider
                 matchingLineNum = definitionPosition.line;
 
                 // get the declaration from the matchingLineNum
-                const declaration: string | undefined = this.findDeclaration(document, word, matchingLineNum);
+                const declaration: string | undefined = findDeclaration(document, word, matchingLineNum);
                 if (declaration) 
                 {
                     // Create a MarkdownString to format the hover content
@@ -36,35 +36,35 @@ export class b4xHoverProvider implements vscode.HoverProvider
         // no definition found, undefined
         return undefined;
     }
+}
 
-    private findDeclaration(document: vscode.TextDocument, word: string, matchingLineNum: number): string | undefined 
+export function findDeclaration(document: vscode.TextDocument, word: string, matchingLineNum: number): string | undefined 
+{
+    if (matchingLineNum > 0)
     {
-        if (matchingLineNum > 0)
+        const text: string = document.lineAt(matchingLineNum).text.trim();
+        const lowerCaseText: string = text.toLowerCase();
+
+        if (lowerCaseText.includes(`Sub ${word}`.toLowerCase()))
         {
-            const text: string = document.lineAt(matchingLineNum).text.trim();
-            const lowerCaseText: string = text.toLowerCase();
-
-            if (lowerCaseText.includes(`Sub ${word}`.toLowerCase()))
-            {
-                // this is a sub or function, return the whole line
-                return text;
-            } else if (lowerCaseText.includes(`${word} As`.toLowerCase()))
-            {
-                // this is a variable
-                if (!lowerCaseText.includes(`Dim ${word}`.toLowerCase()) && 
-                    !lowerCaseText.includes(`Public ${word}`.toLowerCase()) && 
-                    !lowerCaseText.includes(`Private ${word}`.toLowerCase()))
-                {
-                    // this is a paramater of a sub
-                    const parameterPosition: number = lowerCaseText.indexOf(`${word} As`.toLowerCase());
-                    let parameterDeclarationEnd: number = text.indexOf(',', parameterPosition);
-                    if (parameterDeclarationEnd < 0) {parameterDeclarationEnd = text.indexOf(')', parameterPosition)}
-                    return "(parameter) ".concat(text.substring(parameterPosition, parameterDeclarationEnd));
-                } 
-            }
-
+            // this is a sub or function, return the whole line
             return text;
+        } else if (lowerCaseText.includes(`${word} As`.toLowerCase()))
+        {
+            // this is a variable
+            if (!lowerCaseText.includes(`Dim ${word}`.toLowerCase()) && 
+                !lowerCaseText.includes(`Public ${word}`.toLowerCase()) && 
+                !lowerCaseText.includes(`Private ${word}`.toLowerCase()))
+            {
+                // this is a paramater of a sub
+                const parameterPosition: number = lowerCaseText.indexOf(`${word} As`.toLowerCase());
+                let parameterDeclarationEnd: number = text.indexOf(',', parameterPosition);
+                if (parameterDeclarationEnd < 0) {parameterDeclarationEnd = text.indexOf(')', parameterPosition)}
+                return "(parameter) ".concat(text.substring(parameterPosition, parameterDeclarationEnd));
+            } 
         }
-        return undefined;
+
+        return text;
     }
+    return undefined;
 }
