@@ -18,6 +18,7 @@ export function activate(context: vscode.ExtensionContext)
     //register reference provider
     const referenceProvider = new b4xReferenceProvider();
     context.subscriptions.push(vscode.languages.registerReferenceProvider('b4x', referenceProvider));
+    //const t: boolean = true;
 }
 
 // 扩展停用时调用
