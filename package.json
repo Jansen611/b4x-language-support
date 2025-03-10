@@ -4,7 +4,7 @@
   "description": "B4x Language Support",
   "version": "0.0.7",
   "publisher": "Jansen",
-  "icon": "assets/Logo.jpg",
+  "icon": "assets/Logo.png",
   "engines": {
     "vscode": "^1.97.0"
   },
