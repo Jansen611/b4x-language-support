@@ -98,6 +98,10 @@ export function findLocalSubBoundary(document: vscode.TextDocument,
     {
         const text: string = document.lineAt(line).text;
         const lowerCaseText: string = text.toLowerCase();
+        
+        // cheching if this line is a comment line, if it is ignore
+        if (lowerCaseText.trim().startsWith("'")) {continue;}
+
         const isEndSubFound: boolean = lowerCaseText.trim().includes(`${subEndString}`);
         const isStartSubFound: boolean = lowerCaseText.trim().includes(`${subStartString}`);
 
@@ -129,6 +133,9 @@ export function findLocalSubBoundary(document: vscode.TextDocument,
     {
         const text: string = document.lineAt(line).text;
         const lowerCaseText: string = text.toLowerCase();
+        // cheching if this line is a comment line, if it is ignore
+        if (lowerCaseText.trim().startsWith("'")) {continue;}
+
         const isEndSubFound: boolean = lowerCaseText.trim().includes(`${subEndString}`);
         const isStartSubFound: boolean = lowerCaseText.trim().includes(`${subStartString}`);
 
@@ -170,6 +177,9 @@ function findLocalVariableDefinitionPosition(document: vscode.TextDocument, word
     {
         const text: string = document.lineAt(line).text;
         const lowerCaseText: string = text.toLowerCase();
+        // cheching if this line is a comment line, if it is ignore
+        if (lowerCaseText.trim().startsWith("'")) {continue;}
+
         const variableMatchResult: RegExpMatchArray | null = lowerCaseText.match(new RegExp(`${comRegExp.StartOfWord}${word} As`, 'i'))
         // checking if local declaration matches
         if (variableMatchResult) 
@@ -198,6 +208,8 @@ function findGlobalDefinitionPosition(document: vscode.TextDocument, word: strin
     {
         const text: string = document.lineAt(line).text
         const lowerCaseText: String = text.toLowerCase();
+        // cheching if this line is a comment line, if it is ignore
+        if (lowerCaseText.trim().startsWith("'")) {continue;}
 
         if (retWordInfo.ClassType == ClassType.Undefined)
         {

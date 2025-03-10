@@ -29,6 +29,9 @@ export class b4xReferenceProvider implements vscode.ReferenceProvider
                     {
                         const text: string = document.lineAt(line).text;
                         const lowerCaseText: String = text.toLowerCase();
+                        // cheching if this line is a comment line, if it is ignore
+                        if (lowerCaseText.trim().startsWith("'")) {continue;}
+
                         const idx: number = lowerCaseText.indexOf(word.toLowerCase());
         
                         if (idx >= 0)
