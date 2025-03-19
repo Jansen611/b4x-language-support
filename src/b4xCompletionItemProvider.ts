@@ -19,8 +19,8 @@ export class B4XCompletionItemProvider implements vscode.CompletionItemProvider
         if (variableMatchResult)
         {
             // look for the starting line number of the global declaration area
-            let globalDeclarationStartLine: number = fullDocLinesLower.indexOf('sub class_globals');
-            if (globalDeclarationStartLine == -1) {globalDeclarationStartLine = fullDocLinesLower.indexOf('sub process_globals');}
+            let globalDeclarationStartLine: number = fullDocLinesLower.findIndex(line => line.match('sub class_globals'));
+            if (globalDeclarationStartLine == -1) {globalDeclarationStartLine = fullDocLinesLower.findIndex(line => line.match('sub process_globals'));}
             if (globalDeclarationStartLine == -1) {return [];}
 
             let itemsShow: vscode.CompletionItem[] = [];
