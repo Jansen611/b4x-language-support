@@ -1,9 +1,23 @@
-export const EndOfWord:String = '\\b(?<=\\w)'
-export const StartOfWord:String = '\\b(?=\\w)'
+export const EndOfWord:string = '\\b(?<=\\w)'
+export const StartOfWord:string = '\\b(?=\\w)'
 
 export enum Flag
 {
     CaseIncensitive = 'i',
     Multiline = 'm',
     Unicode = 'u'
+}
+
+export function PositiveLookbehind(value: string): string
+{
+    let retVal: string = '';
+    if (value){retVal = `(?<=${value})`;}
+    return retVal;
+}
+
+export function PositiveLookahead(value: string): string
+{
+    let retVal: string = '';
+    if (value) {retVal = `(?=${value})`;}
+    return retVal;
 }

@@ -29,12 +29,12 @@ export class b4xHoverProvider implements vscode.HoverProvider
                     if (definitionInfo.Scope == b4xDefinitionProvider.KeywordScope.Global &&
                         definitionInfo.Type == b4xDefinitionProvider.KeywordType.Variable)
                     {
-                        switch(definitionInfo.ClassType)
+                        switch(definitionInfo.ModuleType)
                         {
-                            case b4xDefinitionProvider.ClassType.Class:
+                            case b4xDefinitionProvider.ModuleType.Class:
                                 declaration = "(class_globals) " + declaration;
                                 break;
-                            case b4xDefinitionProvider.ClassType.Process:
+                            case b4xDefinitionProvider.ModuleType.StaticCode:
                                 declaration = "(process_globals) " + declaration;
                                 break;
                             default:

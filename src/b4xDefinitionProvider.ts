@@ -33,27 +33,33 @@ export class b4xDefinitionProvider implements vscode.DefinitionProvider
 
 export class KeywordInfo
 {
-    DefinitionPos: vscode.Position | undefined; 
+    KeywordName: string = '';
+    DefinitionPos: vscode.Position | undefined = undefined; 
     Scope: KeywordScope = KeywordScope.Undefined;
     Type: KeywordType = KeywordType.Undefined;
     ClassName: string = '';
-    ClassType: ClassType = ClassType.Undefined;
+    ModuleName: string = '';
+    ModuleType: ModuleType = ModuleType.Undefined;
 }
 
 export enum KeywordScope {Undefined = 0, Local = 1, Global = 2, CodeSpace = 3}
 
 export enum KeywordType {Undefined = 0, Parameter = 1, Variable = 2, Sub = 3}
 
-export enum ClassType {Undefined = 0, Class = 1, Process = 2}
+export enum ModuleType {Undefined = 0, Class = 1, StaticCode = 2, Service = 3}
+
+export function getWordFromDocumentPosition(document: vscode.TextDocument, position: vscode.Position): string
+{
+    const wordRange: vscode.Range | undefined = document.getWordRangeAtPosition(position);
+    const word: string = wordRange? document.getText(wordRange) : '';
+    return word;
+}
 
 export function findDefinitionPosition(document: vscode.TextDocument, word: string, lineNo: number): KeywordInfo
 {
     let wordType: KeywordScope = KeywordScope.Undefined;
-    let retWordInfo: KeywordInfo = {DefinitionPos: undefined, 
-                                    Scope: KeywordScope.Undefined, 
-                                    Type: KeywordType.Undefined,
-                                    ClassName: document.fileName,
-                                    ClassType: ClassType.Undefined};
+    let retWordInfo: KeywordInfo = {...new KeywordInfo(), KeywordName: word, ModuleName: document.fileName};
+
     // check whether the selected text is in comment
     const lineText: string = document.lineAt(lineNo).text.trim();
     if (lineText.startsWith("'")) {retWordInfo.DefinitionPos = undefined; return retWordInfo;};
@@ -113,8 +119,8 @@ export function findLocalSubBoundary(document: vscode.TextDocument,
             const isProcessGlobalFound: boolean = lowerCaseText.trim().includes("Sub Process_Globals".toLowerCase());
             if (isClassGlobalFound || isProcessGlobalFound)
             {
-                if (isClassGlobalFound && givenWordInfo) {givenWordInfo.ClassType = ClassType.Class;}
-                if (isProcessGlobalFound && givenWordInfo) {givenWordInfo.ClassType = ClassType.Process;}
+                if (isClassGlobalFound && givenWordInfo) {givenWordInfo.ModuleType = ModuleType.Class;}
+                if (isProcessGlobalFound && givenWordInfo) {givenWordInfo.ModuleType = ModuleType.StaticCode;}
                 return retArray;
             }
             retArray[0] = line;
@@ -158,11 +164,7 @@ export function findLocalSubBoundary(document: vscode.TextDocument,
 
 function findLocalVariableDefinitionPosition(document: vscode.TextDocument, word: string, lineNo: number): KeywordInfo 
 {
-    let retWordInfo: KeywordInfo = {DefinitionPos: undefined, 
-                                    Scope: KeywordScope.Undefined, 
-                                    Type: KeywordType.Undefined,
-                                    ClassName: document.fileName,
-                                    ClassType: ClassType.Undefined};
+    let retWordInfo: KeywordInfo = {...new KeywordInfo(), KeywordName: word, ModuleName: document.fileName};
     // finding the local sub boundary
     const localSubBoundary: [number, number] = findLocalSubBoundary(document, lineNo, retWordInfo);
 
@@ -198,11 +200,7 @@ function findLocalVariableDefinitionPosition(document: vscode.TextDocument, word
 
 function findGlobalDefinitionPosition(document: vscode.TextDocument, word: string): KeywordInfo
 {   
-    let retWordInfo: KeywordInfo = {DefinitionPos: undefined, 
-                                    Scope: KeywordScope.Undefined, 
-                                    Type: KeywordType.Undefined,
-                                    ClassName: document.fileName,
-                                    ClassType: ClassType.Undefined};
+    let retWordInfo: KeywordInfo = {...new KeywordInfo(), KeywordName: word, ModuleName: document.fileName};
     // 遍历文档的每一行
     for (let line: number = 0; line < document.lineCount; line++) 
     {
@@ -211,12 +209,12 @@ function findGlobalDefinitionPosition(document: vscode.TextDocument, word: strin
         // cheching if this line is a comment line, if it is ignore
         if (lowerCaseText.trim().startsWith("'")) {continue;}
 
-        if (retWordInfo.ClassType == ClassType.Undefined)
+        if (retWordInfo.ModuleType == ModuleType.Undefined)
         {
             const isClassGlobalFound: boolean = lowerCaseText.trim().includes("Sub Class_Globals".toLowerCase());
             const isProcessGlobalFound: boolean = lowerCaseText.trim().includes("Sub Process_Globals".toLowerCase());
-            if (isClassGlobalFound) {retWordInfo.ClassType = ClassType.Class;}
-            if (isProcessGlobalFound) {retWordInfo.ClassType = ClassType.Process;}
+            if (isClassGlobalFound) {retWordInfo.ModuleType = ModuleType.Class;}
+            if (isProcessGlobalFound) {retWordInfo.ModuleType = ModuleType.StaticCode;}
         }
 
         // 检查是否包含目标单词
