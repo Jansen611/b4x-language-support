@@ -2,7 +2,7 @@
   "name": "b4x-vscode",
   "displayName": "B4X",
   "description": "B4x Language Support",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "publisher": "Jansen",
   "icon": "assets/Logo.png",
   "engines": {
