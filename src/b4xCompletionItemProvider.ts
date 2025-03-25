@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import * as b4xDefinitionProvider from './b4xDefinitionProvider';
 import * as comRegExp from './comRegExp';
+import { log } from 'console';
 
 export class B4XCompletionItemProvider implements vscode.CompletionItemProvider 
 {
@@ -14,8 +15,10 @@ export class B4XCompletionItemProvider implements vscode.CompletionItemProvider
         const fullDocLines: string[] = fullDocString.split('\n');
         const fullDocLinesLower: string[] = fullDocStringLower.split('\n');
 
+        
         const variableMatchResult: RegExpMatchArray | null = fullDocString.match(new RegExp(comRegExp.PositiveLookbehind('sub class_globals|sub process_globals') + '[\\s\\S]+?' +
                                                                                             comRegExp.PositiveLookahead('end sub'), comRegExp.Flag.CaseIncensitive))
+        // find all global variables and functions
         if (variableMatchResult)
         {
             // look for the starting line number of the global declaration area
@@ -27,34 +30,35 @@ export class B4XCompletionItemProvider implements vscode.CompletionItemProvider
             const globalDeclarationString: string = variableMatchResult[0];
             const globalDeclarationLines = globalDeclarationString.split('\n');
             // loop through line by line to get all global variables
+            const variableMatchRegEx_GI = new RegExp(`${comRegExp.StartOfWord}(\\w+) +As +(\\w+)${comRegExp.EndOfWord}`, comRegExp.Flag.CaseIncensitive + comRegExp.Flag.Global)
+            const variableMatchRegEx_I = new RegExp(`${comRegExp.StartOfWord}(\\w+) +As +(\\w+)${comRegExp.EndOfWord}`, comRegExp.Flag.CaseIncensitive)
             for (let i: number = 0; i < globalDeclarationLines.length; i++)
             {
                 const lineText: string = globalDeclarationLines[i];
-                // ignore any comment lines
-                if (lineText.trim().startsWith("'")) {continue;}
-                const variableMatchResult = lineText.match(new RegExp(`${comRegExp.StartOfWord}(\\w+) +As +(\\w+)${comRegExp.EndOfWord}`, comRegExp.Flag.CaseIncensitive));
-                if (variableMatchResult && variableMatchResult.length > 2)
+                const completionItemListToAdd = FindVariablesAndCreateCompletions(lineText, word);
+                for (const completionItemToAdd of completionItemListToAdd)
                 {
-                    //found a global variable; [0] - match, [1] - variableName, [2] - typeName
-                    if (variableMatchResult[1].toLowerCase().includes(word.toLowerCase()))
+                    itemsShow.push(completionItemToAdd);
+                }
+            }
+
+            // check local variables
+            const currentLineNum: number = position.line
+            if (currentLineNum > globalDeclarationStartLine + globalDeclarationLines.length || currentLineNum < globalDeclarationStartLine)
+            {
+                // find local sub boundary
+                const localSubBoundary: [number, number] = b4xDefinitionProvider.findLocalSubBoundary(document, currentLineNum);
+                if (localSubBoundary[0] < localSubBoundary [1])
+                {
+                    // the local sub found, go through the document line by line
+                    for (let i: number = localSubBoundary[0]; i < localSubBoundary[1]; i++) 
                     {
-                        // create a completionItem to show to user
-                        const variableName: string = variableMatchResult[1].trim();
-                        let detailToShow: string = lineText.trim();
-                        let keywordKind = vscode.CompletionItemKind.Variable;
-                        if (lineText.includes("'")) {detailToShow = lineText.split("'")[0].trim();}
-                        if (detailToShow.match(new RegExp(`${comRegExp.StartOfWord}Const${comRegExp.EndOfWord}`, comRegExp.Flag.CaseIncensitive)))
+                        const localLineText: string = fullDocLines[i];
+                        const localCompletionItemListToAdd = FindVariablesAndCreateCompletions(localLineText, word);
+                        for (const completionItemToAdd of localCompletionItemListToAdd)
                         {
-                            keywordKind = vscode.CompletionItemKind.Constant;
+                            itemsShow.push(completionItemToAdd);
                         }
-                        const completionItemToAdd: vscode.CompletionItem = 
-                        {
-                            label: variableName,
-                            kind: keywordKind,
-                            detail: detailToShow,
-                            insertText: variableName,
-                        }
-                        itemsShow.push(completionItemToAdd);
                     }
                 }
             }
@@ -104,4 +108,49 @@ export class B4XCompletionItemProvider implements vscode.CompletionItemProvider
         // ];
         return [];
     }
+}
+
+function FindVariablesAndCreateCompletions(lineText: string, keywordToMarch?: string): vscode.CompletionItem[]
+{
+    const variableMatchRegEx_GI = new RegExp(`${comRegExp.StartOfWord}(\\w+) +As +(\\w+)${comRegExp.EndOfWord}`, comRegExp.Flag.CaseIncensitive + comRegExp.Flag.Global)
+    const variableMatchRegEx_I = new RegExp(`${comRegExp.StartOfWord}(\\w+) +As +(\\w+)${comRegExp.EndOfWord}`, comRegExp.Flag.CaseIncensitive)
+    let word: string = keywordToMarch? keywordToMarch : '';
+    let retVal: vscode.CompletionItem[] = [];
+    
+    // ignore any comment lines
+    if (lineText.trim().startsWith("'")) {return [];}
+    const variableMatchResult = lineText.match(variableMatchRegEx_GI);
+    if (variableMatchResult)
+    {
+        for (const match of variableMatchResult)
+        {
+            const variableMatchResult_I = match.match(variableMatchRegEx_I);
+            // if match is null, work on the next match
+            if (!variableMatchResult_I){continue;}
+
+            //found a global variable; [0] - match, [1] - variableName, [2] - typeName
+            if (variableMatchResult_I[1].toLowerCase().includes(word.toLowerCase()))
+            {
+                // create a completionItem to show to user
+                const variableName: string = variableMatchResult_I[1].trim();
+                let detailToShow: string = lineText.trim();
+                let keywordKind = vscode.CompletionItemKind.Variable;
+                if (lineText.includes("'")) {detailToShow = lineText.split("'")[0].trim();}
+                if (detailToShow.match(new RegExp(`${comRegExp.StartOfWord}Const${comRegExp.EndOfWord}`, comRegExp.Flag.CaseIncensitive)))
+                {
+                    keywordKind = vscode.CompletionItemKind.Constant;
+                }
+                const completionItemToAdd: vscode.CompletionItem = 
+                {
+                    label: variableName,
+                    kind: keywordKind,
+                    detail: detailToShow,
+                    insertText: variableName,
+                }
+                retVal.push(completionItemToAdd);
+            }
+        }
+    }
+
+    return retVal;
 }

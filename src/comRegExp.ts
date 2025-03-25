@@ -5,7 +5,8 @@ export enum Flag
 {
     CaseIncensitive = 'i',
     Multiline = 'm',
-    Unicode = 'u'
+    Unicode = 'u',
+    Global = 'g'
 }
 
 export function PositiveLookbehind(value: string): string
