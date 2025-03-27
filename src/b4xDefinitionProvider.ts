@@ -55,13 +55,13 @@ export function getWordFromDocumentPosition(document: vscode.TextDocument, posit
     return word;
 }
 
-export function findDefinitionPosition(document: vscode.TextDocument, word: string, lineNo: number): KeywordInfo
+export function findDefinitionPosition(document: vscode.TextDocument, word: string, wordLineNo: number): KeywordInfo
 {
     let wordType: KeywordScope = KeywordScope.Undefined;
     let retWordInfo: KeywordInfo = {...new KeywordInfo(), KeywordName: word, ModuleName: document.fileName};
 
     // check whether the selected text is in comment
-    const lineText: string = document.lineAt(lineNo).text.trim();
+    const lineText: string = document.lineAt(wordLineNo).text.trim();
     if (lineText.startsWith("'")) {retWordInfo.DefinitionPos = undefined; return retWordInfo;};
     // check whether the selected text is child of another object
     const idxBeforeWork: number = lineText.indexOf(word) - 1;
@@ -70,7 +70,7 @@ export function findDefinitionPosition(document: vscode.TextDocument, word: stri
     if (lineText.charAt(idxBeforeWork) == '.') {retWordInfo.Scope = KeywordScope.CodeSpace; return retWordInfo;}; 
 
     // finding the local definition
-    const respWordInfoLocal: KeywordInfo = findLocalVariableDefinitionPosition(document, word, lineNo);
+    const respWordInfoLocal: KeywordInfo = findLocalVariableDefinitionPosition(document, word, wordLineNo);
 
     if (!respWordInfoLocal.DefinitionPos) 
     {
@@ -88,6 +88,23 @@ export function findDefinitionPosition(document: vscode.TextDocument, word: stri
     }
 
     return retWordInfo;
+}
+
+export function getDeclarationStringFromSearch(document: vscode.TextDocument, word: string, wordLineNo: number): string | undefined
+{
+    const definitionInfo = findDefinitionPosition(document, word, wordLineNo);
+    const definitionPosition: vscode.Position | undefined = definitionInfo.DefinitionPos;
+    let matchingLineNum: number = 0;
+    
+    if (definitionPosition)
+    {
+        matchingLineNum = definitionPosition.line;
+        // get the declaration from the matchingLineNum
+        let declaration: string | undefined = getDeclarationStringFromSameline(document, word, matchingLineNum); 
+        return declaration;
+    }
+    
+    return undefined;
 }
 
 // find the Local Sub Boundary
@@ -240,4 +257,34 @@ function findGlobalDefinitionPosition(document: vscode.TextDocument, word: strin
 
     // 如果未找到定义，返回 undefined
     return retWordInfo;
+}
+
+// try to get the declaration string of a given keyword from a given line
+function getDeclarationStringFromSameline(document: vscode.TextDocument, word: string, matchingLineNum: number): string | undefined 
+{
+    if (matchingLineNum > 0)
+    {
+        const text: string = document.lineAt(matchingLineNum).text.trim();
+        const lowerCaseText: string = text.toLowerCase();
+
+        if (lowerCaseText.includes(`Sub ${word}`.toLowerCase()))
+        {
+            // this is a sub or function, return the whole line
+            return text;
+        } else if (lowerCaseText.match(new RegExp(`${comRegExp.StartOfWord}${word} As`, comRegExp.Flag.CaseIncensitive)))
+        {
+            // this is a variable
+            if (!lowerCaseText.match(`(?:Dim|Public|Private|Const) ${word}`.toLowerCase()))
+            {
+                // this is a paramater of a sub
+                const parameterPosition: number = lowerCaseText.indexOf(`${word} As`.toLowerCase());
+                let parameterDeclarationEnd: number = text.indexOf(',', parameterPosition);
+                if (parameterDeclarationEnd < 0) {parameterDeclarationEnd = text.indexOf(')', parameterPosition)}
+                return "(parameter) " + text.substring(parameterPosition, parameterDeclarationEnd);
+            } 
+        }
+
+        return text;
+    }
+    return undefined;
 }
