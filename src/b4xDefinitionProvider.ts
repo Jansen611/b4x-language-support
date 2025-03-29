@@ -90,8 +90,12 @@ export function findDefinitionPosition(document: vscode.TextDocument, word: stri
     return retWordInfo;
 }
 
-export function getDeclarationStringFromSearch(document: vscode.TextDocument, word: string, wordLineNo: number): string | undefined
+export function getDeclarationStringFromSearch(document: vscode.TextDocument, word: string, wordLineNo: number,
+                                               isFunctionSearch?: boolean, isVariableSearch?: boolean): string | undefined
 {
+    if (isFunctionSearch == undefined) {isFunctionSearch = true;}
+    if (isVariableSearch == undefined) {isVariableSearch = true;}
+
     const definitionInfo = findDefinitionPosition(document, word, wordLineNo);
     const definitionPosition: vscode.Position | undefined = definitionInfo.DefinitionPos;
     let matchingLineNum: number = 0;
@@ -100,7 +104,7 @@ export function getDeclarationStringFromSearch(document: vscode.TextDocument, wo
     {
         matchingLineNum = definitionPosition.line;
         // get the declaration from the matchingLineNum
-        let declaration: string | undefined = getDeclarationStringFromSameline(document, word, matchingLineNum); 
+        let declaration: string | undefined = getDeclarationStringFromSameline(document, word, matchingLineNum, isFunctionSearch, isVariableSearch); 
         return declaration;
     }
     
@@ -260,7 +264,8 @@ function findGlobalDefinitionPosition(document: vscode.TextDocument, word: strin
 }
 
 // try to get the declaration string of a given keyword from a given line
-function getDeclarationStringFromSameline(document: vscode.TextDocument, word: string, matchingLineNum: number): string | undefined 
+function getDeclarationStringFromSameline(document: vscode.TextDocument, word: string, matchingLineNum: number, 
+                                          isFunctionSearch: boolean, isVariableSearch: boolean): string | undefined 
 {
     if (matchingLineNum > 0)
     {
@@ -270,21 +275,23 @@ function getDeclarationStringFromSameline(document: vscode.TextDocument, word: s
         if (lowerCaseText.includes(`Sub ${word}`.toLowerCase()))
         {
             // this is a sub or function, return the whole line
-            return text;
+            if (isFunctionSearch) {return text;}
         } else if (lowerCaseText.match(new RegExp(`${comRegExp.StartOfWord}${word} As`, comRegExp.Flag.CaseIncensitive)))
         {
-            // this is a variable
-            if (!lowerCaseText.match(`(?:Dim|Public|Private|Const) ${word}`.toLowerCase()))
+            if (isVariableSearch)
             {
-                // this is a paramater of a sub
-                const parameterPosition: number = lowerCaseText.indexOf(`${word} As`.toLowerCase());
-                let parameterDeclarationEnd: number = text.indexOf(',', parameterPosition);
-                if (parameterDeclarationEnd < 0) {parameterDeclarationEnd = text.indexOf(')', parameterPosition)}
-                return "(parameter) " + text.substring(parameterPosition, parameterDeclarationEnd);
-            } 
+                // this is a variable
+                if (!lowerCaseText.match(`(?:Dim|Public|Private|Const) ${word}`.toLowerCase()))
+                {
+                    // this is a paramater of a sub
+                    const parameterPosition: number = lowerCaseText.indexOf(`${word} As`.toLowerCase());
+                    let parameterDeclarationEnd: number = text.indexOf(',', parameterPosition);
+                    if (parameterDeclarationEnd < 0) {parameterDeclarationEnd = text.indexOf(')', parameterPosition)}
+                    return "(parameter) " + text.substring(parameterPosition, parameterDeclarationEnd);
+                } 
+                return text;
+            }
         }
-
-        return text;
     }
     return undefined;
 }
