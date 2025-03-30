@@ -13,12 +13,25 @@ export const B4X_BASECLASS_MEMBER_DECLARATION: Record<string, string> ={
     "list.as" : "As(Type As Object)",
     "list.clear" : "Clear()",
     "list.get" : "Get(index As Int) As Object",
+    "list.indexof" : "IndexOf(item As Object) As Int",
+    "list.initialize" : "Initialize()",
+    "list.initialize2" : "Initialize2(array As List)",
+    "list.insertat" : "InsertAt(index As Int, list As List)",
+    "list.isinitialized" : "IsInitialized() As Boolean",
+    "list.removeat" : "RemoveAt(index As Int)",
+    "list.set" : "Set(index As Int, item As Object)",
+    "list.size" : "Size As Int",
+    "list.sort" : "Sort(ascending As Boolean)",
+    "list.sortcaseinsensitive" : "SortCaseInsensitive(ascending As Boolean)",
+    "list.sorttype" : "SortType(fieldName As String, ascending As Boolean)",
+    "list.sorttypecaseinsensitive" : "SortTypeCaseInsensitive(fieldName As String, ascending As Boolean)",
+    "map.initialize" : "Initialize()",
 
 }
 
 export const B4X_BASECLASS_MEMBER_COMPLETION: Record<string, vscode.CompletionItem[]> = {
     "list": [
-        {
+        { // Add
             label: "Add",
             kind: vscode.CompletionItemKind.Method,
             detail: B4X_BASECLASS_MEMBER_DECLARATION['list.add'],
@@ -27,7 +40,7 @@ export const B4X_BASECLASS_MEMBER_COMPLETION: Record<string, vscode.CompletionIt
             commitCharacters: ['('],
             command: SignatureTriggerCommand
         },
-        {
+        { // AddAll
             label: "AddAll",
             kind: vscode.CompletionItemKind.Method,
             detail: B4X_BASECLASS_MEMBER_DECLARATION['list.addall'],
@@ -36,7 +49,7 @@ export const B4X_BASECLASS_MEMBER_COMPLETION: Record<string, vscode.CompletionIt
             commitCharacters: ['('],
             command: SignatureTriggerCommand
         },
-        {
+        { // AddAllAt
             label: "AddAllAt",
             kind: vscode.CompletionItemKind.Method,
             detail: B4X_BASECLASS_MEMBER_DECLARATION['list.addallat'],
@@ -45,7 +58,7 @@ export const B4X_BASECLASS_MEMBER_COMPLETION: Record<string, vscode.CompletionIt
             commitCharacters: ['('],
             command: SignatureTriggerCommand
         },
-        {
+        { // As
             label: "As",
             kind: vscode.CompletionItemKind.Method,
             detail: B4X_BASECLASS_MEMBER_DECLARATION['list.as'],
@@ -54,7 +67,7 @@ export const B4X_BASECLASS_MEMBER_COMPLETION: Record<string, vscode.CompletionIt
             commitCharacters: ['('],
             command: SignatureTriggerCommand
         },
-        {
+        { // Clear
             label: "Clear",
             kind: vscode.CompletionItemKind.Method,
             detail: B4X_BASECLASS_MEMBER_DECLARATION['list.clear'],
@@ -63,7 +76,7 @@ export const B4X_BASECLASS_MEMBER_COMPLETION: Record<string, vscode.CompletionIt
             commitCharacters: ['('],
             command: SignatureTriggerCommand
         },
-        {
+        { // Get
             label: "Get",
             kind: vscode.CompletionItemKind.Method,
             detail: B4X_BASECLASS_MEMBER_DECLARATION['list.get'],
@@ -72,28 +85,28 @@ export const B4X_BASECLASS_MEMBER_COMPLETION: Record<string, vscode.CompletionIt
             commitCharacters: ['('],
             command: SignatureTriggerCommand
         },
-        {
+        { //IndexOf
             label: "IndexOf",
             kind: vscode.CompletionItemKind.Method,
-            detail: "IndexOf(item As Object) As Int",
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['list.indexof'],
             documentation: "Returns the index of the specified item, or -1 if it was not found.",
             //insertText: new vscode.SnippetString("IndexOf($1)"),
             commitCharacters: ['('],
             command: SignatureTriggerCommand
         },
-        {
+        { // Initialize
             label: "Initialize",
             kind: vscode.CompletionItemKind.Method,
-            detail: "Initialize()",
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['list.initialize'],
             documentation: "Initializes an empty list.",
             //insertText: new vscode.SnippetString("Initialize()"),
             commitCharacters: ['('],
             command: SignatureTriggerCommand
         },
-        {
+        { // Initialize2
             label: "Initialize2",
             kind: vscode.CompletionItemKind.Method,
-            detail: "Initialize2(array As List)",
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['list.initialize2'],
             documentation: "Initializes a list with the given values. This method should be used to convert arrays to lists. \n" + 
                            "Note that if you pass a list to this method then both objects will share the same list, \n" +
                            "and if you pass an array the list will be of a fixed size. Meaning that you cannot later add or remove items.",
@@ -101,75 +114,75 @@ export const B4X_BASECLASS_MEMBER_COMPLETION: Record<string, vscode.CompletionIt
             commitCharacters: ['('],
             command: SignatureTriggerCommand
         },
-        {
+        { // InsertAt
             label: "InsertAt",
             kind: vscode.CompletionItemKind.Method,
-            detail: "InsertAt(index As Int, list As List)",
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['list.insertat'],
             documentation: "Inserts the specified element in the specified index, before the current item at that index. \n" + 
                            "As a result all items with index equal to or larger than the specified index are shifted.",
             //insertText: new vscode.SnippetString("InsertAt($1, $2)"),
             commitCharacters: ['('],
             command: SignatureTriggerCommand
         },
-        {
+        { // IsInitialized
             label: "IsInitialized",
             kind: vscode.CompletionItemKind.Method,
-            detail: "IsInitialized() As Boolean",
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['list.isinitialized'],
             //insertText: new vscode.SnippetString("IsInitialized()"),
             commitCharacters: ['('],
             command: SignatureTriggerCommand
         },
-        {
+        { // RemoveAt
             label: "RemoveAt",
             kind: vscode.CompletionItemKind.Method,
-            detail: "RemoveAt(index As Int)",
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['list.removeat'],
             documentation: "Removes the item at the specified index.",
             //insertText: new vscode.SnippetString("RemoveAt($1)"),
             commitCharacters: ['('],
             command: SignatureTriggerCommand
         },
-        {
+        { // Set
             label: "Set",
             kind: vscode.CompletionItemKind.Method,
-            detail: "Set(index As Int, item As Object)",
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['list.set'],
             documentation: "Replaces the current item in the specified index with the new item.",
             //insertText: new vscode.SnippetString("Set($1, $2)"),
             commitCharacters: ['('],
             command: SignatureTriggerCommand
         },
-        {
+        { // Size
             label: "Size",
             kind: vscode.CompletionItemKind.Property,
-            detail: "Size As Int",
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['list.size'],
             documentation: "Returns the number of items in the list.",
             //insertText: new vscode.SnippetString("Size"),
             commitCharacters: ['('],
             command: SignatureTriggerCommand
         },
-        {
+        { // Sort
             label: "Sort",
             kind: vscode.CompletionItemKind.Method,
-            detail: "Sort(ascending As Boolean)",
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['list.sort'],
             documentation: "Sorts the list. \n" +
 	                       "The items must all be numbers or strings.",
             //insertText: new vscode.SnippetString("Sort($1)"),
             commitCharacters: ['('],
             command: SignatureTriggerCommand
         },
-        {
+        { // SortCaseInsensitive
             label: "SortCaseInsensitive",
             kind: vscode.CompletionItemKind.Method,
-            detail: "SortCaseInsensitive(ascending As Boolean)",
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['list.sortcaseinsensitive'],
             documentation: "Lexicographically sorts the list, ignoring the characters case. \n" +
 	                       "The items must all be numbers or strings.",
             //insertText: new vscode.SnippetString("SortCaseInsensitive($1)"),
             commitCharacters: ['('],
             command: SignatureTriggerCommand
         },
-        {
+        { // SortType
             label: "SortType",
             kind: vscode.CompletionItemKind.Method,
-            detail: "SortType(fieldName As String, ascending As Boolean)",
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['list.sorttype'],
             documentation: "Sorts a list with items of user defined type. The list is sorted based on the specified field. \n" +
                            "FieldName - The case-sensitive field name that will be used for sorting. Field must contain numbers or strings. \n" +
                            "Ascending - Whether to sort ascending or descending.",
@@ -177,10 +190,10 @@ export const B4X_BASECLASS_MEMBER_COMPLETION: Record<string, vscode.CompletionIt
             commitCharacters: ['('],
             command: SignatureTriggerCommand
         },
-        {
+        { // SortTypeCaseInsensitive
             label: "SortTypeCaseInsensitive",
             kind: vscode.CompletionItemKind.Method,
-            detail: "SortTypeCaseInsensitive(fieldName As String, ascending As Boolean)",
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['list.sorttypecaseinsensitive'],
             documentation: "Similar to SortType. Lexicographically sorts the list, ignoring the characters case.",
             //insertText: new vscode.SnippetString("SortTypeCaseInsensitive($1, $2)"),
             commitCharacters: ['('],
@@ -191,7 +204,7 @@ export const B4X_BASECLASS_MEMBER_COMPLETION: Record<string, vscode.CompletionIt
         {
             label: "Initialize",
             kind: vscode.CompletionItemKind.Method,
-            detail: "Initialize()",
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['map.initialize'],
             documentation: "Initializes the object.",
             //insertText: new vscode.SnippetString("Initialize()")
         },
