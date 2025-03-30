@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import * as b4xDefinitionProvider from './b4xDefinitionProvider';
+import * as docMethods from './documentMethods';
 import * as comRegExp from './comRegExp';
 
 export class b4xSignatureHelpProvider implements vscode.SignatureHelpProvider
@@ -13,8 +14,7 @@ export class b4xSignatureHelpProvider implements vscode.SignatureHelpProvider
             const lineText: string = document.lineAt(position.line).text;
             const funcCallStartIdx: number = lineText.lastIndexOf('(', position.character);
             const funcNamePosition = new vscode.Position(position.line, funcCallStartIdx - 1);
-            const funcNameRange: vscode.Range | undefined = document.getWordRangeAtPosition(funcNamePosition);
-            const funcName: string = funcNameRange? document.getText(funcNameRange) : '';
+            const funcName: string = docMethods.getWordFromDocumentPosition(document, funcNamePosition); 
 
             // search for any declaration of this funcName
             let declaration: string | undefined = b4xDefinitionProvider.getDeclarationStringFromSearch(document, funcName, funcNamePosition.line, true, false);

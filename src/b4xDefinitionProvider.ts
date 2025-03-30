@@ -1,13 +1,14 @@
 import * as vscode from 'vscode';
+import * as docMethods from './documentMethods';
 import * as comRegExp from './comRegExp';
+
 export class b4xDefinitionProvider implements vscode.DefinitionProvider 
 {
     provideDefinition(document: vscode.TextDocument, 
                       position: vscode.Position, 
                       token: vscode.CancellationToken): vscode.ProviderResult<vscode.Definition | vscode.DefinitionLink[]> 
     {
-        const wordRange: vscode.Range | undefined = document.getWordRangeAtPosition(position);
-        const word: string = wordRange? document.getText(wordRange) : '';
+        const word: string = docMethods.getWordFromDocumentPosition(document, position);
         const lineNo: number = position.line;
 
         if (word) 
@@ -47,13 +48,6 @@ export enum KeywordScope {Undefined = 0, Local = 1, Global = 2, CodeSpace = 3}
 export enum KeywordType {Undefined = 0, Parameter = 1, Variable = 2, Sub = 3}
 
 export enum ModuleType {Undefined = 0, Class = 1, StaticCode = 2, Service = 3}
-
-export function getWordFromDocumentPosition(document: vscode.TextDocument, position: vscode.Position): string
-{
-    const wordRange: vscode.Range | undefined = document.getWordRangeAtPosition(position);
-    const word: string = wordRange? document.getText(wordRange) : '';
-    return word;
-}
 
 export function findDefinitionPosition(document: vscode.TextDocument, word: string, wordLineNo: number): KeywordInfo
 {
@@ -199,11 +193,10 @@ function findLocalVariableDefinitionPosition(document: vscode.TextDocument, word
     for (let line: number = localSubBoundary[0]; line < localSubBoundary[1]; line++) 
     {
         const text: string = document.lineAt(line).text;
-        const lowerCaseText: string = text.toLowerCase();
-        // cheching if this line is a comment line, if it is ignore
-        if (lowerCaseText.trim().startsWith("'")) {continue;}
+        // check if this line is a comment line, if it is ignore
+        if (text.trim().startsWith("'")) {continue;}
 
-        const variableMatchResult: RegExpMatchArray | null = lowerCaseText.match(new RegExp(`${comRegExp.StartOfWord}${word} As`, 'i'))
+        const variableMatchResult: RegExpMatchArray | null = text.match(new RegExp(`${comRegExp.StartOfWord}${word} As (\\w+)`, 'i'))
         // checking if local declaration matches
         if (variableMatchResult) 
         {
@@ -211,6 +204,7 @@ function findLocalVariableDefinitionPosition(document: vscode.TextDocument, word
             retWordInfo.DefinitionPos = new vscode.Position(line, text.indexOf(word));
             retWordInfo.Scope = KeywordScope.Local;
             retWordInfo.Type = KeywordType.Variable;
+            if (variableMatchResult.length > 1) {retWordInfo.ClassName = variableMatchResult[1];}
             return retWordInfo
         }
     }
@@ -228,7 +222,7 @@ function findGlobalDefinitionPosition(document: vscode.TextDocument, word: strin
         const text: string = document.lineAt(line).text
         const lowerCaseText: String = text.toLowerCase();
         // cheching if this line is a comment line, if it is ignore
-        if (lowerCaseText.trim().startsWith("'")) {continue;}
+        if (text.trim().startsWith("'")) {continue;}
 
         if (retWordInfo.ModuleType == ModuleType.Undefined)
         {
@@ -243,10 +237,10 @@ function findGlobalDefinitionPosition(document: vscode.TextDocument, word: strin
         if (isEventFound) {continue;}
         
         const functionMatchPattern: string = `Sub ${word}${comRegExp.EndOfWord}`;
-        const functionMatchResult = lowerCaseText.match(new RegExp(functionMatchPattern, comRegExp.Flag.CaseIncensitive));
+        const functionMatchResult = text.match(new RegExp(functionMatchPattern, 'i'));
 
-        const variableMatchPattern: string = `${comRegExp.StartOfWord}${word} As`;
-        const variableMatchResult = lowerCaseText.match(new RegExp(variableMatchPattern, comRegExp.Flag.CaseIncensitive));
+        const variableMatchPattern: string = `${comRegExp.StartOfWord}${word} As (\\w+)`;
+        const variableMatchResult = text.match(new RegExp(variableMatchPattern, 'i'));
         //const isVariableFound: boolean = lowerCaseText.includes(`${word} As`.toLowerCase());
         if (functionMatchResult || variableMatchResult) 
         {
@@ -254,7 +248,11 @@ function findGlobalDefinitionPosition(document: vscode.TextDocument, word: strin
             retWordInfo.DefinitionPos = new vscode.Position(line, text.indexOf(word));
             retWordInfo.Scope = KeywordScope.Global;
             if (functionMatchResult){retWordInfo.Type = KeywordType.Sub;}
-            if (variableMatchResult){retWordInfo.Type = KeywordType.Variable;}
+            if (variableMatchResult)
+            {
+                retWordInfo.Type = KeywordType.Variable;
+                if (variableMatchResult.length > 1) {retWordInfo.ClassName = variableMatchResult[1];}
+            }
             return retWordInfo;
         }
     }

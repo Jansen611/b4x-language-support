@@ -1,7 +1,8 @@
 import * as vscode from 'vscode';
 import * as b4xDefinitionProvider from './b4xDefinitionProvider';
+import * as documentMethods from './documentMethods';
 import * as comRegExp from './comRegExp';
-import { log } from 'console';
+import * as b4xBaseClassInfo from './b4xBaseClassInfo'
 
 export class B4XCompletionItemProvider implements vscode.CompletionItemProvider 
 {
@@ -9,8 +10,33 @@ export class B4XCompletionItemProvider implements vscode.CompletionItemProvider
     : vscode.ProviderResult<vscode.CompletionList | vscode.CompletionItem[]> 
     {
         const cha = context.triggerCharacter;
-        const word: string = b4xDefinitionProvider.getWordFromDocumentPosition(document, position);
-        const fullDocString: string = document.getText();
+        const wordToSearch: string = documentMethods.getWordFromDocumentPosition(document, position);
+        // seach current doc by default, but this can be changed to other doc
+        let fullDocString: string = document.getText();
+        
+        const linePrefix: string = documentMethods.getLinePrefixFromDocPosition(document, position);
+        // check whether this is a member search or global search
+        const parentObjectMatch = linePrefix.match(new RegExp('(\\w+)\\.', 'g'))
+        if (parentObjectMatch && parentObjectMatch.length > 0)
+        {
+            // this is a member of an object, no point search for the original document
+            fullDocString = '';
+            // loop through all matches to find in which class space to do the search
+            for (let i:number = 0; i < parentObjectMatch.length; i++)
+            {
+                const keywordMatch = parentObjectMatch[i].match('\\w+');
+                if (keywordMatch)
+                {
+                    let output = b4xDefinitionProvider.findDefinitionPosition(document, keywordMatch[0], position.line);
+                    if (output.ClassName && b4xBaseClassInfo.B4X_BASECLASS_MEMBERS[output.ClassName])
+                    {
+                        // the prefix object is one of the b4x base class, return the class members directly
+                        return b4xBaseClassInfo.B4X_BASECLASS_MEMBERS[output.ClassName];
+                    }
+                }
+            }
+        }
+
         const fullDocStringLower: string = fullDocString.toLowerCase();
         const fullDocLines: string[] = fullDocString.split('\n');
         const fullDocLinesLower: string[] = fullDocStringLower.split('\n');
@@ -35,7 +61,7 @@ export class B4XCompletionItemProvider implements vscode.CompletionItemProvider
             for (let i: number = 0; i < globalDeclarationLines.length; i++)
             {
                 const lineText: string = globalDeclarationLines[i];
-                const completionItemListToAdd = FindVariablesAndCreateCompletions(lineText, word);
+                const completionItemListToAdd = FindVariablesAndCreateCompletions(lineText, wordToSearch);
                 for (const completionItemToAdd of completionItemListToAdd)
                 {
                     itemsShow.push(completionItemToAdd);
@@ -54,7 +80,7 @@ export class B4XCompletionItemProvider implements vscode.CompletionItemProvider
                     for (let i: number = localSubBoundary[0]; i < localSubBoundary[1]; i++) 
                     {
                         const localLineText: string = fullDocLines[i];
-                        const localCompletionItemListToAdd = FindVariablesAndCreateCompletions(localLineText, word);
+                        const localCompletionItemListToAdd = FindVariablesAndCreateCompletions(localLineText, wordToSearch);
                         for (const completionItemToAdd of localCompletionItemListToAdd)
                         {
                             itemsShow.push(completionItemToAdd);
@@ -77,7 +103,7 @@ export class B4XCompletionItemProvider implements vscode.CompletionItemProvider
                     if (functionMatchResult)
                     {
                         //found a global function;
-                        if (functionMatchResult[0].toLowerCase().includes(word.toLowerCase()))
+                        if (functionMatchResult[0].toLowerCase().includes(wordToSearch.toLowerCase()))
                         {
                             // create a completionItem to show to user
                             let detailToShow: string = lineText.trim();

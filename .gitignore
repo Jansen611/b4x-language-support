@@ -1,4 +1,5 @@
 node_modules
 out
+reference
 *.vsix
 *.4

@@ -23,7 +23,7 @@ export function activate(context: vscode.ExtensionContext)
 
     // register completion provider
     const completionItemProvider = new b4xCompletionItemProvider();
-    context.subscriptions.push(vscode.languages.registerCompletionItemProvider('b4x', completionItemProvider));
+    context.subscriptions.push(vscode.languages.registerCompletionItemProvider('b4x', completionItemProvider, '.'));
 
     // register signature provider, only activate when '(' and ',' is pressed
     const signatureHelpProvider = new b4xSignatureHelpProvider();

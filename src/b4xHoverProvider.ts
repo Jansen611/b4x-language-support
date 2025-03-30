@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import * as b4xDefinitionProvider from './b4xDefinitionProvider';
+import * as docMethods from './documentMethods';
 
 export class b4xHoverProvider implements vscode.HoverProvider 
 {
@@ -7,8 +8,7 @@ export class b4xHoverProvider implements vscode.HoverProvider
                  position: vscode.Position, 
                  token: vscode.CancellationToken): vscode.ProviderResult<vscode.Hover>
     {
-        const wordRange: vscode.Range | undefined = document.getWordRangeAtPosition(position);
-        const word: string = wordRange? document.getText(wordRange) : '';
+        const word: string = docMethods.getWordFromDocumentPosition(document, position);
         const wordLineNo: number = position.line;
 
         if (word) 
