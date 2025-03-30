@@ -8,7 +8,7 @@ export class b4xHoverProvider implements vscode.HoverProvider
                  position: vscode.Position, 
                  token: vscode.CancellationToken): vscode.ProviderResult<vscode.Hover>
     {
-        const word: string = docMethods.getWordFromDocumentPosition(document, position);
+        const word: string = docMethods.getWordFromDocPosition(document, position);
         const wordLineNo: number = position.line;
 
         if (word) 

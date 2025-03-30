@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import * as b4xDefinitionProvider from './b4xDefinitionProvider';
-import * as documentMethods from './documentMethods';
+import * as docMethods from './documentMethods';
 import * as comRegExp from './comRegExp';
 import * as b4xBaseClassInfo from './b4xBaseClassInfo'
 
@@ -10,13 +10,12 @@ export class B4XCompletionItemProvider implements vscode.CompletionItemProvider
     : vscode.ProviderResult<vscode.CompletionList | vscode.CompletionItem[]> 
     {
         const cha = context.triggerCharacter;
-        const wordToSearch: string = documentMethods.getWordFromDocumentPosition(document, position);
+        const wordToSearch: string = docMethods.getWordFromDocPosition(document, position);
         // seach current doc by default, but this can be changed to other doc
         let fullDocString: string = document.getText();
         
-        const linePrefix: string = documentMethods.getLinePrefixFromDocPosition(document, position);
         // check whether this is a member search or global search
-        const parentObjectMatch = linePrefix.match(new RegExp('(\\w+)\\.', 'g'))
+        const parentObjectMatch = docMethods.getAllParentObjMatchFromDocPosition(document, position);
         if (parentObjectMatch && parentObjectMatch.length > 0)
         {
             // this is a member of an object, no point search for the original document
@@ -27,11 +26,11 @@ export class B4XCompletionItemProvider implements vscode.CompletionItemProvider
                 const keywordMatch = parentObjectMatch[i].match('\\w+');
                 if (keywordMatch)
                 {
-                    let output = b4xDefinitionProvider.findDefinitionPosition(document, keywordMatch[0], position.line);
-                    if (output.ClassName && b4xBaseClassInfo.B4X_BASECLASS_MEMBERS[output.ClassName])
+                    let outKeywordInfo = b4xDefinitionProvider.findDefinitionPosition(document, keywordMatch[0], position.line);
+                    if (outKeywordInfo.ClassName && b4xBaseClassInfo.B4X_BASECLASS_MEMBER_COMPLETION[outKeywordInfo.ClassName.toLocaleLowerCase()])
                     {
                         // the prefix object is one of the b4x base class, return the class members directly
-                        return b4xBaseClassInfo.B4X_BASECLASS_MEMBERS[output.ClassName];
+                        return b4xBaseClassInfo.B4X_BASECLASS_MEMBER_COMPLETION[outKeywordInfo.ClassName.toLocaleLowerCase()];
                     }
                 }
             }

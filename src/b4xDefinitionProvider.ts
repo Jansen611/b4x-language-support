@@ -8,7 +8,7 @@ export class b4xDefinitionProvider implements vscode.DefinitionProvider
                       position: vscode.Position, 
                       token: vscode.CancellationToken): vscode.ProviderResult<vscode.Definition | vscode.DefinitionLink[]> 
     {
-        const word: string = docMethods.getWordFromDocumentPosition(document, position);
+        const word: string = docMethods.getWordFromDocPosition(document, position);
         const lineNo: number = position.line;
 
         if (word) 
