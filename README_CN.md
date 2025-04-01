@@ -2,7 +2,7 @@
 
 为 B4X（B4A，B4i以及B4J 等）提供语法高亮、代码片段和基础语言支持的 Visual Studio Code 扩展（当前版本功能有限，后续会逐步增强）。
 
-![B4X Logo](assets/Logo.png)
+<img src="assets/Logo.png" width="150">
 
 ## 功能
 - **语法高亮**：支持 `.bas` 文件的 B4X 语法着色。
