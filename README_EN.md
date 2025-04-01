@@ -16,7 +16,7 @@ Provides syntax highlighting, code snippets, and basic language support for B4X 
 ## Installation
 1. Open VSCode.
 2. Press `Ctrl+Shift+X` (or click the Extensions sidebar icon).
-3. Search for `B4X`, then click Install.
+3. Search for `b4x-vscode`, then click Install.
 
 ## Usage
 - Simply open any `.bas` file to activate the features.
