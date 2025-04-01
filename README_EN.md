@@ -4,6 +4,9 @@ Provides syntax highlighting, code snippets, and basic language support for B4X 
 
 <img src="assets/Logo.png" width="150">
 
+## Current Version
+- Version: 0.0.9
+
 ## Features
 - **Syntax Highlighting**: Supports B4X syntax coloring for `.bas` files.
 - **Code Snippets**: Quick insertion of common B4X code structures.
