@@ -216,7 +216,7 @@ function findLocalVariableDefinitionPosition(document: vscode.TextDocument, word
 function findGlobalDefinitionPosition(document: vscode.TextDocument, word: string): KeywordInfo
 {   
     let retWordInfo: KeywordInfo = {...new KeywordInfo(), KeywordName: word, ModuleName: document.fileName};
-    // 遍历文档的每一行
+    // loop through every line
     for (let line: number = 0; line < document.lineCount; line++) 
     {
         const text: string = document.lineAt(line).text
@@ -232,7 +232,7 @@ function findGlobalDefinitionPosition(document: vscode.TextDocument, word: strin
             if (isProcessGlobalFound) {retWordInfo.ModuleType = ModuleType.StaticCode;}
         }
 
-        // 检查是否包含目标单词
+        // check whether including keyword
         const isEventFound: boolean = text.includes(`Sub ${word}_`.toLowerCase());
         if (isEventFound) {continue;}
         
@@ -244,7 +244,7 @@ function findGlobalDefinitionPosition(document: vscode.TextDocument, word: strin
         //const isVariableFound: boolean = lowerCaseText.includes(`${word} As`.toLowerCase());
         if (functionMatchResult || variableMatchResult) 
         {
-            // 返回定义的位置
+            // return definition position
             retWordInfo.DefinitionPos = new vscode.Position(line, text.indexOf(word));
             retWordInfo.Scope = KeywordScope.Global;
             if (functionMatchResult){retWordInfo.Type = KeywordType.Sub;}
@@ -257,7 +257,7 @@ function findGlobalDefinitionPosition(document: vscode.TextDocument, word: strin
         }
     }
 
-    // 如果未找到定义，返回 undefined
+    // return undefined if not found
     return retWordInfo;
 }
 

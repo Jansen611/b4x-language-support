@@ -5,7 +5,7 @@
 <img src="assets/Logo.png" width="150">
 
 ## 当前版本
-- Version: 0.0.9
+- Version: 0.1.0
 
 ## 功能
 - **语法高亮**：支持 `.bas` 文件的 B4X 语法着色。
@@ -22,7 +22,7 @@
 - 直接打开 `.bas` 文件即可生效。
 
 ## 问题反馈
-遇到问题？请提交到 [GitHub Issues](https://github.com/Jansen611/b4x-language-support/issues)（需补充你的仓库链接）。
+遇到问题？请提交到 [GitHub Issues](https://github.com/Jansen611/b4x-language-support/issues)。
 
 ## 许可证
 MIT © [Jansen](https://github.com/Jansen611)

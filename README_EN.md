@@ -5,7 +5,7 @@ Provides syntax highlighting, code snippets, and basic language support for B4X 
 <img src="assets/Logo.png" width="150">
 
 ## Current Version
-- Version: 0.0.9
+- Version: 0.1.0
 
 ## Features
 - **Syntax Highlighting**: Supports B4X syntax coloring for `.bas` files.
@@ -22,7 +22,7 @@ Provides syntax highlighting, code snippets, and basic language support for B4X 
 - Simply open any `.bas` file to activate the features.
 
 ## Issue Reporting
-Encounter problems? Please submit to [GitHub Issues](https://github.com/Jansen611/b4x-language-support/issues) (replace with your actual repo link if needed).
+Encounter problems? Please submit to [GitHub Issues](https://github.com/Jansen611/b4x-language-support/issues).
 
 ## License
 MIT © [Jansen](https://github.com/Jansen611)

@@ -26,6 +26,18 @@ export const B4X_BASECLASS_MEMBER_DECLARATION: Record<string, string> ={
     "list.sorttype" : "SortType(fieldName As String, ascending As Boolean)",
     "list.sorttypecaseinsensitive" : "SortTypeCaseInsensitive(fieldName As String, ascending As Boolean)",
     "map.initialize" : "Initialize()",
+    "map.put" : "Put(Key As Object, Value As Object) As Object",
+    "map.remove" : "Remove(Key As Object) As Object",
+    "map.get" : "Get(Key As Object) As Object",
+    "map.getdefault" : "GetDefault(Key As Object, DefaultValue As Object) As Object",
+    "map.getkeyat" : "GetKeyAt(index As Int) As Object",
+    "map.getvalueat" : "GetValueAt(index As Int) As Object",
+    "map.clear" : "Clear()",
+    "map.containskey" : "ContainsKey(Key As Object) As Boolean",
+    "map.containsvalue" : "ContainsValue(Value As Object) As Boolean",
+    "map.keys" : "Keys() As IterableList",
+    "map.values" : "Values() As IterableList",
+    "map.size" : "Size As Int"
 
 }
 
@@ -200,17 +212,17 @@ export const B4X_BASECLASS_MEMBER_COMPLETION: Record<string, vscode.CompletionIt
         }
     ],
     "map": [
-        { //Initialize
+        { // Initialize
             label: "Initialize",
             kind: vscode.CompletionItemKind.Method,
             detail: B4X_BASECLASS_MEMBER_DECLARATION['map.initialize'],
             documentation: "Initializes the object.",
             //insertText: new vscode.SnippetString("Initialize()")
         },
-        {
+        { // Put
             label: "Put",
             kind: vscode.CompletionItemKind.Method,
-            detail: "Put(Key As Object, Value As Object) As Object",
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['map.put'],
             documentation: "Puts a key/value pair in the map, overwriting the previous item with this key (if such exists). \n" + 
                            "Returns the previous item with this key or null if there was no such item. \n" + 
                            "Note that if you are using strings as the keys then the keys are case sensitive.",
@@ -218,39 +230,39 @@ export const B4X_BASECLASS_MEMBER_COMPLETION: Record<string, vscode.CompletionIt
             commitCharacters: ['('],
             command: SignatureTriggerCommand
         },
-        {
+        { // Remove
             label: "Remove",
             kind: vscode.CompletionItemKind.Method,
-            detail: "Remove(Key As Object) As Object",
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['map.remove'],
             documentation: "Removes the item with the given key, if such exists. \n" + 
                            "Returns the item removed or null if no matching item was found.",
             //insertText: new vscode.SnippetString("Remove($1)")
             commitCharacters: ['('],
             command: SignatureTriggerCommand
         },
-        {
+        { // Get
             label: "Get",
             kind: vscode.CompletionItemKind.Method,
-            detail: "Get(Key As Object) As Object",
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['map.get'],
             documentation: "Returns the value of the item with the given key. \n"+
                            "Returns Null if the value doesn't exist.",
             //insertText: new vscode.SnippetString("Get($1)")
             commitCharacters: ['('],
             command: SignatureTriggerCommand
         },
-        {
+        { // GetDefault
             label: "GetDefault",
             kind: vscode.CompletionItemKind.Method,
-            detail: "GetDefault(Key As Object, DefaultValue As Object) As Object",
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['map.getdefault'],
             documentation: "Returns the value of the item with the given key. If no such item exists the specified default value is returned.",
             //insertText: new vscode.SnippetString("GetDefault($1, $2)")
             commitCharacters: ['('],
             command: SignatureTriggerCommand
         },
-        {
+        { // GetKeyAt
             label: "GetKeyAt",
             kind: vscode.CompletionItemKind.Method,
-            detail: "GetKeyAt(index As Int) As Object",
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['map.getkeyat'],
             documentation: "Returns the key of the item at the given index. \n" +
                            "GetKeyAt and GetValueAt should be used to iterate over all the items. \n" +
                            "These methods are optimized for iterating over the items in ascending order.",
@@ -258,10 +270,10 @@ export const B4X_BASECLASS_MEMBER_COMPLETION: Record<string, vscode.CompletionIt
             commitCharacters: ['('],
             command: SignatureTriggerCommand
         },
-        {
+        { // GetValueAt
             label: "GetValueAt",
             kind: vscode.CompletionItemKind.Method,
-            detail: "GetValueAt(index As Int) As Object",
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['map.getvalueat'],
             documentation: "Returns the value of the item at the given index. \n" +
                            "GetKeyAt and GetValueAt should be used to iterate over all the items. \n" +
                            "These methods are optimized for iterating over the items in ascending order.",
@@ -269,59 +281,59 @@ export const B4X_BASECLASS_MEMBER_COMPLETION: Record<string, vscode.CompletionIt
             commitCharacters: ['('],
             command: SignatureTriggerCommand
         },
-        {
+        { // Clear
             label: "Clear",
             kind: vscode.CompletionItemKind.Method,
-            detail: "Clear()",
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['map.clear'],
             documentation: "Clears all items from the map.",
             //insertText: new vscode.SnippetString("Clear()")
             commitCharacters: ['('],
             command: SignatureTriggerCommand
         },
-        {
+        { // ContainsKey
             label: "ContainsKey",
             kind: vscode.CompletionItemKind.Method,
-            detail: "ContainsKey(Key As Object) As Boolean",
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['map.containskey'],
             documentation: "Tests whether there is an item with the given key.",
             //insertText: new vscode.SnippetString("ContainsKey($1)")
             commitCharacters: ['('],
             command: SignatureTriggerCommand
         },
-        {
-            label: "containsValue",
+        { // ContainsValue
+            label: "ContainsValue",
             kind: vscode.CompletionItemKind.Method,
-            detail: "containsValue(Value As Object) As Boolean",
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['map.containsvalue'],
             documentation: "Tests whether there is an item with the given value.",
             //insertText: new vscode.SnippetString("containsValue($1)")
             commitCharacters: ['('],
             command: SignatureTriggerCommand
         },
-        {
+        { // Keys
             label: "Keys",
             kind: vscode.CompletionItemKind.Method,
-            detail: "Keys() As IterableList",
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['map.keys'],
             documentation: "Returns an object which can be used to iterate over all the keys with a For Each block.",
             //insertText: new vscode.SnippetString("Keys()"),
             commitCharacters: ['('],
             command: SignatureTriggerCommand
         },
-        {
+        { // Values
             label: "Values",
             kind: vscode.CompletionItemKind.Method,
-            detail: "Values() As IterableList",
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['map.values'],
             documentation: "Returns an object which can be used to iterate over all the values with a For Each block.",
             //insertText: new vscode.SnippetString("Values()"),
             commitCharacters: ['('],
             command: SignatureTriggerCommand
         },
-        {
+        { // Size
             label: "Size",
             kind: vscode.CompletionItemKind.Property,
-            detail: "Size As Int",
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['map.size'],
             documentation: "Returns the number of items stored in the map.",
             //insertText: "Size",
             command: SignatureTriggerCommand
         }
     ]
-    // 其他 B4X 基础类...
+    // Other B4X Base Classes...
 };

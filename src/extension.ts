@@ -7,7 +7,7 @@ import { b4xSignatureHelpProvider } from './b4xSignatureHelpProvider';
 
 export function activate(context: vscode.ExtensionContext) 
 {
-    console.log('扩展已激活！');
+    console.log('b4x vscode activated');
 
     // register definition provider
     const definitionProvider = new b4xDefinitionProvider.b4xDefinitionProvider();
@@ -30,9 +30,8 @@ export function activate(context: vscode.ExtensionContext)
     context.subscriptions.push(vscode.languages.registerSignatureHelpProvider('b4x', signatureHelpProvider,'(', ','));
 }
 
-// 扩展停用时调用
 export function deactivate() 
 {
-    console.log('扩展已停用！');
+    console.log('b4x vscode deactivated');
 }
 

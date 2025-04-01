@@ -69,7 +69,7 @@ export class b4xSignatureHelpProvider implements vscode.SignatureHelpProvider
                 else {label = '';}
             }
             
-            // 或者创建两段式展示
+            // create markdown with code block
             const markdown = new vscode.MarkdownString();
             markdown.appendMarkdown('');
             markdown.appendCodeblock(declaration, 'b4x');
