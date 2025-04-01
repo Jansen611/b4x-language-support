@@ -2,7 +2,7 @@
 
 Provides syntax highlighting, code snippets, and basic language support for B4X (B4A, B4i, B4J, etc.) in Visual Studio Code (current version has limited features, will be enhanced gradually).
 
-![B4X Logo](assets/Logo.png){: style="width:100px; height:auto;"}
+<img src="assets/Logo.png" width="100">
 
 ## Features
 - **Syntax Highlighting**: Supports B4X syntax coloring for `.bas` files.
