@@ -5,7 +5,7 @@
 <img src="assets/Logo.png" width="150">
 
 ## 当前版本
-- Version: 0.1.0
+- Version: 0.1.1
 
 ## 功能
 - **语法高亮**：支持 `.bas` 文件的 B4X 语法着色。
