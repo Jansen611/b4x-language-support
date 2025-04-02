@@ -18,11 +18,12 @@ launchJson.version = newVersion;
 writeFileSync(launchJsonPath, JSON.stringify(launchJson, null, 2), 'utf8');
 
 // update version number in README files
+const readmeENPath: string = resolve(__dirname, '../README.md');
+let readmeEN: string = readFileSync(readmeENPath, 'utf8');
+readmeEN = readmeEN.replace(new RegExp('(?<=- Version: )[\\S]+?(?=\\s)'), newVersion);
+writeFileSync(readmeENPath, readmeEN, 'utf8');
+// do English first, as it is the default one
 const readmeCNPath: string = resolve(__dirname, '../README_CN.md');
 let readmeCN: string = readFileSync(readmeCNPath, 'utf8');
 readmeCN = readmeCN.replace(new RegExp('(?<=- Version: )[\\S]+?(?=\\s)'), newVersion);
 writeFileSync(readmeCNPath, readmeCN, 'utf8');
-const readmeENPath: string = resolve(__dirname, '../README_EN.md');
-let readmeEN: string = readFileSync(readmeENPath, 'utf8');
-readmeEN = readmeEN.replace(new RegExp('(?<=- Version: )[\\S]+?(?=\\s)'), newVersion);
-writeFileSync(readmeENPath, readmeEN, 'utf8');
