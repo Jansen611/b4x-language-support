@@ -4,7 +4,7 @@ All notable changes to the "b4x-language-support" extension will be documented i
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
-## [0.1.3]
+## [0.1.3] - Added support for more B4X base classes
 - **Enhancements**:
   - Added TypeName lookup for some B4X base class: "Char", "Boolean", "Int", "List", "Map", "String" and "Timer"
   - Added Member lookup for more B4X base class: "Timer" and "String"
@@ -12,7 +12,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - **Documentation**:
   - Initial changelog setup.
 
-## [0.1.0] - Initial Release
+## [0.1.0] - Initial release
 - **Features**:
   - Basic syntax highlighting for `.bas` files.
   - Code snippets for common B4X structures.
