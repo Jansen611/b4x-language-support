@@ -29,14 +29,11 @@ export class b4xSignatureHelpProvider implements vscode.SignatureHelpProvider
                 if (keywordMatch)
                 {
                     let outKeywordInfo = b4xDefinitionProvider.findDefinitionPosition(document, keywordMatch[0], position.line);
-                    switch (outKeywordInfo.ClassName.toLowerCase())
+                    const className: string = outKeywordInfo.ClassName.toLowerCase();
+                    if (b4xBaseClassInfo.B4X_SYSTEMCLASS_NAME.has(className))
                     {
-                        case 'list':
-                        case 'map':
-                            // this is system base class, construct the class Key
-                            systemClassKey = outKeywordInfo.ClassName;
-                            break;
-                        default:
+                        // this is system base class, construct the class Key
+                        systemClassKey = outKeywordInfo.ClassName;
                     }
                 }
             }

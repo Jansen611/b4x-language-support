@@ -1,4 +1,3 @@
-import { METHODS } from 'http';
 import * as vscode from 'vscode';
 
 const SignatureTriggerCommand: vscode.Command = {
@@ -6,7 +5,68 @@ const SignatureTriggerCommand: vscode.Command = {
     command: 'editor.action.triggerParameterHints'
 }
 
+export const B4X_SYSTEMCLASS_NAME: Set<string> = new Set(['list', 'map', 'timer', 'string'])
+
+export const B4X_SYSTEMCLASS_TYPE_COMPLETION: vscode.CompletionItem[] = [
+    { // Char
+        label: "Char",
+        kind: vscode.CompletionItemKind.Class,
+        detail: "Char",
+        documentation: "Single character."
+    },
+    { // Boolean
+        label: "Boolean",
+        kind: vscode.CompletionItemKind.Class,
+        detail: "Boolean",
+        documentation: "True or False value."
+    },
+    { // Int
+        label: "Int",
+        kind: vscode.CompletionItemKind.Class,
+        detail: "Int",
+        documentation: "4 bytes integer number."
+    },
+    { // List
+        label: "List",
+        kind: vscode.CompletionItemKind.Class,
+        detail: "List",
+        documentation: "Lists are similar to dynamic arrays. You can add and remove items from a list and it will change its size accordingly. \n" +
+                       "A list can hold any type of object. However if a list is declared as a process global object it cannot hold activity objects (like views). \n" +
+                       "Basic4android automatically converts regular arrays to lists. So when a List parameter is expected you can pass an array instead."
+    },
+    { // Map
+        label: "Map",
+        kind: vscode.CompletionItemKind.Class,
+        detail: "Map",
+        documentation: "A collection that holds pairs of keys and values. The keys are unique. Which means that if you add a key/value pair (entry) and \n" +
+                       "the collection already holds an entry with the same key, the previous entry will be removed from the map. \n" +
+                       "Fetching an item is done by looking for its key. This is usually a very fast operation (O(1) compared to O(n) in a list). \n" +
+                       "The key should be a string or a number. The value can be any type of object. \n" +
+                       "Note that this map implementation does return items in the same order as they were added. \n" +
+                       "Usually you will use Put to add items and Get or GetDefault to get the values based on the key."
+    },
+    { // Timer
+        label: "Timer",
+        kind: vscode.CompletionItemKind.Class,
+        detail: "Timer",
+        documentation: "A Timer object generates ticks events at specified intervals. \n" +
+                       "Using a timer is a good alternative to a long loop, as it allows the UI thread to handle other events and messages. \n" +
+                       "Note that the timer events will not fire while the UI thread is busy running other code. \n" +
+                       "The timer Enabled property is set to False by default. To make it start working you should change it to True. \n" +
+                       "Timer events will not fire when the activity is paused, or if a blocking dialog (like Msgbox) is visible. \n" +
+                       "Timers should be declared in Sub Process_Globals. Otherwise you may get multiple timers running when the activity is recreated. \n" +
+                       "It is also important to disable the timer when the activity is pausing and then enable it when it resumes. This will save CPU and battery."
+    },
+    { // String
+        label: "String",
+        kind: vscode.CompletionItemKind.Class,
+        detail: "String",
+        documentation: "An immutable string of characters"
+    },
+]
+
 export const B4X_BASECLASS_MEMBER_DECLARATION: Record<string, string> ={
+    // List Object
     "list.add" : "Add(item As Object)",
     "list.addall" : "AddAll(list As List)",
     "list.addallat" : "AddAllAt(index As Int, list As List)",
@@ -20,25 +80,52 @@ export const B4X_BASECLASS_MEMBER_DECLARATION: Record<string, string> ={
     "list.isinitialized" : "IsInitialized() As Boolean",
     "list.removeat" : "RemoveAt(index As Int)",
     "list.set" : "Set(index As Int, item As Object)",
-    "list.size" : "Size As Int",
+    "list.size" : "Size As Int", // Property
     "list.sort" : "Sort(ascending As Boolean)",
     "list.sortcaseinsensitive" : "SortCaseInsensitive(ascending As Boolean)",
     "list.sorttype" : "SortType(fieldName As String, ascending As Boolean)",
     "list.sorttypecaseinsensitive" : "SortTypeCaseInsensitive(fieldName As String, ascending As Boolean)",
+
+    // Map Object
     "map.initialize" : "Initialize()",
-    "map.put" : "Put(Key As Object, Value As Object) As Object",
-    "map.remove" : "Remove(Key As Object) As Object",
-    "map.get" : "Get(Key As Object) As Object",
-    "map.getdefault" : "GetDefault(Key As Object, DefaultValue As Object) As Object",
+    "map.put" : "Put(key As Object, value As Object) As Object",
+    "map.remove" : "Remove(key As Object) As Object",
+    "map.get" : "Get(key As Object) As Object",
+    "map.getdefault" : "GetDefault(key As Object, defaultValue As Object) As Object",
     "map.getkeyat" : "GetKeyAt(index As Int) As Object",
     "map.getvalueat" : "GetValueAt(index As Int) As Object",
     "map.clear" : "Clear()",
-    "map.containskey" : "ContainsKey(Key As Object) As Boolean",
-    "map.containsvalue" : "ContainsValue(Value As Object) As Boolean",
+    "map.containskey" : "ContainsKey(key As Object) As Boolean",
+    "map.containsvalue" : "ContainsValue(value As Object) As Boolean",
     "map.keys" : "Keys() As IterableList",
     "map.values" : "Values() As IterableList",
-    "map.size" : "Size As Int"
+    "map.size" : "Size As Int", // Property
 
+    // Timer Object
+    "timer.initialize" : "Initialize(ba As BA, eventName As String, interval As Long)",
+    "timer.isinitialized" : "IsInitialized() As Boolean",
+    "timer.enabled" : "Enabled As Boolean", // Property
+    "timer.interval" : "Interval As Long", // Property
+
+    // String Object
+    "string.length": "Length() As Int",
+    "string.indexof": "IndexOf(searchFor As String) As Int",
+    "string.indexof2": "IndexOf2(searchFor As String, index As Int) As Int",
+    "string.lastindexof": "LastIndexOf(searchFor As String) As Int",
+    "string.lastindexof2": "LastIndexOf2(searchFor As String, index As Int) As Int",
+    "string.trim": "Trim() As String",
+    "string.substring": "SubString(beginIndex As Int) As String",
+    "string.substring2": "SubString2(beginIndex As Int, endIndex As Int) As String",
+    "string.compareto": "CompareTo(other As String) As Int",
+    "string.equalsignorecase": "EqualsIgnoreCase(other As String) As Boolean",
+    "string.charat": "CharAt(index As Int) As Char",
+    "string.startswith": "StartsWith(prefix As String) As Boolean",
+    "string.endswith": "EndsWith(suffix As String) As Boolean",
+    "string.replace": "Replace(target As String, replacement As String) As String",
+    "string.tolowercase": "ToLowerCase() As String",
+    "string.contains": "Contains(searchFor As String) As Boolean",
+    "string.touppercase": "ToUpperCase() As String",
+    "string.getbytes": "GetBytes(charset As String) As Byte[]"
 }
 
 export const B4X_BASECLASS_MEMBER_COMPLETION: Record<string, vscode.CompletionItem[]> = {
@@ -168,7 +255,6 @@ export const B4X_BASECLASS_MEMBER_COMPLETION: Record<string, vscode.CompletionIt
             detail: B4X_BASECLASS_MEMBER_DECLARATION['list.size'],
             documentation: "Returns the number of items in the list.",
             //insertText: new vscode.SnippetString("Size"),
-            command: SignatureTriggerCommand
         },
         { // Sort
             label: "Sort",
@@ -332,6 +418,194 @@ export const B4X_BASECLASS_MEMBER_COMPLETION: Record<string, vscode.CompletionIt
             detail: B4X_BASECLASS_MEMBER_DECLARATION['map.size'],
             documentation: "Returns the number of items stored in the map.",
             //insertText: "Size",
+        }
+    ],
+    "timer": [
+        { // Initialize
+            label: "Initialize",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['timer.initialize'],
+            documentation: "Initializes the timer with the event sub prefix and the specified interval (measured in milliseconds). \n" + 
+                           "MPORTANT: this object should be declared in Sub Process_Globals.",
+            //insertText: new vscode.SnippetString("Initialize($1, $2, $3)"),
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // IsInitialized
+            label: "IsInitialized",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['timer.isinitialized'],
+            documentation: "",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // Enabled
+            label: "Enabled",
+            kind: vscode.CompletionItemKind.Property,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['timer.enabled'],
+            documentation: "Gets or sets whether the timer is enabled (ticking).",
+        },
+        { // Interval
+            label: "Interval",
+            kind: vscode.CompletionItemKind.Property,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['timer.interval'],
+            documentation: "Gets or sets the interval between tick events, measured in milliseconds.",
+        }
+    ],
+    "string": [
+        { // Length
+            label: "Length",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['string.length'],
+            documentation: "Returns the length of this string.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // IndexOf
+            label: "IndexOf",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['string.indexof'],
+            documentation: "Returns the index of the first occurrence of SearchFor string in the string.\n" + 
+                           "Returns -1 if SearchFor was not found.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // IndexOf2
+            label: "IndexOf2",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['string.indexof2'],
+            documentation: "Returns the index of the first occurrence of SearchFor string in the string.\n" + 
+                           "Starts searching from the given Index.\n" +
+                           "Returns -1 if SearchFor was not found.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // LastIndexOf
+            label: "LastIndexOf",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['string.lastindexof'],
+            documentation: "Returns the index of the first occurrence of SearchFor string in the string.\n" + 
+                           "The search starts at the end of the string and advances to the beginning.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // LastIndexOf2
+            label: "LastIndexOf2",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['string.lastindexof2'],
+            documentation: "Returns the index of the first occurrence of SearchFor string in the string.\n" + 
+                           "The search starts at the given index and advances to the beginning.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // Trim
+            label: "Trim",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['string.trim'],
+            documentation: "Returns a copy of the original string without any leading or trailing white spaces.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // SubString
+            label: "SubString",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['string.substring'],
+            documentation: "Returns a new string which is a substring of the original string.\n" + 
+                           "The new string will include the character at BeginIndex and will extend to the end of the string.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // SubString2
+            label: "SubString2",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['string.substring2'],
+            documentation: "Returns a new string which is a substring of the original string.\n" + 
+                           "The new string will include the character at BeginIndex and will extend to the character at EndIndex, not including the last character.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // CompareTo
+            label: "CompareTo",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['string.compareto'],
+            documentation: "Lexicographically compares the two strings.\n" + 
+                           "Returns a value less than 0 if the current string precedes Other.\n" + 
+                           "Returns 0 if both strings are equal.\n" + 
+                           "Returns a value larger than 0 if the current string comes after Other.\n" + 
+                           "Note that upper case characters precede lower case characters.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // EqualsIgnoreCase
+            label: "EqualsIgnoreCase",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['string.equalsignorecase'],
+            documentation: "Returns true if both strings are equal ignoring their case.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // CharAt
+            label: "CharAt",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['string.charat'],
+            documentation: "Returns the character at the given index.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // StartsWith
+            label: "StartsWith",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['string.startswith'],
+            documentation: "Returns true if this string starts with the given Prefix.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // EndsWith
+            label: "EndsWith",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['string.endswith'],
+            documentation: "Returns true if this string ends with the given Suffix.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // Replace
+            label: "Replace",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['string.replace'],
+            documentation: "Returns a new string resulting from the replacement of all the occurrences of Target with Replacement.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // ToLowerCase
+            label: "ToLowerCase",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['string.tolowercase'],
+            documentation: "Returns a new string which is the result of lower casing this string.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // Contains
+            label: "Contains",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['string.contains'],
+            documentation: "Tests whether the string contains the given string parameter.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // ToUpperCase
+            label: "ToUpperCase",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['string.touppercase'],
+            documentation: "Returns a new string which is the result of upper casing this string.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // GetBytes
+            label: "GetBytes",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['string.getbytes'],
+            documentation: "Encodes the string into a new array of bytes.",
+            commitCharacters: ['('],
             command: SignatureTriggerCommand
         }
     ]

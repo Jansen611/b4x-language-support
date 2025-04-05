@@ -10,10 +10,30 @@ export class B4XCompletionItemProvider implements vscode.CompletionItemProvider
     : vscode.ProviderResult<vscode.CompletionList | vscode.CompletionItem[]> 
     {
         const cha = context.triggerCharacter;
-        const wordToSearch: string = docMethods.getWordFromDocPosition(document, position);
+        const wordToSearch: string =  docMethods.getWordFromDocPosition(document, position);
+        let itemsShow: vscode.CompletionItem[] = [new vscode.CompletionItem('')];
+
+        // check wether this is to search class name or member name
+        if (docMethods.isDeclaringTypeNam(document, position))
+        {
+            // loop through the system type first before search for custom type
+            for (const typeCompletion of b4xBaseClassInfo.B4X_SYSTEMCLASS_TYPE_COMPLETION)
+            {
+                if (typeCompletion.label.toString().toLowerCase().includes(wordToSearch))
+                {
+                    itemsShow.push(typeCompletion);
+                }
+            }
+
+            return itemsShow;
+        }
+
+        // no point showing completion items, if the keyword is inside a declaration
+        if (docMethods.isNamingDeclaration(document, position)){return itemsShow;}
+
         // seach current doc by default, but this can be changed to other doc
         let fullDocString: string = document.getText();
-        
+
         // check whether this is a member search or global search
         const parentObjectMatch = docMethods.getAllParentObjMatchFromDocPosition(document, position);
         if (parentObjectMatch && parentObjectMatch.length > 0)
@@ -27,10 +47,10 @@ export class B4XCompletionItemProvider implements vscode.CompletionItemProvider
                 if (keywordMatch)
                 {
                     let outKeywordInfo = b4xDefinitionProvider.findDefinitionPosition(document, keywordMatch[0], position.line);
-                    if (outKeywordInfo.ClassName && b4xBaseClassInfo.B4X_BASECLASS_MEMBER_COMPLETION[outKeywordInfo.ClassName.toLocaleLowerCase()])
+                    if (outKeywordInfo.ClassName && b4xBaseClassInfo.B4X_BASECLASS_MEMBER_COMPLETION[outKeywordInfo.ClassName.toLowerCase()])
                     {
                         // the prefix object is one of the b4x base class, return the class members directly
-                        return b4xBaseClassInfo.B4X_BASECLASS_MEMBER_COMPLETION[outKeywordInfo.ClassName.toLocaleLowerCase()];
+                        return b4xBaseClassInfo.B4X_BASECLASS_MEMBER_COMPLETION[outKeywordInfo.ClassName.toLowerCase()];
                     }
                 }
             }
@@ -40,7 +60,6 @@ export class B4XCompletionItemProvider implements vscode.CompletionItemProvider
         const fullDocLines: string[] = fullDocString.split('\n');
         const fullDocLinesLower: string[] = fullDocStringLower.split('\n');
 
-        
         const variableMatchResult: RegExpMatchArray | null = fullDocString.match(new RegExp(comRegExp.PositiveLookbehind('sub class_globals|sub process_globals') + '[\\s\\S]+?' +
                                                                                             comRegExp.PositiveLookahead('end sub'), comRegExp.Flag.CaseIncensitive))
         // find all global variables and functions
@@ -49,9 +68,9 @@ export class B4XCompletionItemProvider implements vscode.CompletionItemProvider
             // look for the starting line number of the global declaration area
             let globalDeclarationStartLine: number = fullDocLinesLower.findIndex(line => line.match('sub class_globals'));
             if (globalDeclarationStartLine == -1) {globalDeclarationStartLine = fullDocLinesLower.findIndex(line => line.match('sub process_globals'));}
-            if (globalDeclarationStartLine == -1) {return [];}
+            if (globalDeclarationStartLine == -1) {return itemsShow;}
 
-            let itemsShow: vscode.CompletionItem[] = [];
+            //let itemsShow: vscode.CompletionItem[] = [];
             const globalDeclarationString: string = variableMatchResult[0];
             const globalDeclarationLines = globalDeclarationString.split('\n');
             // loop through line by line to get all global variables
