@@ -5,7 +5,7 @@ const SignatureTriggerCommand: vscode.Command = {
     command: 'editor.action.triggerParameterHints'
 }
 
-export const B4X_SYSTEMCLASS_NAME: Set<string> = new Set(['list', 'map', 'timer', 'string'])
+export const B4X_SYSTEMCLASS_NAME: Set<string> = new Set(['list', 'map', 'timer', 'string', 'intent', 'activity'])
 
 export const B4X_SYSTEMCLASS_TYPE_COMPLETION: vscode.CompletionItem[] = [
     { // Char
@@ -62,6 +62,18 @@ export const B4X_SYSTEMCLASS_TYPE_COMPLETION: vscode.CompletionItem[] = [
         kind: vscode.CompletionItemKind.Class,
         detail: "String",
         documentation: "An immutable string of characters"
+    },
+    { // Intent
+        label: "Intent",
+        kind: vscode.CompletionItemKind.Class,
+        detail: "Intent",
+        documentation: "Intent"
+    },
+    { // Activity
+        label: "Activity",
+        kind: vscode.CompletionItemKind.Class,
+        detail: "Activity",
+        documentation: "Activity"
     },
 ]
 
@@ -125,7 +137,48 @@ export const B4X_BASECLASS_MEMBER_DECLARATION: Record<string, string> ={
     "string.tolowercase": "ToLowerCase() As String",
     "string.contains": "Contains(searchFor As String) As Boolean",
     "string.touppercase": "ToUpperCase() As String",
-    "string.getbytes": "GetBytes(charset As String) As Byte[]"
+    "string.getbytes": "GetBytes(charset As String) As Byte[]",
+
+    // Intent Object
+    "intent.initialize": "Initialize(Action As String, Uri As String)",
+    "intent.initialize2": "Initialize2(Uri As String, Flags As Int)",
+    "intent.getaction": "getAction() As String",
+    "intent.setaction": "setAction(v As String)",
+    "intent.settype": "SetType(Type As String)",
+    "intent.getflags": "getFlags() As Int",
+    "intent.setflags": "setFlags(flags As Int)",
+    "intent.addcategory": "AddCategory(Category As String)",
+    "intent.getdata": "GetData() As String",
+    "intent.putextra": "PutExtra(Name As String, Value As Object)",
+    "intent.getextra": "GetExtra(Name As String) As Object",
+    "intent.hasextra": "HasExtra(Name As String) As Boolean",
+    "intent.extrastostring": "ExtrasToString() As String",
+    "intent.wrapasintentchooser": "WrapAsIntentChooser(Title As String)",
+    "intent.setcomponent": "SetComponent(Component As String)",
+    "intent.setpackage": "SetPackage(PackageName As String)",
+
+    // Activity Object
+    "activity.getstartingintent": "GetStartingIntent() As IntentWrapper",
+    "activity.setactivityresult": "SetActivityResult(Result As Int, Data As IntentWrapper)",
+    "activity.addview": "AddView(View As View, Left As Int, Top As Int, Width As Int, Height As Int)",
+    "activity.getview": "GetView(Index As Int) As ConcreteViewWrapper",
+    "activity.removeallviews": "RemoveAllViews()",
+    "activity.removeviewat": "RemoveViewAt(Index As Int)",
+    "activity.getnumberofviews": "getNumberOfViews() As Int",
+    "activity.addmenuitem": "AddMenuItem(Title As String, EventName As String)",
+    "activity.addmenuitem2": "AddMenuItem2(Title As String, EventName As String, Bitmap As Bitmap)",
+    "activity.addmenuitem3": "AddMenuItem3(Title As String, EventName As String, Bitmap As Bitmap, AddToActionBar As Boolean)",
+    "activity.loadlayout": "LoadLayout(LayoutFile As String, ba As BA) As LayoutValues",
+    "activity.rerundesignerscript": "RerunDesignerScript(Layout As String, ba As BA, Width As Int, Height As Int)",
+    "activity.openmenu": "OpenMenu()",
+    "activity.closemenu": "CloseMenu()",
+    "activity.settitle": "setTitle(Title As String)",
+    "activity.gettitle": "getTitle() As String",
+    "activity.settitlecolor": "setTitleColor(Color As Int)",
+    "activity.gettitlecolor": "getTitleColor() As Int",
+    "activity.disableaccessibility": "DisableAccessibility(Disable As Boolean)",
+    "activity.finish": "Finish()",
+    "activity.getallviewsrecursive": "GetAllViewsRecursive() As IterableList"
 }
 
 export const B4X_BASECLASS_MEMBER_COMPLETION: Record<string, vscode.CompletionItem[]> = {
@@ -608,6 +661,320 @@ export const B4X_BASECLASS_MEMBER_COMPLETION: Record<string, vscode.CompletionIt
             commitCharacters: ['('],
             command: SignatureTriggerCommand
         }
-    ]
+    ],
+    "intent": [
+        { // Initialize
+            label: "Initialize",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['intent.initialize'],
+            documentation: "Initializes the object using the given Action and data Uri. Action can be one of the action constants or any other string.\nPass an empty string if a Uri is not required.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // Initialize2
+            label: "Initialize2",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['intent.initialize2'],
+            documentation: "Initializes the object by parsing the Uri.\nFlags - Additional integer value. Pass 0 if it is not required.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // getAction
+            label: "getAction",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['intent.getaction'],
+            documentation: "Gets the Intent action.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // setAction
+            label: "setAction",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['intent.setaction'],
+            documentation: "Sets the Intent action.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // SetType
+            label: "SetType",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['intent.settype'],
+            documentation: "Sets the MIME type.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // getFlags
+            label: "getFlags",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['intent.getflags'],
+            documentation: "Gets the flags component.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // setFlags
+            label: "setFlags",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['intent.setflags'],
+            documentation: "Sets the flags component.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // AddCategory
+            label: "AddCategory",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['intent.addcategory'],
+            documentation: "Adds a category describing the intent required operation.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // GetData
+            label: "GetData",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['intent.getdata'],
+            documentation: "Retrieves the data component as a string.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // PutExtra
+            label: "PutExtra",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['intent.putextra'],
+            documentation: "Adds extra data to the intent.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // GetExtra
+            label: "GetExtra",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['intent.getextra'],
+            documentation: "Returns the item value with the given key.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // HasExtra
+            label: "HasExtra",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['intent.hasextra'],
+            documentation: "Tests whether an item with the given key exists.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // ExtrasToString
+            label: "ExtrasToString",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['intent.extrastostring'],
+            documentation: "Returns a string containing the extra items. This is useful for debugging.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // WrapAsIntentChooser
+            label: "WrapAsIntentChooser",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['intent.wrapasintentchooser'],
+            documentation: "Wraps the intent in another \"chooser\" intent. A dialog will be displayed to the user with the available services that can act on the intent.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // SetComponent
+            label: "SetComponent",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['intent.setcomponent'],
+            documentation: "Explicitly sets the component that will handle this intent.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // SetPackage
+            label: "SetPackage",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['intent.setpackage'],
+            documentation: "Explicitly sets the package name of the target application.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        }
+    ],
+    "activity": [
+    { // GetStartingIntent
+      label: "GetStartingIntent",
+      kind: vscode.CompletionItemKind.Method,
+      detail: B4X_BASECLASS_MEMBER_DECLARATION['activity.getstartingintent'],
+      documentation: "Returns the intent that started this activity.",
+      commitCharacters: ['('],
+      command: SignatureTriggerCommand
+    },
+    { // SetActivityResult
+      label: "SetActivityResult",
+      kind: vscode.CompletionItemKind.Method,
+      detail: B4X_BASECLASS_MEMBER_DECLARATION['activity.setactivityresult'],
+      documentation: "(Advanced) Sets the result that the calling Activity will get after calling StartActivityForResult.",
+      commitCharacters: ['('],
+      command: SignatureTriggerCommand
+    },
+    { // AddView
+      label: "AddView",
+      kind: vscode.CompletionItemKind.Method,
+      detail: B4X_BASECLASS_MEMBER_DECLARATION['activity.addview'],
+      documentation: "Adds a view to this activity.",
+      commitCharacters: ['('],
+      command: SignatureTriggerCommand
+    },
+    { // GetView
+      label: "GetView",
+      kind: vscode.CompletionItemKind.Method,
+      detail: B4X_BASECLASS_MEMBER_DECLARATION['activity.getview'],
+      documentation: "Gets the view that is stored in the specified index.",
+      commitCharacters: ['('],
+      command: SignatureTriggerCommand
+    },
+    { // RemoveAllViews
+      label: "RemoveAllViews",
+      kind: vscode.CompletionItemKind.Method,
+      detail: B4X_BASECLASS_MEMBER_DECLARATION['activity.removeallviews'],
+      documentation: "Removes all child views.",
+      commitCharacters: ['('],
+      command: SignatureTriggerCommand
+    },
+    { // RemoveViewAt
+      label: "RemoveViewAt",
+      kind: vscode.CompletionItemKind.Method,
+      detail: B4X_BASECLASS_MEMBER_DECLARATION['activity.removeviewat'],
+      documentation: "Removes the view that is stored in the specified index.",
+      commitCharacters: ['('],
+      command: SignatureTriggerCommand
+    },
+    { // getNumberOfViews
+      label: "getNumberOfViews",
+      kind: vscode.CompletionItemKind.Method,
+      detail: B4X_BASECLASS_MEMBER_DECLARATION['activity.getnumberofviews'],
+      documentation: "Returns the number of child views.",
+      commitCharacters: ['('],
+      command: SignatureTriggerCommand
+    },
+    { // AddMenuItem
+      label: "AddMenuItem",
+      kind: vscode.CompletionItemKind.Method,
+      detail: B4X_BASECLASS_MEMBER_DECLARATION['activity.addmenuitem'],
+      documentation: "Adds a menu item to the activity.\n" +
+        "Title - Menu item title.\n" +
+        "EventName - The prefix name of the sub that will handle the click event.\n" +
+        "This method should only be called inside sub Activity_Create.\n" +
+        "Note that the 'Sender' value inside the click event equals to the clicked menu item text.",
+      commitCharacters: ['('],
+      command: SignatureTriggerCommand
+    },
+    { // AddMenuItem2
+      label: "AddMenuItem2",
+      kind: vscode.CompletionItemKind.Method,
+      detail: B4X_BASECLASS_MEMBER_DECLARATION['activity.addmenuitem2'],
+      documentation: "Adds a menu item to the activity.\n" +
+        "Title - Menu item title.\n" +
+        "EventName - The prefix name of the sub that will handle the click event.\n" +
+        "Bitmap - Bitmap to draw as the item background.\n" +
+        "Only the first five (or six if there are six total) menu items display icons.\n" +
+        "This method should only be called inside sub Activity_Create.",
+      commitCharacters: ['('],
+      command: SignatureTriggerCommand
+    },
+    { // AddMenuItem3
+      label: "AddMenuItem3",
+      kind: vscode.CompletionItemKind.Method,
+      detail: B4X_BASECLASS_MEMBER_DECLARATION['activity.addmenuitem3'],
+      documentation: "Similar to AddMenuItem2. If AddToActionBar is true then the item will be displayed in the action bar (on Android 3.0+ devices) if there is enough room.\n" +
+        "If there is not enough room then the item will be displayed together with the other menu items.",
+      commitCharacters: ['('],
+      command: SignatureTriggerCommand
+    },
+    { // LoadLayout
+      label: "LoadLayout",
+      kind: vscode.CompletionItemKind.Method,
+      detail: B4X_BASECLASS_MEMBER_DECLARATION['activity.loadlayout'],
+      documentation: "Loads a layout file (.bal).\n" +
+        "Returns the LayoutValues of the actual layout variant that was loaded.",
+      commitCharacters: ['('],
+      command: SignatureTriggerCommand
+    },
+    { // RerunDesignerScript
+      label: "RerunDesignerScript",
+      kind: vscode.CompletionItemKind.Method,
+      detail: B4X_BASECLASS_MEMBER_DECLARATION['activity.rerundesignerscript'],
+      documentation: "<b>This method is deprecated.</b> It ignores the anchoring features and it will fail in Rapid Debug mode.\n" +
+        "You should instead remove the views and load the layout again.",
+      commitCharacters: ['('],
+      command: SignatureTriggerCommand
+    },
+    { // OpenMenu
+      label: "OpenMenu",
+      kind: vscode.CompletionItemKind.Method,
+      detail: B4X_BASECLASS_MEMBER_DECLARATION['activity.openmenu'],
+      documentation: "Programmatically opens the menu.",
+      commitCharacters: ['('],
+      command: SignatureTriggerCommand
+    },
+    { // CloseMenu
+      label: "CloseMenu",
+      kind: vscode.CompletionItemKind.Method,
+      detail: B4X_BASECLASS_MEMBER_DECLARATION['activity.closemenu'],
+      documentation: "Programmatically closes the menu.",
+      commitCharacters: ['('],
+      command: SignatureTriggerCommand
+    },
+    { // setTitle
+      label: "setTitle",
+      kind: vscode.CompletionItemKind.Method,
+      detail: B4X_BASECLASS_MEMBER_DECLARATION['activity.settitle'],
+      documentation: "Sets the activity title.",
+      commitCharacters: ['('],
+      command: SignatureTriggerCommand
+    },
+    { // getTitle
+      label: "getTitle",
+      kind: vscode.CompletionItemKind.Method,
+      detail: B4X_BASECLASS_MEMBER_DECLARATION['activity.gettitle'],
+      documentation: "Gets the activity title.",
+      commitCharacters: ['('],
+      command: SignatureTriggerCommand
+    },
+    { // setTitleColor
+      label: "setTitleColor",
+      kind: vscode.CompletionItemKind.Method,
+      detail: B4X_BASECLASS_MEMBER_DECLARATION['activity.settitlecolor'],
+      documentation: "Sets the title color. This property is only supported by Android 2.x devices. It will not do anything on newer devices.",
+      commitCharacters: ['('],
+      command: SignatureTriggerCommand
+    },
+    { // getTitleColor
+      label: "getTitleColor",
+      kind: vscode.CompletionItemKind.Method,
+      detail: B4X_BASECLASS_MEMBER_DECLARATION['activity.gettitlecolor'],
+      documentation: "Gets the title color. This property is only supported by Android 2.x devices. It will not do anything on newer devices.",
+      commitCharacters: ['('],
+      command: SignatureTriggerCommand
+    },
+    { // DisableAccessibility
+      label: "DisableAccessibility",
+      kind: vscode.CompletionItemKind.Method,
+      detail: B4X_BASECLASS_MEMBER_DECLARATION['activity.disableaccessibility'],
+      documentation: "This method was added as a workaround for an Android bug.\n" +
+        "By setting the Disable property to True the child views (of all Activities) will not be added to the accessibility enabled list.",
+      commitCharacters: ['('],
+      command: SignatureTriggerCommand
+    },
+    { // Finish
+      label: "Finish",
+      kind: vscode.CompletionItemKind.Method,
+      detail: B4X_BASECLASS_MEMBER_DECLARATION['activity.finish'],
+      documentation: "Closes this activity.",
+      commitCharacters: ['('],
+      command: SignatureTriggerCommand
+    },
+    { // GetAllViewsRecursive
+      label: "GetAllViewsRecursive",
+      kind: vscode.CompletionItemKind.Method,
+      detail: B4X_BASECLASS_MEMBER_DECLARATION['activity.getallviewsrecursive'],
+      documentation: "Returns an iterator that iterates over all the child views including views that were added to other child views.",
+      commitCharacters: ['('],
+      command: SignatureTriggerCommand
+    }
+  ]
+
     // Other B4X Base Classes...
 };
