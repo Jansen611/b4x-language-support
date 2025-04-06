@@ -269,24 +269,28 @@ function getDeclarationStringFromSameline(document: vscode.TextDocument, word: s
     {
         const text: string = document.lineAt(matchingLineNum).text.trim();
         const lowerCaseText: string = text.toLowerCase();
+        const variableMatch = text.match(new RegExp(`${comRegExp.StartOfWord}${word} As \\w+`, 'gi'));
 
         if (lowerCaseText.includes(`Sub ${word}`.toLowerCase()))
         {
             // this is a sub or function, return the whole line
             if (isFunctionSearch) {return text;}
-        } else if (lowerCaseText.match(new RegExp(`${comRegExp.StartOfWord}${word} As`, comRegExp.Flag.CaseIncensitive)))
+        } else if (variableMatch)
         {
             if (isVariableSearch)
             {
                 // this is a variable
-                if (!lowerCaseText.match(`(?:Dim|Public|Private|Const) ${word}`.toLowerCase()))
+                if (!lowerCaseText.match(`(?:Dim|Public|Private|Const|For Each) ${word}`.toLowerCase()))
                 {
                     // this is a paramater of a sub
                     const parameterPosition: number = lowerCaseText.indexOf(`${word} As`.toLowerCase());
                     let parameterDeclarationEnd: number = text.indexOf(',', parameterPosition);
                     if (parameterDeclarationEnd < 0) {parameterDeclarationEnd = text.indexOf(')', parameterPosition)}
                     return "(parameter) " + text.substring(parameterPosition, parameterDeclarationEnd);
-                } 
+                } else
+                {
+                    return variableMatch[0];
+                }
                 return text;
             }
         }

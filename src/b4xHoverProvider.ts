@@ -17,20 +17,32 @@ export class b4xHoverProvider implements vscode.HoverProvider
             let declaration: string | undefined = b4xDefinitionProvider.getDeclarationStringFromSearch(document, word, wordLineNo);                
             if (declaration) 
             {
-                if (definitionInfo.Scope == b4xDefinitionProvider.KeywordScope.Global &&
-                    definitionInfo.Type == b4xDefinitionProvider.KeywordType.Variable)
+                if (definitionInfo.Type == b4xDefinitionProvider.KeywordType.Variable)
                 {
-                    switch(definitionInfo.ModuleType)
+                    if (definitionInfo.Scope == b4xDefinitionProvider.KeywordScope.Global)
                     {
-                        case b4xDefinitionProvider.ModuleType.Class:
-                            declaration = "(class_globals) " + declaration;
-                            break;
-                        case b4xDefinitionProvider.ModuleType.StaticCode:
-                            declaration = "(process_globals) " + declaration;
-                            break;
-                        default:
+                        declaration = "(global variable) " + declaration;
+                    } else if (definitionInfo.Scope == b4xDefinitionProvider.KeywordScope.Local)
+                    {
+                        declaration = "(local variable) " + declaration;
                     }
                 }
+
+                // if (definitionInfo.Scope == b4xDefinitionProvider.KeywordScope.Global &&
+                //     definitionInfo.Type == b4xDefinitionProvider.KeywordType.Variable)
+                // {
+                //     switch(definitionInfo.ModuleType)
+                //     {
+                //         case b4xDefinitionProvider.ModuleType.Class:
+                //         case b4xDefinitionProvider.ModuleType.StaticCode:
+                //             declaration = "(global variable) " + declaration;
+                //             break;
+                //         // case b4xDefinitionProvider.ModuleType.StaticCode:
+                //         //     declaration = "(process_globals) " + declaration;
+                //         //     break;
+                //         default:
+                //     }
+                // }
 
                 // Create a MarkdownString to format the hover content
                 const markdownString = new vscode.MarkdownString();

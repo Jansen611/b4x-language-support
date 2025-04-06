@@ -28,7 +28,8 @@
           "b4x"
         ],
         "extensions": [
-          ".bas"
+          ".bas",
+          ".b4a"
         ],
         "configuration": "./language-configuration.json"
       }
