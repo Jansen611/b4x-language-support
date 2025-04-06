@@ -192,18 +192,24 @@ function findLocalVariableDefinitionPosition(document: vscode.TextDocument, word
     // go through the document line by line
     for (let line: number = localSubBoundary[0]; line < localSubBoundary[1]; line++) 
     {
-        const text: string = document.lineAt(line).text;
+        const lineText: string = document.lineAt(line).text;
         // check if this line is a comment line, if it is ignore
-        if (text.trim().startsWith("'")) {continue;}
+        if (lineText.trim().startsWith("'")) {continue;}
 
-        const variableMatchResult: RegExpMatchArray | null = text.match(new RegExp(`${comRegExp.StartOfWord}${word} As (\\w+)`, 'i'))
+        const variableMatchResult: RegExpMatchArray | null = lineText.match(comRegExp.VairableMatchPattern(word, 'i'))
         // checking if local declaration matches
         if (variableMatchResult) 
         {
             // found the local variable, returning the position
-            retWordInfo.DefinitionPos = new vscode.Position(line, text.indexOf(word));
+            retWordInfo.DefinitionPos = new vscode.Position(line, lineText.indexOf(word));
             retWordInfo.Scope = KeywordScope.Local;
-            retWordInfo.Type = KeywordType.Variable;
+            if (lineText.match(comRegExp.DeclarationMatchPattern(word, 'i')))
+            {
+                retWordInfo.Type = KeywordType.Variable;
+            } else
+            {
+                retWordInfo.Type = KeywordType.Parameter;
+            }
             if (variableMatchResult.length > 1) {retWordInfo.ClassName = variableMatchResult[1];}
             return retWordInfo
         }
@@ -213,16 +219,16 @@ function findLocalVariableDefinitionPosition(document: vscode.TextDocument, word
     return retWordInfo;
 }
 
-function findGlobalDefinitionPosition(document: vscode.TextDocument, word: string): KeywordInfo
+function findGlobalDefinitionPosition(document: vscode.TextDocument, keyWord: string): KeywordInfo
 {   
-    let retWordInfo: KeywordInfo = {...new KeywordInfo(), KeywordName: word, ModuleName: document.fileName};
+    let retWordInfo: KeywordInfo = {...new KeywordInfo(), KeywordName: keyWord, ModuleName: document.fileName};
     // loop through every line
     for (let line: number = 0; line < document.lineCount; line++) 
     {
-        const text: string = document.lineAt(line).text
-        const lowerCaseText: String = text.toLowerCase();
+        const lineText: string = document.lineAt(line).text
+        const lowerCaseText: String = lineText.toLowerCase();
         // cheching if this line is a comment line, if it is ignore
-        if (text.trim().startsWith("'")) {continue;}
+        if (lineText.trim().startsWith("'")) {continue;}
 
         if (retWordInfo.ModuleType == ModuleType.Undefined)
         {
@@ -233,24 +239,29 @@ function findGlobalDefinitionPosition(document: vscode.TextDocument, word: strin
         }
 
         // check whether including keyword
-        const isEventFound: boolean = text.includes(`Sub ${word}_`.toLowerCase());
+        const isEventFound: boolean = lineText.includes(`Sub ${keyWord}_`.toLowerCase());
         if (isEventFound) {continue;}
         
-        const functionMatchPattern: string = `Sub ${word}${comRegExp.EndOfWord}`;
-        const functionMatchResult = text.match(new RegExp(functionMatchPattern, 'i'));
+        const functionMatchPattern: string = `Sub ${keyWord}${comRegExp.EndOfWord}`;
+        const functionMatchResult = lineText.match(new RegExp(functionMatchPattern, 'i'));
 
-        const variableMatchPattern: string = `${comRegExp.StartOfWord}${word} As (\\w+)`;
-        const variableMatchResult = text.match(new RegExp(variableMatchPattern, 'i'));
+        const variableMatchResult = lineText.match(comRegExp.VairableMatchPattern(keyWord, 'i'));
         //const isVariableFound: boolean = lowerCaseText.includes(`${word} As`.toLowerCase());
         if (functionMatchResult || variableMatchResult) 
         {
             // return definition position
-            retWordInfo.DefinitionPos = new vscode.Position(line, text.indexOf(word));
+            retWordInfo.DefinitionPos = new vscode.Position(line, lineText.indexOf(keyWord));
             retWordInfo.Scope = KeywordScope.Global;
             if (functionMatchResult){retWordInfo.Type = KeywordType.Sub;}
             if (variableMatchResult)
             {
-                retWordInfo.Type = KeywordType.Variable;
+                if (lineText.match(comRegExp.DeclarationMatchPattern(keyWord, 'i')))
+                {
+                    retWordInfo.Type = KeywordType.Variable;
+                } else
+                {
+                    retWordInfo.Type = KeywordType.Parameter;
+                }
                 if (variableMatchResult.length > 1) {retWordInfo.ClassName = variableMatchResult[1];}
             }
             return retWordInfo;
@@ -269,27 +280,27 @@ function getDeclarationStringFromSameline(document: vscode.TextDocument, word: s
     {
         const text: string = document.lineAt(matchingLineNum).text.trim();
         const lowerCaseText: string = text.toLowerCase();
-        const variableMatch = text.match(new RegExp(`${comRegExp.StartOfWord}${word} As \\w+`, 'gi'));
+        const variableMatchResult = text.match(comRegExp.VairableMatchPattern(word, 'gi'));
 
         if (lowerCaseText.includes(`Sub ${word}`.toLowerCase()))
         {
             // this is a sub or function, return the whole line
             if (isFunctionSearch) {return text;}
-        } else if (variableMatch)
+        } else if (variableMatchResult)
         {
             if (isVariableSearch)
             {
                 // this is a variable
-                if (!lowerCaseText.match(`(?:Dim|Public|Private|Const|For Each) ${word}`.toLowerCase()))
+                if (!text.match(comRegExp.DeclarationMatchPattern(word, 'i')))
                 {
                     // this is a paramater of a sub
                     const parameterPosition: number = lowerCaseText.indexOf(`${word} As`.toLowerCase());
                     let parameterDeclarationEnd: number = text.indexOf(',', parameterPosition);
-                    if (parameterDeclarationEnd < 0) {parameterDeclarationEnd = text.indexOf(')', parameterPosition)}
-                    return "(parameter) " + text.substring(parameterPosition, parameterDeclarationEnd);
+                    if (parameterDeclarationEnd < 0) {parameterDeclarationEnd = text.indexOf(')', parameterPosition);}
+                    return text.substring(parameterPosition, parameterDeclarationEnd);
                 } else
                 {
-                    return variableMatch[0];
+                    return variableMatchResult[0];
                 }
                 return text;
             }

@@ -26,6 +26,9 @@ export class b4xHoverProvider implements vscode.HoverProvider
                     {
                         declaration = "(local variable) " + declaration;
                     }
+                } else if (definitionInfo.Type == b4xDefinitionProvider.KeywordType.Parameter)
+                {
+                    declaration = "(parameter) " + declaration;
                 }
 
                 // if (definitionInfo.Scope == b4xDefinitionProvider.KeywordScope.Global &&
