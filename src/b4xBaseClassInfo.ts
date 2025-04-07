@@ -703,9 +703,7 @@ export const B4X_BASECLASS_MEMBER_COMPLETION: Record<string, vscode.CompletionIt
             label: "Flags",
             kind: vscode.CompletionItemKind.Property,
             detail: B4X_BASECLASS_MEMBER_DECLARATION['intent.flags'],
-            documentation: "Gets and Sets the flags component.",
-            commitCharacters: ['('],
-            command: SignatureTriggerCommand
+            documentation: "Gets and Sets the flags component."
         },
         { // AddCategory
             label: "AddCategory",
