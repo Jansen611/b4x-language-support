@@ -673,7 +673,8 @@ export const B4X_BASECLASS_MEMBER_COMPLETION: Record<string, vscode.CompletionIt
             label: "Initialize",
             kind: vscode.CompletionItemKind.Method,
             detail: B4X_BASECLASS_MEMBER_DECLARATION['intent.initialize'],
-            documentation: "Initializes the object using the given Action and data Uri. Action can be one of the action constants or any other string.\nPass an empty string if a Uri is not required.",
+            documentation: "Initializes the object using the given Action and data Uri. Action can be one of the action constants or any other string.\n" + 
+                           "Pass an empty string if a Uri is not required.",
             commitCharacters: ['('],
             command: SignatureTriggerCommand
         },
@@ -681,7 +682,8 @@ export const B4X_BASECLASS_MEMBER_COMPLETION: Record<string, vscode.CompletionIt
             label: "Initialize2",
             kind: vscode.CompletionItemKind.Method,
             detail: B4X_BASECLASS_MEMBER_DECLARATION['intent.initialize2'],
-            documentation: "Initializes the object by parsing the Uri.\nFlags - Additional integer value. Pass 0 if it is not required.",
+            documentation: "Initializes the object by parsing the Uri.\n" + 
+                           "Flags - Additional integer value. Pass 0 if it is not required.",
             commitCharacters: ['('],
             command: SignatureTriggerCommand
         },
