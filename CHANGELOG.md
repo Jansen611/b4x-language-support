@@ -4,6 +4,16 @@ All notable changes to the "b4x-language-support" extension will be documented i
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [0.1.4] - More keywords support and Cursor compatibility
+- **Enhancements**:
+  - Added more keywords support including #if, #else #region etc
+  - Added ".b4a", ".b4i", ".b4j" to auto extension detection
+  - Added TypeName and Member lookup for two more B4X base class: "Intent", "Activity"
+  - Added variable scope in hover; eg. variables will show like this: "(global/local/parameter) Name As TypeName"
+- **Bug fixes**:
+  - Fixed some keywords not highlighted bug: "For Each" and "Exit"
+  - Fixed hover error where parameter-variable and local-variable sometimes can sometimes not showing
+
 ## [0.1.3] - Added support for more B4X base classes
 - **Enhancements**:
   - Added TypeName lookup for some B4X base class: "Char", "Boolean", "Int", "List", "Map", "String" and "Timer"
