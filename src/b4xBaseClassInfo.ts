@@ -782,163 +782,163 @@ export const B4X_BASECLASS_MEMBER_COMPLETION: Record<string, vscode.CompletionIt
     ],
     "activity": [
         { // GetStartingIntent
-        label: "GetStartingIntent",
-        kind: vscode.CompletionItemKind.Method,
-        detail: B4X_BASECLASS_MEMBER_DECLARATION['activity.getstartingintent'],
-        documentation: "Returns the intent that started this activity.",
-        commitCharacters: ['('],
-        command: SignatureTriggerCommand
+            label: "GetStartingIntent",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['activity.getstartingintent'],
+            documentation: "Returns the intent that started this activity.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
         },
         { // SetActivityResult
-        label: "SetActivityResult",
-        kind: vscode.CompletionItemKind.Method,
-        detail: B4X_BASECLASS_MEMBER_DECLARATION['activity.setactivityresult'],
-        documentation: "(Advanced) Sets the result that the calling Activity will get after calling StartActivityForResult.",
-        commitCharacters: ['('],
-        command: SignatureTriggerCommand
+            label: "SetActivityResult",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['activity.setactivityresult'],
+            documentation: "(Advanced) Sets the result that the calling Activity will get after calling StartActivityForResult.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
         },
         { // AddView
-        label: "AddView",
-        kind: vscode.CompletionItemKind.Method,
-        detail: B4X_BASECLASS_MEMBER_DECLARATION['activity.addview'],
-        documentation: "Adds a view to this activity.",
-        commitCharacters: ['('],
-        command: SignatureTriggerCommand
+            label: "AddView",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['activity.addview'],
+            documentation: "Adds a view to this activity.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
         },
         { // GetView
-        label: "GetView",
-        kind: vscode.CompletionItemKind.Method,
-        detail: B4X_BASECLASS_MEMBER_DECLARATION['activity.getview'],
-        documentation: "Gets the view that is stored in the specified index.",
-        commitCharacters: ['('],
-        command: SignatureTriggerCommand
+            label: "GetView",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['activity.getview'],
+            documentation: "Gets the view that is stored in the specified index.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
         },
         { // RemoveAllViews
-        label: "RemoveAllViews",
-        kind: vscode.CompletionItemKind.Method,
-        detail: B4X_BASECLASS_MEMBER_DECLARATION['activity.removeallviews'],
-        documentation: "Removes all child views.",
-        commitCharacters: ['('],
-        command: SignatureTriggerCommand
+            label: "RemoveAllViews",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['activity.removeallviews'],
+            documentation: "Removes all child views.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
         },
         { // RemoveViewAt
-        label: "RemoveViewAt",
-        kind: vscode.CompletionItemKind.Method,
-        detail: B4X_BASECLASS_MEMBER_DECLARATION['activity.removeviewat'],
-        documentation: "Removes the view that is stored in the specified index.",
-        commitCharacters: ['('],
-        command: SignatureTriggerCommand
+            label: "RemoveViewAt",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['activity.removeviewat'],
+            documentation: "Removes the view that is stored in the specified index.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
         },
         { // NumberOfViews
-        label: "NumberOfViews",
-        kind: vscode.CompletionItemKind.Property,
-        detail: B4X_BASECLASS_MEMBER_DECLARATION['activity.numberofviews'],
-        documentation: "Returns the number of child views. [readonly]",
+            label: "NumberOfViews",
+            kind: vscode.CompletionItemKind.Property,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['activity.numberofviews'],
+            documentation: "Returns the number of child views. [readonly]"
         },
         { // AddMenuItem
-        label: "AddMenuItem",
-        kind: vscode.CompletionItemKind.Method,
-        detail: B4X_BASECLASS_MEMBER_DECLARATION['activity.addmenuitem'],
-        documentation: "Adds a menu item to the activity.\n" +
-                       "Title - Menu item title.\n" +
-                       "EventName - The prefix name of the sub that will handle the click event.\n" +
-                       "This method should only be called inside sub Activity_Create.\n" +
-                       "Note that the 'Sender' value inside the click event equals to the clicked menu item text.",
-        commitCharacters: ['('],
-        command: SignatureTriggerCommand
+            label: "AddMenuItem",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['activity.addmenuitem'],
+            documentation: "Adds a menu item to the activity.\n" +
+                           "Title - Menu item title.\n" +
+                           "EventName - The prefix name of the sub that will handle the click event.\n" +
+                           "This method should only be called inside sub Activity_Create.\n" +
+                           "Note that the 'Sender' value inside the click event equals to the clicked menu item text.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
         },
         { // AddMenuItem2
-        label: "AddMenuItem2",
-        kind: vscode.CompletionItemKind.Method,
-        detail: B4X_BASECLASS_MEMBER_DECLARATION['activity.addmenuitem2'],
-        documentation: "Adds a menu item to the activity.\n" +
-                       "Title - Menu item title.\n" +
-                       "EventName - The prefix name of the sub that will handle the click event.\n" +
-                       "Bitmap - Bitmap to draw as the item background.\n" +
-                       "Only the first five (or six if there are six total) menu items display icons.\n" +
-                       "This method should only be called inside sub Activity_Create.",
-        commitCharacters: ['('],
-        command: SignatureTriggerCommand
+            label: "AddMenuItem2",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['activity.addmenuitem2'],
+            documentation: "Adds a menu item to the activity.\n" +
+                           "Title - Menu item title.\n" +
+                           "EventName - The prefix name of the sub that will handle the click event.\n" +
+                           "Bitmap - Bitmap to draw as the item background.\n" +
+                           "Only the first five (or six if there are six total) menu items display icons.\n" +
+                           "This method should only be called inside sub Activity_Create.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
         },
         { // AddMenuItem3
-        label: "AddMenuItem3",
-        kind: vscode.CompletionItemKind.Method,
-        detail: B4X_BASECLASS_MEMBER_DECLARATION['activity.addmenuitem3'],
-        documentation: "Similar to AddMenuItem2. If AddToActionBar is true then the item will be displayed in the action bar (on Android 3.0+ devices) if there is enough room.\n" +
-                       "If there is not enough room then the item will be displayed together with the other menu items.",
-        commitCharacters: ['('],
-        command: SignatureTriggerCommand
+            label: "AddMenuItem3",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['activity.addmenuitem3'],
+            documentation: "Similar to AddMenuItem2. If AddToActionBar is true then the item will be displayed in the action bar (on Android 3.0+ devices) if there is enough room.\n" +
+                           "If there is not enough room then the item will be displayed together with the other menu items.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
         },
         { // LoadLayout
-        label: "LoadLayout",
-        kind: vscode.CompletionItemKind.Method,
-        detail: B4X_BASECLASS_MEMBER_DECLARATION['activity.loadlayout'],
-        documentation: "Loads a layout file (.bal).\n" +
-                       "Returns the LayoutValues of the actual layout variant that was loaded.",
-        commitCharacters: ['('],
-        command: SignatureTriggerCommand
+            label: "LoadLayout",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['activity.loadlayout'],
+            documentation: "Loads a layout file (.bal).\n" +
+                           "Returns the LayoutValues of the actual layout variant that was loaded.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
         },
         { // RerunDesignerScript
-        label: "RerunDesignerScript",
-        kind: vscode.CompletionItemKind.Method,
-        detail: B4X_BASECLASS_MEMBER_DECLARATION['activity.rerundesignerscript'],
-        documentation: "This method is deprecated. It ignores the anchoring features and it will fail in Rapid Debug mode.\n" +
-                       "You should instead remove the views and load the layout again.",
-        commitCharacters: ['('],
-        command: SignatureTriggerCommand
+            label: "RerunDesignerScript",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['activity.rerundesignerscript'],
+            documentation: "This method is deprecated. It ignores the anchoring features and it will fail in Rapid Debug mode.\n" +
+                           "You should instead remove the views and load the layout again.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
         },
         { // OpenMenu
-        label: "OpenMenu",
-        kind: vscode.CompletionItemKind.Method,
-        detail: B4X_BASECLASS_MEMBER_DECLARATION['activity.openmenu'],
-        documentation: "Programmatically opens the menu.",
-        commitCharacters: ['('],
-        command: SignatureTriggerCommand
+            label: "OpenMenu",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['activity.openmenu'],
+            documentation: "Programmatically opens the menu.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
         },
         { // CloseMenu
-        label: "CloseMenu",
-        kind: vscode.CompletionItemKind.Method,
-        detail: B4X_BASECLASS_MEMBER_DECLARATION['activity.closemenu'],
-        documentation: "Programmatically closes the menu.",
-        commitCharacters: ['('],
-        command: SignatureTriggerCommand
+            label: "CloseMenu",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['activity.closemenu'],
+            documentation: "Programmatically closes the menu.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
         },
         { // Title
-        label: "Title",
-        kind: vscode.CompletionItemKind.Property,
-        detail: B4X_BASECLASS_MEMBER_DECLARATION['activity.title'],
-        documentation: "Gets and Sets the activity title.",
+            label: "Title",
+            kind: vscode.CompletionItemKind.Property,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['activity.title'],
+            documentation: "Gets and Sets the activity title."
         },
         { // TitleColor
-        label: "TitleColor",
-        kind: vscode.CompletionItemKind.Property,
-        detail: B4X_BASECLASS_MEMBER_DECLARATION['activity.titlecolor'],
-        documentation: "Gets and Sets the title color. This property is only supported by Android 2.x devices. It will not do anything on newer devices.",
+            label: "TitleColor",
+            kind: vscode.CompletionItemKind.Property,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['activity.titlecolor'],
+            documentation: "Gets and Sets the title color. This property is only supported by Android 2.x devices. It will not do anything on newer devices."
         },
         { // DisableAccessibility
-        label: "DisableAccessibility",
-        kind: vscode.CompletionItemKind.Method,
-        detail: B4X_BASECLASS_MEMBER_DECLARATION['activity.disableaccessibility'],
-        documentation: "This method was added as a workaround for an Android bug.\n" +
-                       "By setting the Disable property to True the child views (of all Activities) will not be added to the accessibility enabled list.",
-        commitCharacters: ['('],
-        command: SignatureTriggerCommand
+            label: "DisableAccessibility",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['activity.disableaccessibility'],
+            documentation: "This method was added as a workaround for an Android bug.\n" +
+                           "By setting the Disable property to True the child views (of all Activities) will not be added to the accessibility enabled list.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
         },
         { // Finish
-        label: "Finish",
-        kind: vscode.CompletionItemKind.Method,
-        detail: B4X_BASECLASS_MEMBER_DECLARATION['activity.finish'],
-        documentation: "Closes this activity.",
-        commitCharacters: ['('],
-        command: SignatureTriggerCommand
+            label: "Finish",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['activity.finish'],
+            documentation: "Closes this activity.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
         },
         { // GetAllViewsRecursive
-        label: "GetAllViewsRecursive",
-        kind: vscode.CompletionItemKind.Method,
-        detail: B4X_BASECLASS_MEMBER_DECLARATION['activity.getallviewsrecursive'],
-        documentation: "Returns an iterator that iterates over all the child views including views that were added to other child views.",
-        commitCharacters: ['('],
-        command: SignatureTriggerCommand
+            label: "GetAllViewsRecursive",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['activity.getallviewsrecursive'],
+            documentation: "Returns an iterator that iterates over all the child views including views that were added to other child views.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
         }
     ]
 
