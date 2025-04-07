@@ -10,7 +10,7 @@
   },
   "icon": "assets/Logo.png",
   "engines": {
-    "vscode": "^1.97.0"
+    "vscode": "^1.96.2"
   },
   "categories": [
     "Programming Languages"
@@ -29,7 +29,9 @@
         ],
         "extensions": [
           ".bas",
-          ".b4a"
+          ".b4a",
+          ".b4i",
+          ".b4j"
         ],
         "configuration": "./language-configuration.json"
       }
