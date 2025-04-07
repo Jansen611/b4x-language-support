@@ -14,14 +14,39 @@
 	],
 	"repository": {
 		"keywords": {
-			"patterns": [{
-				"name": "keyword.control.b4x",
-				"match": "(?i)\\b(if|then|else|elseif|end if|while|loop|for|to|return)\\b"
-			},
-			{
-				"name": "keyword.operator.b4x",
-				"match": "(?i)\\b(Mod|And|Not|Or|Xor|as|Is|Eqv)\\b"
-			}]
+			"patterns": [
+				{
+					"name": "comment.line",
+					"match": "(?i)'([\\s\\S]+?)[\\n|\\r]"
+				},
+				{
+					"name":  "keyword.control.b4x",
+					"match": "(?i)\\b(end if|wait for|for each)\\b"
+				},
+				{
+					"name":  "keyword.control.b4x",
+					"match": "(?i)\\b(if|then|else|elseif|while|loop|for|next|to|return|exit)\\b"
+				},
+				{
+					"name": "keyword.other.b4x",
+					"match": "(?i)\\b(Mod|And|Not|Or|Xor|as|Is|Eqv)\\b"				
+				},
+				{
+					"name": "markup.inserted.b4x",
+					"match": "(?i)#(end if|end region)\\b"
+				},
+				{
+					"name": "markup.inserted.b4x",
+					"match": "(?i)#(if|region|else if|else)\\b"
+				},
+				{
+					"name": "support.function.b4x",
+					"match": "(?i)\\b\\.(\\w+)\\b"
+				}, 
+				{
+					"name": "storage.type",
+					"match": "(?i)\\b(dim|private|const|public|sub|end sub)\\b"
+				}]
 		},
 		"strings": {
 			"name": "string.quoted.double.b4x",
