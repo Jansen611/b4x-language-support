@@ -21,11 +21,11 @@
 				},
 				{
 					"name":  "keyword.control.b4x",
-					"match": "(?i)\\b(end if|wait for|for each)\\b"
+					"match": "(?i)\\b(end if|wait for|for each|end try)\\b"
 				},
 				{
 					"name":  "keyword.control.b4x",
-					"match": "(?i)\\b(if|then|else|elseif|while|loop|for|next|to|return|exit)\\b"
+					"match": "(?i)\\b(if|then|else|elseif|while|loop|for|next|to|return|exit|try|catch)\\b"
 				},
 				{
 					"name": "keyword.other.b4x",
