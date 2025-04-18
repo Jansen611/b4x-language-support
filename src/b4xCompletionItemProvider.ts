@@ -65,6 +65,15 @@ export class B4XCompletionItemProvider implements vscode.CompletionItemProvider
             }
         }
 
+        // give system variables suggestion
+        for (const variableCompletion of b4xBaseClassInfo.B4X_SYSTEMVARIABLE_COMPLETION)
+        {
+            if (variableCompletion.label.toString().match(new RegExp(wordToSearch, 'i')))
+            {
+                itemsShow.push(variableCompletion);
+            }
+        }
+
         const fullDocStringLower: string = fullDocString.toLowerCase();
         const fullDocLines: string[] = fullDocString.split('\n');
         const fullDocLinesLower: string[] = fullDocStringLower.split('\n');

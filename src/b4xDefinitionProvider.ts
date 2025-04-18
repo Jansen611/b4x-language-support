@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import * as docMethods from './documentMethods';
 import * as comRegExp from './comRegExp';
+import { B4X_SYSTEMVARIABLE_COMPLETION } from './b4xBaseClassInfo';
 
 export class b4xDefinitionProvider implements vscode.DefinitionProvider 
 {
@@ -72,7 +73,23 @@ export function findDefinitionPosition(document: vscode.TextDocument, word: stri
         console.log(`Seaching for definition: ${word}`);
         // finding the global definition
         const respWordInfoGlobal: KeywordInfo = findGlobalDefinitionPosition(document, word);
-        if (respWordInfoGlobal.DefinitionPos) 
+        if (!respWordInfoGlobal.DefinitionPos)
+        {
+            // finding the system definition
+            const foundSystemVariable = B4X_SYSTEMVARIABLE_COMPLETION.find((x) => x.label.toString().match(new RegExp(word, 'i')))
+            if (foundSystemVariable)
+            {
+                retWordInfo.DefinitionPos = new vscode.Position(wordLineNo, lineText.indexOf(word));
+                retWordInfo.Scope = KeywordScope.CodeSpace;
+                retWordInfo.Type = KeywordType.Variable;
+                const foundSystemVariableDeclaration: String = foundSystemVariable.detail || "";
+                const classNameMatch = foundSystemVariableDeclaration.match(comRegExp.VairableMatchPattern(word, 'i'));
+                if (classNameMatch && classNameMatch.length > 1) 
+                {
+                    retWordInfo.ClassName = classNameMatch[1]
+                }
+            }
+        } else
         {
             retWordInfo = respWordInfoGlobal;
         }

@@ -111,7 +111,16 @@ export const B4X_SYSTEMKEYWORD_COMPLETION: vscode.CompletionItem[] = [
     }
 ]
 
-export const B4X_SYSTEMCLASS_NAME: Set<string> = new Set(['list', 'map', 'timer', 'string', 'intent', 'activity'])
+export const B4X_SYSTEMVARIABLE_COMPLETION: vscode.CompletionItem[] = [
+     {// DateTime
+        label: "DateTime",
+        kind: vscode.CompletionItemKind.Variable,
+        detail: "DateTime As DateTime",
+        documentation: "Date and time related methods."
+    }
+]
+
+export const B4X_SYSTEMCLASS_NAME: Set<string> = new Set(['list', 'map', 'timer', 'string', 'intent', 'activity', 'datetime'])
 
 export const B4X_SYSTEMCLASS_TYPE_COMPLETION: vscode.CompletionItem[] = [
     { // Char
@@ -131,6 +140,12 @@ export const B4X_SYSTEMCLASS_TYPE_COMPLETION: vscode.CompletionItem[] = [
         kind: vscode.CompletionItemKind.Class,
         detail: "Int",
         documentation: "4 bytes integer number."
+    },
+    { // Long
+        label: "Long",
+        kind: vscode.CompletionItemKind.Class,
+        detail: "Long",
+        documentation: "8 bytes integer number."
     },
     { // List
         label: "List",
@@ -290,7 +305,36 @@ export const B4X_BASECLASS_MEMBER_DECLARATION: Record<string, string> ={
     "activity.titlecolor": "TitleColor As Int",
     "activity.disableaccessibility": "DisableAccessibility(disable As Boolean)",
     "activity.finish": "Finish()",
-    "activity.getallviewsrecursive": "GetAllViewsRecursive() As IterableList"
+    "activity.getallviewsrecursive": "GetAllViewsRecursive() As IterableList",
+
+    //DateTime Object
+    "datetime.listenetoexternaltimechanges": "ListenToExternalTimeChanges(ba As BA)",
+    "datetime.now": "Now As Long",
+    "datetime.date": "Date(ticks As Long) As String",
+    "datetime.time": "Time(ticks As Long) As String",
+    "datetime.timeformat": "TimeFormat As String",
+    "datetime.dateformat": "DateFormat As String",
+    "datetime.dateparse": "DateParse(date As String) As Long",
+    "datetime.devicedefaultdateformat": "DeviceDefaultDateFormat As String",
+    "datetime.devicedefaulttimeformat": "DeviceDefaultTimeFormat As String",
+    "datetime.timeparse": "TimeParse(time As String) As Long",
+    "datetime.datetimeparse": "DateTimeParse(date As String, time As String) As Long",
+    "datetime.settimezone": "SetTimeZone(offsetHours As Double)",
+    "datetime.gettimezoneoffset": "TimeZoneOffset As Double",
+    "datetime.gettimezoneoffsetat": "GetTimeZoneOffsetAt(date As Long) As Double",
+    "datetime.getyear": "GetYear(ticks As Long) As Int",
+    "datetime.getmonth": "GetMonth(ticks As Long) As Int",
+    "datetime.getdayofmonth": "GetDayOfMonth(ticks As Long) As Int",
+    "datetime.getdayofyear": "GetDayOfYear(ticks As Long) As Int",
+    "datetime.getdayofweek": "GetDayOfWeek(ticks As Long) As Int",
+    "datetime.gethour": "GetHour(ticks As Long) As Int",
+    "datetime.getsecond": "GetSecond(ticks As Long) As Int",
+    "datetime.getminute": "GetMinute(ticks As Long) As Int",
+    "datetime.add": "Add(ticks As Long, years As Int, months As Int, days As Int) As Long",
+    "datetime.ticksperday": "TicksPerDay As Long",
+    "datetime.ticksperhour": "TicksPerHour As Long",
+    "datetime.ticksperminute": "TicksPerMinute As Long",
+    "datetime.tickspersecond": "TicksPerSecond As Long"
 }
 
 export const B4X_BASECLASS_MEMBER_COMPLETION: Record<string, vscode.CompletionItem[]> = {
@@ -1046,7 +1090,223 @@ export const B4X_BASECLASS_MEMBER_COMPLETION: Record<string, vscode.CompletionIt
             commitCharacters: ['('],
             command: SignatureTriggerCommand
         }
-    ]
-
+    ],
+    "datetime": [
+    { // ListenToExternalTimeChanges
+      label: "ListenToExternalTimeChanges",
+      kind: vscode.CompletionItemKind.Method,
+      detail: B4X_BASECLASS_MEMBER_DECLARATION['datetime.listenetoexternaltimechanges'],
+      documentation: "Creates a dynamic broadcast receiver that listens to the \"time-zone changed\" event and \"time set\" event.\n" +
+                     "By calling this method the time-zone will update automatically when the device time-zone changes.\n" +
+                     "DateTime_TimeChanged event will be raised when the time-zone changes or when the time is set.",
+      commitCharacters: ['('],
+      command: SignatureTriggerCommand
+    },
+    { // Now
+      label: "Now",
+      kind: vscode.CompletionItemKind.Property,
+      detail: B4X_BASECLASS_MEMBER_DECLARATION['datetime.now'],
+      documentation: "Gets the current time as ticks (number of milliseconds since January 1, 1970).",
+    },
+    { // Date
+      label: "Date",
+      kind: vscode.CompletionItemKind.Method,
+      detail: B4X_BASECLASS_MEMBER_DECLARATION['datetime.date'],
+      documentation: "Returns a string representation of the date (which is stored as ticks).\n" +
+                     "The date format can be set with the DateFormat keyword.",
+      commitCharacters: ['('],
+      command: SignatureTriggerCommand
+    },
+    { // Time
+      label: "Time",
+      kind: vscode.CompletionItemKind.Method,
+      detail: B4X_BASECLASS_MEMBER_DECLARATION['datetime.time'],
+      documentation: "Returns a string representation of the time (which is stored as ticks).\n" +
+                     "The time format can be set with the TimeFormat keyword.",
+      commitCharacters: ['('],
+      command: SignatureTriggerCommand
+    },
+    { // TimeFormat
+      label: "TimeFormat",
+      kind: vscode.CompletionItemKind.Property,
+      detail: B4X_BASECLASS_MEMBER_DECLARATION['datetime.timeformat'],
+      documentation: "Gets and Sets the format used to parse time strings.\n" +
+                     "See this page for the supported patterns: http://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html \n" +
+                     "The default pattern is HH:mm:ss (23:45:12 for example). HH not hh."
+    },
+    { // DateFormat
+      label: "DateFormat",
+      kind: vscode.CompletionItemKind.Property,
+      detail: B4X_BASECLASS_MEMBER_DECLARATION['datetime.dateformat'],
+      documentation: "Gets and Sets the format used to parse date strings.\n" +
+                     "See this page for the supported patterns: http://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html \n" +
+                     "The default pattern is MM/dd/yyyy (04/23/2002 for example). MM not mm."
+    },
+    { // DateParse
+      label: "DateParse",
+      kind: vscode.CompletionItemKind.Method,
+      detail: B4X_BASECLASS_MEMBER_DECLARATION['datetime.dateparse'],
+      documentation: "Parses the given date string and returns its ticks representation.\n" +
+                     "An exception will be thrown if parsing fails.",
+      commitCharacters: ['('],
+      command: SignatureTriggerCommand
+    },
+    { // DeviceDefaultDateFormat
+      label: "DeviceDefaultDateFormat",
+      kind: vscode.CompletionItemKind.Property,
+      detail: B4X_BASECLASS_MEMBER_DECLARATION['datetime.devicedefaultdateformat'],
+      documentation: "Returns the default date format based on the device selected language."
+    },
+    { // DeviceDefaultTimeFormat
+      label: "DeviceDefaultTimeFormat",
+      kind: vscode.CompletionItemKind.Property,
+      detail: B4X_BASECLASS_MEMBER_DECLARATION['datetime.devicedefaulttimeformat'],
+      documentation: "Returns the default time format based on the device selected language."
+    },
+    { // TimeParse
+      label: "TimeParse",
+      kind: vscode.CompletionItemKind.Method,
+      detail: B4X_BASECLASS_MEMBER_DECLARATION['datetime.timeparse'],
+      documentation: "Parses the given time string and returns its ticks representation.\n" +
+                     "Note that the returned value date will be today.",
+      commitCharacters: ['('],
+      command: SignatureTriggerCommand
+    },
+    { // DateTimeParse
+      label: "DateTimeParse",
+      kind: vscode.CompletionItemKind.Method,
+      detail: B4X_BASECLASS_MEMBER_DECLARATION['datetime.datetimeparse'],
+      documentation: "Parses the given date and time strings and returns the ticks representation.",
+      commitCharacters: ['('],
+      command: SignatureTriggerCommand
+    },
+    { // SetTimeZone
+      label: "SetTimeZone",
+      kind: vscode.CompletionItemKind.Method,
+      detail: B4X_BASECLASS_MEMBER_DECLARATION['datetime.settimezone'],
+      documentation: "Sets the application time zone. This setting affect the conversions of dates to ticks value and vice versa (device default settings are not changed).",
+      commitCharacters: ['('],
+      command: SignatureTriggerCommand
+    },
+    { // TimeZoneOffset
+      label: "TimeZoneOffset",
+      kind: vscode.CompletionItemKind.Property,
+      detail: B4X_BASECLASS_MEMBER_DECLARATION['datetime.timezoneoffset'],
+      documentation: "Returns the current offset measured in hours from UTC."
+    },
+    { // GetTimeZoneOffsetAt
+      label: "GetTimeZoneOffsetAt",
+      kind: vscode.CompletionItemKind.Method,
+      detail: B4X_BASECLASS_MEMBER_DECLARATION['datetime.gettimezoneoffsetat'],
+      documentation: "Returns the offset measured in hours from UTC at the specified date (offset can change due to daylight saving settings).",
+      commitCharacters: ['('],
+      command: SignatureTriggerCommand
+    },
+    { // GetYear
+      label: "GetYear",
+      kind: vscode.CompletionItemKind.Method,
+      detail: B4X_BASECLASS_MEMBER_DECLARATION['datetime.getyear'],
+      documentation: "Returns the year component from the ticks value.",
+      commitCharacters: ['('],
+      command: SignatureTriggerCommand
+    },
+    { // GetMonth
+      label: "GetMonth",
+      kind: vscode.CompletionItemKind.Method,
+      detail: B4X_BASECLASS_MEMBER_DECLARATION['datetime.getmonth'],
+      documentation: "Returns the month of year component from the ticks value.\n" +
+                     "Values are between 1 to 12.",
+      commitCharacters: ['('],
+      command: SignatureTriggerCommand
+    },
+    { // GetDayOfMonth
+      label: "GetDayOfMonth",
+      kind: vscode.CompletionItemKind.Method,
+      detail: B4X_BASECLASS_MEMBER_DECLARATION['datetime.getdayofmonth'],
+      documentation: "Returns the day of month component from the ticks value.\n" +
+                     "Values are between 1 to 31.",
+      commitCharacters: ['('],
+      command: SignatureTriggerCommand
+    },
+    { // GetDayOfYear
+      label: "GetDayOfYear",
+      kind: vscode.CompletionItemKind.Method,
+      detail: B4X_BASECLASS_MEMBER_DECLARATION['datetime.getdayofyear'],
+      documentation: "Returns the day of year component from the ticks value.\n" +
+                    "Values are between 1 to 366.",
+      commitCharacters: ['('],
+      command: SignatureTriggerCommand
+    },
+    { // GetDayOfWeek
+      label: "GetDayOfWeek",
+      kind: vscode.CompletionItemKind.Method,
+      detail: B4X_BASECLASS_MEMBER_DECLARATION['datetime.getdayofweek'],
+      documentation: "Returns the day of week component from the ticks value.\n" +
+                     "Values are between 1 to 7, where 1 means Sunday.\n" +
+                     "You can use the AHLocale library if you need to change the first day.",
+      commitCharacters: ['('],
+      command: SignatureTriggerCommand
+    },
+    { // GetHour
+      label: "GetHour",
+      kind: vscode.CompletionItemKind.Method,
+      detail: B4X_BASECLASS_MEMBER_DECLARATION['datetime.gethour'],
+      documentation: "Returns the hour of day component from the ticks value.\n" +
+                     "Values are between 0 to 23.",
+      commitCharacters: ['('],
+      command: SignatureTriggerCommand
+    },
+    { // GetSecond
+      label: "GetSecond",
+      kind: vscode.CompletionItemKind.Method,
+      detail: B4X_BASECLASS_MEMBER_DECLARATION['datetime.getsecond'],
+      documentation: "Returns the seconds within a minute component from the ticks value.\n" +
+                     "Values are between 0 to 59.",
+      commitCharacters: ['('],
+      command: SignatureTriggerCommand
+    },
+    { // GetMinute
+      label: "GetMinute",
+      kind: vscode.CompletionItemKind.Method,
+      detail: B4X_BASECLASS_MEMBER_DECLARATION['datetime.getminute'],
+      documentation: "Returns the minutes within a hour component from the ticks value.\n" +
+                     "Values are between 0 to 59.",
+      commitCharacters: ['('],
+      command: SignatureTriggerCommand
+    },
+    { // Add
+      label: "Add",
+      kind: vscode.CompletionItemKind.Method,
+      detail: B4X_BASECLASS_MEMBER_DECLARATION['datetime.add'],
+      documentation: "Returns a ticks value which is the result of adding the specified time spans to the given ticks value.\n" +
+                     "Pass negative values if you want to subtract the values.",
+      commitCharacters: ['('],
+      command: SignatureTriggerCommand
+    },
+    { // TicksPerSecond
+        label: "TicksPerSecond",
+        kind: vscode.CompletionItemKind.Constant,
+        detail: B4X_BASECLASS_MEMBER_DECLARATION['datetime.tickspersecond'],
+        documentation: "Returns one second worth of ticks count"
+    },
+    { // TicksPerMinute
+        label: "TicksPerMinute",
+        kind: vscode.CompletionItemKind.Constant,
+        detail: B4X_BASECLASS_MEMBER_DECLARATION['datetime.ticksperminute'],
+        documentation: "Returns one minute worth of ticks count"
+    },
+    { // TicksPerHour
+        label: "TicksPerHour",
+        kind: vscode.CompletionItemKind.Constant,
+        detail: B4X_BASECLASS_MEMBER_DECLARATION['datetime.ticksperhour'],
+        documentation: "Returns one hour worth of ticks count"
+    },
+    { // TicksPerDay
+        label: "TicksPerDay",
+        kind: vscode.CompletionItemKind.Constant,
+        detail: B4X_BASECLASS_MEMBER_DECLARATION['datetime.ticksperday'],
+        documentation: "Returns one day worth of ticks count"
+      },
+  ]
     // Other B4X Base Classes...
 };
