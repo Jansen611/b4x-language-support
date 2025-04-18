@@ -5,7 +5,7 @@
 <img src="assets/Logo.png" width="150">
 
 ## 当前版本
-- Version: 0.1.4
+- Version: 0.1.5
 
 ## 功能
 - **语法高亮**：支持 `.bas`、`.b4a`、`.b4i`和`.b4j` 文件的 B4X 语法着色。

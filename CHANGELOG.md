@@ -4,7 +4,7 @@ All notable changes to the "b4x-language-support" extension will be documented i
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
-## [0.1.4] - More keywords support and Cursor compatibility
+## [0.1.5] - More keywords support and Cursor compatibility
 - **Enhancements**:
   - Added more keywords support including #if, #else #region etc
   - Added ".b4a", ".b4i", ".b4j" to auto extension detection
