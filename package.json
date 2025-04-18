@@ -23,16 +23,8 @@
     "languages": [
       {
         "id": "b4x",
-        "aliases": [
-          "B4X",
-          "b4x"
-        ],
-        "extensions": [
-          ".bas",
-          ".b4a",
-          ".b4i",
-          ".b4j"
-        ],
+        "aliases": ["B4X", "b4x"],
+        "extensions": [".bas", ".b4a", ".b4i", ".b4j"],
         "configuration": "./language-configuration.json"
       }
     ],

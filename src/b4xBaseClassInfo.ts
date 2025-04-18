@@ -5,6 +5,112 @@ const SignatureTriggerCommand: vscode.Command = {
     command: 'editor.action.triggerParameterHints'
 }
 
+export const B4X_SYSTEMKEYWORD_COMPLETION: vscode.CompletionItem[] = [
+    { // Dim
+        label: "Dim",
+        kind: vscode.CompletionItemKind.Keyword,
+        detail: "Dim",
+        documentation: "Declare a variable.\n" +
+                       "Syntax 1: Dim variableName [As typeName] [= expression]\n" +
+                       "Syntax 2: Dim variableName1 [= expression1], variableName2 [= expression2], ..., [As typeName]"
+    },
+    { // Sub
+        label: "Sub",
+        kind: vscode.CompletionItemKind.Keyword,
+        detail: "Sub",
+        documentation: "Declare a sub with parameters and return type.\n" +
+                       "Syntax: Sub subName [(list of parameters)] [As returnType]"
+    },
+    { // End Sub
+        label: "End Sub",
+        kind: vscode.CompletionItemKind.Keyword,
+        detail: "End Sub"
+    },
+    { // Public
+        label: "Public",
+        kind: vscode.CompletionItemKind.Keyword,
+        detail: "Public"
+    },
+    { // Private
+        label: "Private",
+        kind: vscode.CompletionItemKind.Keyword,
+        detail: "Private"
+    },
+    { // Return
+        label: "Return",
+        kind: vscode.CompletionItemKind.Keyword,
+        detail: "Return",
+        documentation: "Returns from the current sub and optionally returns the given value.\n" +
+                       "Syntax: Return [value]"
+    },
+    { // Exit
+        label: "Exit",
+        kind: vscode.CompletionItemKind.Keyword,
+        detail: "Exit",
+        documentation: "Exits the most inner loop.\n" +
+                       "Note that Exit inside a Select block will exit the Sellect block"
+    },
+    { // For
+        label: "For",
+        kind: vscode.CompletionItemKind.Keyword,
+        detail: "For",
+    },
+    { // For Each
+        label: "For Each",
+        kind: vscode.CompletionItemKind.Keyword,
+        detail: "For Each",
+    },
+    { // Next
+        label: "Next",
+        kind: vscode.CompletionItemKind.Keyword,
+        detail: "Next"
+    },
+    { // Try
+        label: "Try",
+        kind: vscode.CompletionItemKind.Keyword,
+        detail: "Try",
+        documentation: "Any exception thrown inside a try block will be caught in the catch block.\n" +
+                       "Call LastException to get the caught exception."
+    },
+    { // Catch
+        label: "Catch",
+        kind: vscode.CompletionItemKind.Keyword,
+        detail: "Catch",
+        documentation: "Any exception thrown inside a try block will be caught in the catch block.\n" +
+                       "Call LastException to get the caught exception."
+    },
+    { // End Try
+        label: "End Try",
+        kind: vscode.CompletionItemKind.Keyword,
+        detail: "End Try"
+    },
+    { // If
+        label: "If",
+        kind: vscode.CompletionItemKind.Keyword,
+        detail: "If",
+    },
+    { // Else
+        label: "Else",
+        kind: vscode.CompletionItemKind.Keyword,
+        detail: "Else",
+    },
+    { // Else If
+        label: "Else If",
+        kind: vscode.CompletionItemKind.Keyword,
+        detail: "Else If",
+    },
+    { // End If
+        label: "End If",
+        kind: vscode.CompletionItemKind.Keyword,
+        detail: "End If",
+    },
+    { // Wait For
+        label: "Wait For",
+        kind: vscode.CompletionItemKind.Keyword,
+        detail: "Wait For",
+    }
+]
+
 export const B4X_SYSTEMCLASS_NAME: Set<string> = new Set(['list', 'map', 'timer', 'string', 'intent', 'activity'])
 
 export const B4X_SYSTEMCLASS_TYPE_COMPLETION: vscode.CompletionItem[] = [

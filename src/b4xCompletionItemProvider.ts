@@ -14,12 +14,12 @@ export class B4XCompletionItemProvider implements vscode.CompletionItemProvider
         let itemsShow: vscode.CompletionItem[] = [new vscode.CompletionItem('')];
 
         // check wether this is to search class name or member name
-        if (docMethods.isDeclaringTypeNam(document, position))
+        if (docMethods.isDeclaringTypeNam(document, position)) // looking for 'As' keyword
         {
             // loop through the system type first before search for custom type
             for (const typeCompletion of b4xBaseClassInfo.B4X_SYSTEMCLASS_TYPE_COMPLETION)
             {
-                if (typeCompletion.label.toString().toLowerCase().includes(wordToSearch))
+                if (typeCompletion.label.toString().match((new RegExp(wordToSearch, 'i'))))
                 {
                     itemsShow.push(typeCompletion);
                 }
@@ -35,7 +35,7 @@ export class B4XCompletionItemProvider implements vscode.CompletionItemProvider
         let fullDocString: string = document.getText();
 
         // check whether this is a member search or global search
-        const parentObjectMatch = docMethods.getAllParentObjMatchFromDocPosition(document, position);
+        const parentObjectMatch = docMethods.getAllParentObjMatchFromDocPosition(document, position); // looking for '.' operator
         if (parentObjectMatch && parentObjectMatch.length > 0)
         {
             // this is a member of an object, no point search for the original document
@@ -53,6 +53,15 @@ export class B4XCompletionItemProvider implements vscode.CompletionItemProvider
                         return b4xBaseClassInfo.B4X_BASECLASS_MEMBER_COMPLETION[outKeywordInfo.ClassName.toLowerCase()];
                     }
                 }
+            }
+        }
+
+        // give system keywords suggestion
+        for (const keywordCompletion of b4xBaseClassInfo.B4X_SYSTEMKEYWORD_COMPLETION)
+        {
+            if (keywordCompletion.label.toString().match(new RegExp(wordToSearch, 'i')))
+            {
+                itemsShow.push(keywordCompletion);
             }
         }
 
@@ -138,18 +147,10 @@ export class B4XCompletionItemProvider implements vscode.CompletionItemProvider
                         }
                     }
                 }
-
+            //return new vscode.CompletionList(itemsShow, true);
             return itemsShow;
         }
-
-        // const items: vscode.CompletionItem[] =[
-        //     {
-        //         label: 'Log("message")',
-        //         kind: vscode.CompletionItemKind.Snippet, 
-        //         detail: 'Logs a message to the console.',
-        //         textEdit: new vscode.TextEdit(new vscode.Range(position.with(undefined, position.character), position), 'Log("${1:message}")')
-        //     }
-        // ];
+        //return new vscode.CompletionList([], true);
         return [];
     }
 }

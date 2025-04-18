@@ -24,7 +24,7 @@
         ["\"", "\""]
     ],
     "indentationRules": {
-        "increaseIndentPattern": "(?i)(^\\s*\\b((Class|Else|For|Select|Case|Property|Sub|Function|With)|(Else)?If\\b.*\\bThen)\\b.*$",
-        "decreaseIndentPattern": "^(?i)\\s*\\b(End\\s\\b(Class|If|Select|Property|Sub|Function|With)\\b|Else(If)?|Case|Next|Loop|WEnd)\\b"
+        "increaseIndentPattern": "^\\s*([Pp]ublic |[Pp]rivate )?\\b(([Ee]lse|[Tt]ry|[Cc]atch|[Ff]or|[Ss]elect|[Cc]ase|[Ss]ub|[Ww]ith)|([Ee]lse )?[Ii]f\\b.*\\b[Tt]hen)\\b.*$",
+        "decreaseIndentPattern": "^\\s*\\b([Ee]nd\\s\\b([Ii]f|[Ss]elect|[Tt]ry|[Ss]ub|[Ww]ith)\\b|[Ee]lse( [Ii]f)?|[Cc]ase|[Nn]ext|[Ll]oop)\\b"
     }
 }
