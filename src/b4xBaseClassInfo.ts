@@ -114,9 +114,54 @@ export const B4X_SYSTEMKEYWORD_COMPLETION: vscode.CompletionItem[] = [
 export const B4X_SYSTEMVARIABLE_COMPLETION: vscode.CompletionItem[] = [
      {// DateTime
         label: "DateTime",
-        kind: vscode.CompletionItemKind.Variable,
+        kind: vscode.CompletionItemKind.Interface,
         detail: "DateTime As DateTime",
         documentation: "Date and time related methods."
+    },
+    {// CRLF
+        label: "CRLF",
+        kind: vscode.CompletionItemKind.Value,
+        detail: "CRLF As String",
+        documentation: "New line character. The value of Chr(10)."
+    },
+    {// TAB
+        label: "TAB",
+        kind: vscode.CompletionItemKind.Value,
+        detail: "Tab As String",
+        documentation: "Tab character."
+    },
+    {// QUOTE
+        label: "QUOTE",
+        kind: vscode.CompletionItemKind.Value,
+        detail: "QUOTE As String",
+        documentation: "Quote character. The value of Chr(34)."
+    },
+    {// True
+        label: "True",
+        kind: vscode.CompletionItemKind.Value,
+        detail: "True As Boolean"
+    },
+    {// False
+        label: "False",
+        kind: vscode.CompletionItemKind.Value,
+        detail: "False As Boolean"
+    },
+    {// Null
+        label: "Null",
+        kind: vscode.CompletionItemKind.Value,
+        detail: "Null As Object"
+    },
+    {// cPI
+        label: "cPI",
+        kind: vscode.CompletionItemKind.Value,
+        detail: "cPI As Double",
+        documentation: "PI constant."
+    },
+    {// cE
+        label: "cE",
+        kind: vscode.CompletionItemKind.Value,
+        detail: "cE As Double",
+        documentation: "e (natural logarithm base) constant."
     }
 ]
 

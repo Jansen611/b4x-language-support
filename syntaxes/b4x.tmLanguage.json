@@ -32,6 +32,10 @@
 					"match": "(?i)\\b(Mod|And|Not|Or|Xor|as|Is|Eqv)\\b"				
 				},
 				{
+					"name": "storage.type",
+					"match": "(?i)\\b(Crlf|Datetime|Tab|Quote|cPi|cE|Keycodes|Density|Colors|Gravity|File|Application|Bit|Typeface|DialogResponse|Regex|Random)\\b"				
+				},
+				{
 					"name": "markup.inserted.b4x",
 					"match": "(?i)#(end if|end region)\\b"
 				},
@@ -44,8 +48,12 @@
 					"match": "(?i)\\b\\.(\\w+)\\b"
 				}, 
 				{
-					"name": "storage.type",
-					"match": "(?i)\\b(dim|private|const|public|sub|end sub)\\b"
+					"name": "keyword.control.b4x",
+					"match": "(?i)\\b(private sub|public sub|end sub)\\b"
+				},
+				{
+					"name": "keyword.control.b4x",
+					"match": "(?i)\\b(dim|private|const|public|sub)\\b"
 				}]
 		},
 		"strings": {
