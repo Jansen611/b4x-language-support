@@ -114,7 +114,7 @@ export const B4X_SYSTEMKEYWORD_COMPLETION: vscode.CompletionItem[] = [
 export const B4X_SYSTEMVARIABLE_COMPLETION: vscode.CompletionItem[] = [
      {// DateTime
         label: "DateTime",
-        kind: vscode.CompletionItemKind.Interface,
+        kind: vscode.CompletionItemKind.Struct,
         detail: "DateTime As DateTime",
         documentation: "Date and time related methods."
     },

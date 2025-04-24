@@ -48,11 +48,11 @@
 					"match": "(?i)\\b\\.(\\w+)\\b"
 				}, 
 				{
-					"name": "keyword.control.b4x",
+					"name": "storage.type",
 					"match": "(?i)\\b(private sub|public sub|end sub)\\b"
 				},
 				{
-					"name": "keyword.control.b4x",
+					"name": "storage.type",
 					"match": "(?i)\\b(dim|private|const|public|sub)\\b"
 				}]
 		},
