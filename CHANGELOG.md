@@ -4,6 +4,14 @@ All notable changes to the "b4x-language-support" extension will be documented i
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [0.1.6] - More keywords support and bug fixes
+- **Enhancements**:
+  - Added more keywords support including "DateTime", "Bit", "Regex"
+  - Added TypeName and Member lookup for additional B4X base class: "Matcher"
+- **Bug fixes**:
+  - Fixed issue where auto indent rule not working
+  - Fixed colour highlight for some b4x keywords.
+
 ## [0.1.5] - More keywords support and Cursor compatibility
 - **Enhancements**:
   - Added more keywords support including #if, #else #region etc
