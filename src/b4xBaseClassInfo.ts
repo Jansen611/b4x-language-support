@@ -118,6 +118,19 @@ export const B4X_SYSTEMVARIABLE_COMPLETION: vscode.CompletionItem[] = [
         detail: "DateTime As DateTime",
         documentation: "Date and time related methods."
     },
+    {// Bit
+        label: "Bit",
+        kind: vscode.CompletionItemKind.Struct,
+        detail: "Bit As Bit",
+        documentation: "Bit is a predefined object containing bitwise related methods."
+    },
+    {// Regex
+        label: "Regex",
+        kind: vscode.CompletionItemKind.Struct,
+        detail: "Regex As Regex",
+        documentation: "Regex is a predefined object that contains regular expressions methods. \n" +
+                       "*All methods receive a 'pattern' string. This is the regular expression pattern."
+    },
     {// CRLF
         label: "CRLF",
         kind: vscode.CompletionItemKind.Value,
@@ -165,7 +178,8 @@ export const B4X_SYSTEMVARIABLE_COMPLETION: vscode.CompletionItem[] = [
     }
 ]
 
-export const B4X_SYSTEMCLASS_NAME: Set<string> = new Set(['list', 'map', 'timer', 'string', 'intent', 'activity', 'datetime'])
+export const B4X_SYSTEMCLASS_NAME: Set<string> = new Set(['list', 'map', 'timer', 'string', 'intent', 'activity',  
+                                                          'datetime', 'bit', 'regex', 'matcher'])
 
 export const B4X_SYSTEMCLASS_TYPE_COMPLETION: vscode.CompletionItem[] = [
     { // Char
@@ -251,6 +265,13 @@ export const B4X_SYSTEMCLASS_TYPE_COMPLETION: vscode.CompletionItem[] = [
                        "The KeyPress and KeyUp events occur when the user presses or releases a key, assuming that no other view has consumed this event (like EditText).\n" +
                        "When handling the KeyPress or KeyUp event you should return a boolean value which tells whether the event was consumed."
     },
+    { // Matcher
+        label: "Matcher",
+        kind: vscode.CompletionItemKind.Class,
+        detail: "Matcher",
+        documentation: "A Matcher object is used to search for a pattern in a string. \n" +
+	                   "Regex.Matcher returns a matcher object for a specific pattern and specific text."
+    },
 ]
 
 export const B4X_BASECLASS_MEMBER_DECLARATION: Record<string, string> ={
@@ -313,7 +334,7 @@ export const B4X_BASECLASS_MEMBER_DECLARATION: Record<string, string> ={
     "string.tolowercase": "ToLowerCase() As String",
     "string.contains": "Contains(searchFor As String) As Boolean",
     "string.touppercase": "ToUpperCase() As String",
-    "string.getbytes": "GetBytes(charset As String) As Byte[]",
+    "string.getbytes": "GetBytes(charset As String) As Byte()",
 
     // Intent Object
     "intent.initialize": "Initialize(action As String, uri As String)",
@@ -379,7 +400,49 @@ export const B4X_BASECLASS_MEMBER_DECLARATION: Record<string, string> ={
     "datetime.ticksperday": "TicksPerDay As Long",
     "datetime.ticksperhour": "TicksPerHour As Long",
     "datetime.ticksperminute": "TicksPerMinute As Long",
-    "datetime.tickspersecond": "TicksPerSecond As Long"
+    "datetime.tickspersecond": "TicksPerSecond As Long",
+
+    //Bit Object
+    "bit.and": "And(n1 As Int, n2 As Int) As Int",
+    "bit.andlong": "AndLong(n1 As Long, n2 As Long) As Long",
+    "bit.or": "Or(n1 As Int, n2 As Int) As Int",
+    "bit.orlong": "OrLong(n1 As Long, n2 As Long) As Long",
+    "bit.xor": "Xor(n1 As Int, n2 As Int) As Int",
+    "bit.xorlong": "XorLong(n1 As Long, n2 As Long) As Long",
+    "bit.not": "Not(n As Int) As Int",
+    "bit.notlong": "NotLong(n As Long) As Long",
+    "bit.shiftleft": "ShiftLeft(n As Int, shift As Int) As Int",
+    "bit.shiftleftlong": "ShiftLeftLong(n As Long, shift As Int) As Long",
+    "bit.shiftright": "ShiftRight(n As Int, shift As Int) As Int",
+    "bit.shiftrightlong": "ShiftRightLong(n As Long, shift As Int) As Long",
+    "bit.unsignedshiftright": "UnsignedShiftRight(n As Int, shift As Int) As Int",
+    "bit.unsignedshiftrightlong": "UnsignedShiftRightLong(n As Long, shift As Int) As Long",
+    "bit.tobinarystring": "ToBinaryString(n As Int) As String",
+    "bit.tooctalstring": "ToOctalString(n As Int) As String",
+    "bit.tohexstring": "ToHexString(n As Int) As String",
+    "bit.tohexstringlong": "ToHexStringLong(n As Long) As String",
+    "bit.parseint": "ParseInt(value As String, radix As Int) As Int",
+    "bit.parselong": "ParseLong(value As String, radix As Int) As Long",
+    "bit.inputstreamtobytes": "InputStreamToBytes(in As InputStream) As Byte()",
+    "bit.arraycopy": "ArrayCopy(srcArray As Object, srcOffset As Int, destArray As Object, destOffset As Int, count As Int)",
+
+    //Regex Object
+    "regex.ismatch": "IsMatch(pattern As String, text As String) As Boolean",
+    "regex.ismatch2": "IsMatch2(pattern As String, options As Int, text As String) As Boolean",
+    "regex.replace": "Replace(pattern As String, text As String, template As String) As String",
+    "regex.replace2": "Replace2(pattern As String, options As Int, text As String, template As String) As String",
+    "regex.split": "Split(pattern As String, text As String) As String()",
+    "regex.split2": "Split2(pattern As String, options As Int, text As String) As String()",
+    "regex.matcher": "Matcher(pattern As String, text As String) As Matcher",
+    "regex.matcher2": "Matcher2(pattern As String, options As Int, text As String) As Matcher",
+    
+    //Matcher Object
+    "matcher.find": "Find() As Boolean",
+    "matcher.group": "Group(index As Int) As String",
+    "matcher.groupcount": "GroupCount As Int",
+    "matcher.match": "Match As String",
+    "matcher.getstart": "GetStart(index As Int) As Int",
+    "matcher.getend": "GetEnd(index As Int) As Int"
 }
 
 export const B4X_BASECLASS_MEMBER_COMPLETION: Record<string, vscode.CompletionItem[]> = {
@@ -1352,6 +1415,297 @@ export const B4X_BASECLASS_MEMBER_COMPLETION: Record<string, vscode.CompletionIt
         detail: B4X_BASECLASS_MEMBER_DECLARATION['datetime.ticksperday'],
         documentation: "Returns one day worth of ticks count"
       },
-  ]
+    ],
+    "bit": [
+        { // And
+            label: "And",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['bit.and'],
+            documentation: "Returns the bitwise AND of the two values.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // AndLong
+            label: "AndLong",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['bit.andlong'],
+            documentation: "Returns the bitwise AND of the two values.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // Or
+            label: "Or",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['bit.or'],
+            documentation: "Returns the bitwise OR of the two values.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // OrLong
+            label: "OrLong",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['bit.orlong'],
+            documentation: "Returns the bitwise OR of the two values.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // Xor
+            label: "Xor",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['bit.xor'],
+            documentation: "Returns the bitwise XOR of the two values.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // XorLong
+            label: "XorLong",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['bit.xorlong'],
+            documentation: "Returns the bitwise XOR of the two values.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // Not
+            label: "Not",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['bit.not'],
+            documentation: "Returns the bitwise complement of the given value.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // NotLong
+            label: "NotLong",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['bit.notlong'],
+            documentation: "Returns the bitwise complement of the given value.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // ShiftLeft
+            label: "ShiftLeft",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['bit.shiftleft'],
+            documentation: "Shifts N left.\nShift - Number of positions to shift.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // ShiftLeftLong
+            label: "ShiftLeftLong",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['bit.shiftleftlong'],
+            documentation: "Shifts N left.\nShift - Number of positions to shift.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // ShiftRight
+            label: "ShiftRight",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['bit.shiftright'],
+            documentation: "Shifts N right.\nKeeps the original value sign\nShift - Number of positions to shift.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // ShiftRightLong
+            label: "ShiftRightLong",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['bit.shiftrightlong'],
+            documentation: "Shifts N right.\nKeeps the original value sign\nShift - Number of positions to shift.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // UnsignedShiftRight
+            label: "UnsignedShiftRight",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['bit.unsignedshiftright'],
+            documentation: "Shifts N right.\nShifts zeroes in the leftmost positions.\nShift - Number of positions to shift.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // UnsignedShiftRightLong
+            label: "UnsignedShiftRightLong",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['bit.unsignedshiftrightlong'],
+            documentation: "Shifts N right.\nShifts zeroes in the leftmost positions.\nShift - Number of positions to shift.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // ToBinaryString
+            label: "ToBinaryString",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['bit.tobinarystring'],
+            documentation: "Returns a string representation of N in base 2.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // ToOctalString
+            label: "ToOctalString",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['bit.tooctalstring'],
+            documentation: "Returns a string representation of N in base 8.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // ToHexString
+            label: "ToHexString",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['bit.tohexstring'],
+            documentation: "Returns a string representation of N in base 16.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // ToHexStringLong
+            label: "ToHexStringLong",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['bit.tohexstringlong'],
+            documentation: "Returns a string representation of N in base 16.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // ParseInt
+            label: "ParseInt",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['bit.parseint'],
+            documentation: "Parses Value as an integer using the specified radix.\nRadix - Should be between 2 to 36.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // ParseLong
+            label: "ParseLong",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['bit.parselong'],
+            documentation: "Parses Value as a long using the specified radix.\nRadix - Should be between 2 to 36.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // InputStreamToBytes
+            label: "InputStreamToBytes",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['bit.inputstreamtobytes'],
+            documentation: "Reads the data from the input stream and writes it into an array of bytes.\nThe input stream is automatically closed at the end.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // ArrayCopy
+            label: "ArrayCopy",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['bit.arraycopy'],
+            documentation: "Copies elements from SrcArray to DestArray.\nSrcArray - Source array.\nSrcOffset - Index of first element in the source array.\nDestArray - Destination array.\nDestOffset - Index of the first element in the destination array.\nCount - Number of elements to copy.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        }
+    ],
+    "regex": [
+        { // IsMatch
+            label: "IsMatch",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['regex.ismatch'],
+            documentation: "Tests whether the given text is a match for the given pattern.\nThe whole text should match the pattern.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // IsMatch2
+            label: "IsMatch2",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['regex.ismatch2'],
+            documentation: "Tests whether the given text is a match for the given pattern.\nOptions - One or more pattern options. These options can be combined with Bit.Or.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // Replace
+            label: "Replace",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['regex.replace'],
+            documentation: "Replaces all the matches in the text based on the specified pattern and template.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // Replace2
+            label: "Replace2",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['regex.replace2'],
+            documentation: "Similar to Replace. Allows setting the regex options.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // Split
+            label: "Split",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['regex.split'],
+            documentation: "Splits the given text around matches of the pattern.\nNote that trailing empty matches will be removed.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // Split2
+            label: "Split2",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['regex.split2'],
+            documentation: "Same as Split with the additional pattern options.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // Matcher
+            label: "Matcher",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['regex.matcher'],
+            documentation: "Returns a Matcher object which can be used to find matches of the given pattern in the text.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // Matcher2
+            label: "Matcher2",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['regex.matcher2'],
+            documentation: "Same as Matcher with the additional pattern options.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        }
+    ],
+    "matcher": [
+        { // Find
+            label: "Find",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['matcher.find'],
+            documentation: "Searches for the next substring that matches the pattern.\nReturns True if such a match was found.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // Group
+            label: "Group",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['matcher.group'],
+            documentation: "Returns the value of the specified captured group.\nGroup(0) returns the whole match.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // getGroupCount
+            label: "GroupCount",
+            kind: vscode.CompletionItemKind.Property,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['matcher.getgroupcount'],
+            documentation: "Returns the number of capturing groups in the pattern.\nNote that the number returned does not include group(0) which is the whole match.",
+        },
+        { // getMatch
+            label: "Match",
+            kind: vscode.CompletionItemKind.Property,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['matcher.getmatch'],
+            documentation: "Returns the matched value. This is the same as calling Group(0).",
+        },
+        { // GetStart
+            label: "GetStart",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['matcher.getstart'],
+            documentation: "Returns the start offset of the specified captured group.\nUse GetStart(0) to get the start offset of the whole match.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        },
+        { // GetEnd
+            label: "GetEnd",
+            kind: vscode.CompletionItemKind.Method,
+            detail: B4X_BASECLASS_MEMBER_DECLARATION['matcher.getend'],
+            documentation: "Returns the end offset of the specified captured group.\nUse GetEnd(0) to get the end offset of the whole match.",
+            commitCharacters: ['('],
+            command: SignatureTriggerCommand
+        }
+    ]
+
     // Other B4X Base Classes...
 };
