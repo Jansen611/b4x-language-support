@@ -247,26 +247,5 @@
             "End Sub"
 		],
 		"description": "Create a public bool property"
-	},
-
-	"Create A If Statement With Else": {
-		"prefix": "if else",
-		"body": [
-			"If $1 Then",
-			"\t$2",
-			"Else",
-			"\t$3",
-            "End If"
-		],
-		"description": "Create a if-statment with else"
-	},
-	"Create A If Statement Without Else": {
-		"prefix": "if",
-		"body": [
-			"If $1 Then",
-			"\t$2",
-            "End If"
-		],
-		"description": "Create a if-statment without else"
 	}
 }
