@@ -1,6 +1,5 @@
 node_modules
 out
 reference
-*.vsix
 .DS_Store
 vsc-extension-quickstart.md
