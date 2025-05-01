@@ -26,13 +26,28 @@ export const B4X_SYSTEMKEYWORD_COMPLETION: vscode.CompletionItem[] = [
         kind: vscode.CompletionItemKind.Keyword,
         detail: "End Sub"
     },
+    { // Const
+        label: "Const",
+        kind: vscode.CompletionItemKind.Keyword,
+        detail: "Const"
+    },
     { // Public
         label: "Public",
         kind: vscode.CompletionItemKind.Keyword,
         detail: "Public"
     },
+    { // Public Sub
+        label: "Public Sub",
+        kind: vscode.CompletionItemKind.Keyword,
+        detail: "Public Sub"
+    },
     { // Private
         label: "Private",
+        kind: vscode.CompletionItemKind.Keyword,
+        detail: "Private"
+    },
+    { // Private Sub
+        label: "Private Sub",
         kind: vscode.CompletionItemKind.Keyword,
         detail: "Private"
     },
@@ -64,6 +79,21 @@ export const B4X_SYSTEMKEYWORD_COMPLETION: vscode.CompletionItem[] = [
         label: "Next",
         kind: vscode.CompletionItemKind.Keyword,
         detail: "Next"
+    },
+    { // Select
+        label: "Select",
+        kind: vscode.CompletionItemKind.Keyword,
+        detail: "Select"
+    },
+    { // Case
+        label: "Case",
+        kind: vscode.CompletionItemKind.Keyword,
+        detail: "Case"
+    },
+    { // End Select
+        label: "End Select",
+        kind: vscode.CompletionItemKind.Keyword,
+        detail: "End Select"
     },
     { // Try
         label: "Try",

@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import * as b4xDefinitionProvider from './b4xDefinitionProvider';
+import * as b4xDocumentEvent from './b4xDocumentEvent'
 import { b4xHoverProvider } from './b4xHoverProvider';
 import { b4xReferenceProvider } from './b4xReferenceProvider';
 import { B4XCompletionItemProvider as b4xCompletionItemProvider } from './b4xCompletionItemProvider';
@@ -29,34 +30,8 @@ export function activate(context: vscode.ExtensionContext)
     const signatureHelpProvider = new b4xSignatureHelpProvider();
     context.subscriptions.push(vscode.languages.registerSignatureHelpProvider('b4x', signatureHelpProvider,'(', ','));
 
-    // register auto-closing for Sub/If statements
-    context.subscriptions.push(
-        vscode.workspace.onDidChangeTextDocument((event) => {
-            if (event.contentChanges.length === 0) return;
-
-            const change = event.contentChanges[0];
-            if (change.text.match('\n'))
-            {
-                const editor = vscode.window.activeTextEditor;
-                if (!editor || editor.document.languageId !== 'b4x') return;
-    
-                const line = editor.document.lineAt(change.range.start.line);
-                const lineText = line.text.trim();
-    
-                // Check if the line ends with Sub or If
-                if (lineText.match("^\\s*(Public |Private )?\\b((Try|For|Select|Sub)|If|If\\b.*\\bThen)\\b.*$")) {
-                    //const closingStatement = lineText.endsWith('Sub') ? 'End Sub' : 'End If';
-                    const closingStatement = 'End If';
-                    
-                    editor.edit((editBuilder) => {
-                        const nextLine = line.lineNumber + 2;
-                        const nextLinePos = new vscode.Position(nextLine, 0);
-                        editBuilder.insert(nextLinePos, `\t${closingStatement}\n`);
-                    });
-                }
-            }
-        })
-    );
+    // register auto-closing for keyword statements
+    context.subscriptions.push(vscode.workspace.onDidChangeTextDocument((xEvent) => {b4xDocumentEvent.onTextChange(xEvent)}));
 }
 
 export function deactivate() 

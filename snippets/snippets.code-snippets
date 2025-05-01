@@ -1,6 +1,6 @@
 {
-	"Create A Quick Subroutine": {
-		"prefix": "sub",
+	"Subroutine": {
+		"prefix": "Sub",
 		"body": [
 			"Sub $1($2)",
 			"\t$3",
@@ -8,8 +8,8 @@
 		],
 		"description": "Create a quick subroutine"
 	},
-	"Create A Private Subroutine": {
-		"prefix": "private sub",
+	"Private Subroutine": {
+		"prefix": "Private Sub",
 		"body": [
 			"Private Sub $1($2)",
 			"\t$3",
@@ -17,8 +17,8 @@
 		],
 		"description": "Create a private subroutine"
 	},
-	"Create A Public Subroutine": {
-		"prefix": "public sub",
+	"Public Subroutine": {
+		"prefix": "Public Sub",
 		"body": [
 			"Public Sub $1($2)",
 			"\t$3",
@@ -27,8 +27,8 @@
 		"description": "Create a public subroutine"
 	},
 
-	"Create A Quick Function": {
-		"prefix": "function",
+	"Function": {
+		"prefix": "Function",
 		"body": [
 			"Sub $1($2) As $3",
 			"\t$4",
@@ -36,8 +36,8 @@
 		],
 		"description": "Create a function"
 	},
-	"Create A Private Function": {
-		"prefix": "private function",
+	"Private Function": {
+		"prefix": "Private Function",
 		"body": [
 			"Private Sub $1($2) As $3",
 			"\t$4",
@@ -45,8 +45,8 @@
 		],
 		"description": "Create a private function"
 	},
-	"Create A Public Function": {
-		"prefix": "public function",
+	"Public Function": {
+		"prefix": "Public Function",
 		"body": [
 			"Public Sub $1($2) As $3",
 			"\t$4",
@@ -55,8 +55,8 @@
 		"description": "Create a public function"
 	},
 
-	"Create A Private Object Property": {
-		"prefix": "private object property",
+	"Private Object Property": {
+		"prefix": "Private Object Property",
 		"body": [
 			"Private Sub get$1 As $2",
 			"\tDim mObject As $2 : mObject.initialize",
@@ -73,8 +73,8 @@
 		],
 		"description": "Create a private object property"
 	},
-	"Create A Public Object Property": {
-		"prefix": "public object property",
+	"Public Object Property": {
+		"prefix": "Public Object Property",
 		"body": [
 			"Public Sub get$1 As $2",
 			"\tDim mObject As $2 : mObject.initialize",
@@ -92,8 +92,8 @@
 		"description": "Create a public object property"
 	},
 
-	"Create A Private List Property": {
-		"prefix": "private list property",
+	"Private List Property": {
+		"prefix": "Private List Property",
 		"body": [
 			"Private Sub get$1 As List",
 			"\tDim EmptyList As List : EmptyList.initialize",
@@ -108,8 +108,8 @@
 		],
 		"description": "Create a private list property"
 	},
-	"Create A Public List Property": {
-		"prefix": "public list property",
+	"Public List Property": {
+		"prefix": "Public List Property",
 		"body": [
 			"Public Sub get$1 As List",
 			"\tDim EmptyList As List : EmptyList.initialize",
@@ -126,7 +126,7 @@
 	},
 
 	"Create A Private String Property": {
-		"prefix": "private string property",
+		"prefix": "Private String Property",
 		"body": [
 			"Private Sub get$1 As String",
 			"\tIf Not(fProperties.ContainsKey(\"$1\")) Then",
@@ -140,8 +140,8 @@
 		],
 		"description": "Create a private string property"
 	},
-	"Create A Public String Property": {
-		"prefix": "public string property",
+	"Public String Property": {
+		"prefix": "Public String Property",
 		"body": [
 			"Public Sub get$1 As String",
 			"\tIf Not(fProperties.ContainsKey(\"$1\")) Then",
@@ -156,8 +156,8 @@
 		"description": "Create a public string property"
 	},
 
-	"Create A Private Integer Property": {
-		"prefix": "private int property",
+	"Private Integer Property": {
+		"prefix": "Private Int Property",
 		"body": [
 			"Private Sub get$1 As Int",
 			"\tIf Not(fProperties.ContainsKey(\"$1\")) Then",
@@ -171,8 +171,8 @@
 		],
 		"description": "Create a private int property"
 	},
-	"Create A Public Integer Property": {
-		"prefix": "public int property",
+	"Public Integer Property": {
+		"prefix": "Public Int Property",
 		"body": [
 			"Public Sub get$1 As Int",
 			"\tIf Not(fProperties.ContainsKey(\"$1\")) Then",
@@ -187,8 +187,8 @@
 		"description": "Create a public int property"
 	},
 
-	"Create A Private Double Property": {
-		"prefix": "private double property",
+	"Private Double Property": {
+		"prefix": "Private Double Property",
 		"body": [
 			"Private Sub get$1 As Double",
 			"\tIf Not(fProperties.ContainsKey(\"$1\")) Then",
@@ -202,8 +202,8 @@
 		],
 		"description": "Create a private double property"
 	},
-	"Create A Public Double Property": {
-		"prefix": "public double property",
+	"Public Double Property": {
+		"prefix": "Public Double Property",
 		"body": [
 			"Public Sub get$1 As Double",
 			"\tIf Not(fProperties.ContainsKey(\"$1\")) Then",
@@ -218,8 +218,8 @@
 		"description": "Create a public double property"
 	},
 
-	"Create A Private Boolean Property": {
-		"prefix": "private bool property",
+	"Private Boolean Property": {
+		"prefix": "Private Bool Property",
 		"body": [
 			"Private Sub get$1 As Boolean",
 			"\tIf Not(fProperties.ContainsKey(\"$1\")) Then",
@@ -233,8 +233,8 @@
 		],
 		"description": "Create a private bool property"
 	},
-	"Create A Public Boolean Property": {
-		"prefix": "public bool property",
+	"Public Boolean Property": {
+		"prefix": "Public Bool Property",
 		"body": [
 			"Public Sub get$1 As Boolean",
 			"\tIf Not(fProperties.ContainsKey(\"$1\")) Then",
@@ -247,5 +247,25 @@
             "End Sub"
 		],
 		"description": "Create a public bool property"
+	},
+	"If Statement With Else": {
+		"prefix": "If Else",
+		"body": [
+			"If $1 Then",
+			"\t$2",
+			"Else",
+			"\t$3",
+            "End If"
+		],
+		"description": "Create a if-statment with else"
+	},
+	"If Statement Without Else": {
+		"prefix": "If",
+		"body": [
+			"If $1 Then",
+			"\t$2",
+            "End If"
+		],
+		"description": "Create a if-statment without else"
 	}
 }

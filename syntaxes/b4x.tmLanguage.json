@@ -25,7 +25,7 @@
 				},
 				{
 					"name":  "keyword.control.b4x",
-					"match": "(?i)\\b(if|then|else|elseif|while|loop|for|next|to|return|exit|try|catch)\\b"
+					"match": "(?i)\\b(if|then|else|elseif|while|loop|for|next|to|return|exit|try|catch|in)\\b"
 				},
 				{
 					"name": "keyword.other.b4x",
