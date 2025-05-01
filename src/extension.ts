@@ -5,6 +5,7 @@ import { b4xHoverProvider } from './b4xHoverProvider';
 import { b4xReferenceProvider } from './b4xReferenceProvider';
 import { B4XCompletionItemProvider as b4xCompletionItemProvider } from './b4xCompletionItemProvider';
 import { b4xSignatureHelpProvider } from './b4xSignatureHelpProvider';
+import { b4xFoldingRangeProvider } from './b4xFoldingRangeProvider';
 
 export function activate(context: vscode.ExtensionContext) 
 {
@@ -31,7 +32,8 @@ export function activate(context: vscode.ExtensionContext)
     context.subscriptions.push(vscode.languages.registerSignatureHelpProvider('b4x', signatureHelpProvider,'(', ','));
 
     // register folding ranger provider
-    context.subscriptions.push(vscode.languages.registerFoldingRangeProvider('b4x', ))
+    const foldingRangeProvider = new b4xFoldingRangeProvider();
+    context.subscriptions.push(vscode.languages.registerFoldingRangeProvider('b4x', foldingRangeProvider))
 
     // register auto-closing for keyword statements
     context.subscriptions.push(vscode.workspace.onDidChangeTextDocument((xEvent) => {b4xDocumentEvent.onTextChange(xEvent)}));
