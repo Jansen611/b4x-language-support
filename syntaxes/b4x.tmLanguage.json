@@ -17,7 +17,7 @@
 			"patterns": [
 				{
 					"name": "comment.line",
-					"match": "(?i)'([\\s\\S]+?)[\\n|\\r]"
+					"match": "(?i)'([\\s\\S].*)"
 				},
 				{
 					"name":  "keyword.control.b4x",

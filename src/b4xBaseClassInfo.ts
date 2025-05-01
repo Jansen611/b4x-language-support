@@ -80,8 +80,8 @@ export const B4X_SYSTEMKEYWORD_COMPLETION: vscode.CompletionItem[] = [
         kind: vscode.CompletionItemKind.Keyword,
         detail: "Next"
     },
-    { // Select
-        label: "Select",
+    { // Select Case
+        label: "Select Case",
         kind: vscode.CompletionItemKind.Keyword,
         detail: "Select"
     },

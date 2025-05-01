@@ -28,7 +28,7 @@ export function onTextChange(textChangeEvent: vscode.TextDocumentChangeEvent)
         const lineText = line.text.trim();
 
         // Check if the line matching keyword statements
-        if (lineText.match("^\\s*([Pp]ublic |[Pp]rivate )?\\b([Tt]ry|[Ff]or|[Ss]elect|[Ss]ub|[Ii]f|[Ii]f\\b.*\\b[Tt]hen)\\b.*$")) {
+        if (lineText.match("^\\s*([Pp]ublic |[Pp]rivate )?\\b([Tt]ry|[Ff]or|[Ss]elect|[Ss]ub|[Ii]f)\\b.*$")) {
             //const closingStatement = lineText.endsWith('Sub') ? 'End Sub' : 'End If';
             let closingStatement = '';
             let originalLineText = line.text;
@@ -50,6 +50,15 @@ export function onTextChange(textChangeEvent: vscode.TextDocumentChangeEvent)
                 originalLineText = originalLineText.replace(new RegExp('\\bEach\\b','i'), 'Each')
                 originalLineText = originalLineText.replace(new RegExp('\\bIn\\b','i'), 'In')
                 closingStatement = 'Next'
+            } else if (lineText.match("^\\s*\\b([Ss]elect [Cc]ase)\\b.*$"))
+            {
+                originalLineText = originalLineText.replace(new RegExp('\\bSelect\\b','i'), 'Select')
+                originalLineText = originalLineText.replace(new RegExp('\\bCase\\b','i'), 'Case')
+                closingStatement = 'End Select'
+            } else if (lineText.match("^\\s*\\b([Tt]ry)\\b.*$"))
+            {
+                originalLineText = originalLineText.replace(new RegExp('\\bTry\\b','i'), 'Try')
+                closingStatement = `Catch\n${leadingWhiteSpace}\tLog(LastException)\n${leadingWhiteSpace}End Try`
             }
 
             if (closingStatement)
