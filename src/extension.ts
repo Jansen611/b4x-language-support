@@ -30,6 +30,9 @@ export function activate(context: vscode.ExtensionContext)
     const signatureHelpProvider = new b4xSignatureHelpProvider();
     context.subscriptions.push(vscode.languages.registerSignatureHelpProvider('b4x', signatureHelpProvider,'(', ','));
 
+    // register folding ranger provider
+    context.subscriptions.push(vscode.languages.registerFoldingRangeProvider('b4x', ))
+
     // register auto-closing for keyword statements
     context.subscriptions.push(vscode.workspace.onDidChangeTextDocument((xEvent) => {b4xDocumentEvent.onTextChange(xEvent)}));
 }
