@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import * as docMethods from './documentMethods';
 import * as comRegExp from './comRegExp';
+import * as b4xStructure from './b4xStructure';
 import { B4X_SYSTEMVARIABLE_COMPLETION } from './b4xBaseClassInfo';
 
 export class b4xDefinitionProvider implements vscode.DefinitionProvider 
@@ -14,7 +15,7 @@ export class b4xDefinitionProvider implements vscode.DefinitionProvider
 
         if (word) 
         {
-            const definitionInfo: KeywordInfo = findDefinitionPosition(document, word, lineNo);
+            const definitionInfo: b4xStructure.KeywordInfo = findDefinitionPosition(document, word, lineNo);
             const definitionPosition: vscode.Position | undefined = definitionInfo.DefinitionPos;
 
             if (definitionPosition) 
@@ -33,27 +34,12 @@ export class b4xDefinitionProvider implements vscode.DefinitionProvider
     }
 }
 
-export class KeywordInfo
+
+
+export function findDefinitionPosition(document: vscode.TextDocument, word: string, wordLineNo: number): b4xStructure.KeywordInfo
 {
-    KeywordName: string = '';
-    DefinitionPos: vscode.Position | undefined = undefined; 
-    Scope: KeywordScope = KeywordScope.Undefined;
-    Type: KeywordType = KeywordType.Undefined;
-    ClassName: string = '';
-    ModuleName: string = '';
-    ModuleType: ModuleType = ModuleType.Undefined;
-}
-
-export enum KeywordScope {Undefined = 0, Local = 1, Global = 2, CodeSpace = 3}
-
-export enum KeywordType {Undefined = 0, Parameter = 1, Variable = 2, Sub = 3}
-
-export enum ModuleType {Undefined = 0, Class = 1, StaticCode = 2, Service = 3}
-
-export function findDefinitionPosition(document: vscode.TextDocument, word: string, wordLineNo: number): KeywordInfo
-{
-    let wordType: KeywordScope = KeywordScope.Undefined;
-    let retWordInfo: KeywordInfo = {...new KeywordInfo(), KeywordName: word, ModuleName: document.fileName};
+    let wordType: b4xStructure.KeywordScope = b4xStructure.KeywordScope.Undefined;
+    let retWordInfo: b4xStructure.KeywordInfo = {...new b4xStructure.KeywordInfo(), KeywordName: word, ModuleName: document.fileName};
 
     // check whether the selected text is in comment
     const lineText: string = document.lineAt(wordLineNo).text.trim();
@@ -62,17 +48,17 @@ export function findDefinitionPosition(document: vscode.TextDocument, word: stri
     const idxBeforeWork: number = lineText.indexOf(word) - 1;
     
     // return undefined at the moment, but will need more implementation later
-    if (lineText.charAt(idxBeforeWork) == '.') {retWordInfo.Scope = KeywordScope.CodeSpace; return retWordInfo;}; 
+    if (lineText.charAt(idxBeforeWork) == '.') {retWordInfo.Scope = b4xStructure.KeywordScope.CodeSpace; return retWordInfo;}; 
 
     // finding the local definition
-    const respWordInfoLocal: KeywordInfo = findLocalVariableDefinitionPosition(document, word, wordLineNo);
+    const respWordInfoLocal: b4xStructure.KeywordInfo = findLocalVariableDefinitionPosition(document, word, wordLineNo);
 
     if (!respWordInfoLocal.DefinitionPos) 
     {
         // there is no local definition, time to search globally
         console.log(`Seaching for definition: ${word}`);
         // finding the global definition
-        const respWordInfoGlobal: KeywordInfo = findGlobalDefinitionPosition(document, word);
+        const respWordInfoGlobal: b4xStructure.KeywordInfo = findGlobalDefinitionPosition(document, word);
         if (!respWordInfoGlobal.DefinitionPos)
         {
             // finding the system definition
@@ -80,8 +66,8 @@ export function findDefinitionPosition(document: vscode.TextDocument, word: stri
             if (foundSystemVariable)
             {
                 retWordInfo.DefinitionPos = new vscode.Position(wordLineNo, lineText.indexOf(word));
-                retWordInfo.Scope = KeywordScope.CodeSpace;
-                retWordInfo.Type = KeywordType.Variable;
+                retWordInfo.Scope = b4xStructure.KeywordScope.CodeSpace;
+                retWordInfo.Type = b4xStructure.KeywordType.Variable;
                 const foundSystemVariableDeclaration: String = foundSystemVariable.detail || "";
                 const classNameMatch = foundSystemVariableDeclaration.match(comRegExp.VairableMatchPattern(word, 'i'));
                 if (classNameMatch && classNameMatch.length > 1) 
@@ -125,7 +111,7 @@ export function getDeclarationStringFromSearch(document: vscode.TextDocument, wo
 // find the Local Sub Boundary
 export function findLocalSubBoundary(document: vscode.TextDocument, 
                                      lineNo: number, 
-                                     givenWordInfo?: KeywordInfo): [number, number] 
+                                     givenWordInfo?: b4xStructure.KeywordInfo): [number, number] 
 {
     const subStartString: string = "Sub ".toLowerCase();
     const subEndString: string = "End Sub".toLowerCase();
@@ -151,8 +137,8 @@ export function findLocalSubBoundary(document: vscode.TextDocument,
             const isProcessGlobalFound: boolean = lowerCaseText.trim().includes("Sub Process_Globals".toLowerCase());
             if (isClassGlobalFound || isProcessGlobalFound)
             {
-                if (isClassGlobalFound && givenWordInfo) {givenWordInfo.ModuleType = ModuleType.Class;}
-                if (isProcessGlobalFound && givenWordInfo) {givenWordInfo.ModuleType = ModuleType.StaticCode;}
+                if (isClassGlobalFound && givenWordInfo) {givenWordInfo.ModuleType = b4xStructure.ModuleType.Class;}
+                if (isProcessGlobalFound && givenWordInfo) {givenWordInfo.ModuleType = b4xStructure.ModuleType.StaticCode;}
                 return retArray;
             }
             retArray[0] = line;
@@ -194,9 +180,9 @@ export function findLocalSubBoundary(document: vscode.TextDocument,
     return retArray;
 }
 
-function findLocalVariableDefinitionPosition(document: vscode.TextDocument, word: string, lineNo: number): KeywordInfo 
+function findLocalVariableDefinitionPosition(document: vscode.TextDocument, word: string, lineNo: number): b4xStructure.KeywordInfo 
 {
-    let retWordInfo: KeywordInfo = {...new KeywordInfo(), KeywordName: word, ModuleName: document.fileName};
+    let retWordInfo: b4xStructure.KeywordInfo = {...new b4xStructure.KeywordInfo(), KeywordName: word, ModuleName: document.fileName};
     // finding the local sub boundary
     const localSubBoundary: [number, number] = findLocalSubBoundary(document, lineNo, retWordInfo);
 
@@ -219,13 +205,13 @@ function findLocalVariableDefinitionPosition(document: vscode.TextDocument, word
         {
             // found the local variable, returning the position
             retWordInfo.DefinitionPos = new vscode.Position(line, lineText.indexOf(word));
-            retWordInfo.Scope = KeywordScope.Local;
+            retWordInfo.Scope = b4xStructure.KeywordScope.Local;
             if (lineText.match(comRegExp.DeclarationMatchPattern(word, 'i')))
             {
-                retWordInfo.Type = KeywordType.Variable;
+                retWordInfo.Type = b4xStructure.KeywordType.Variable;
             } else
             {
-                retWordInfo.Type = KeywordType.Parameter;
+                retWordInfo.Type = b4xStructure.KeywordType.Parameter;
             }
             if (variableMatchResult.length > 1) {retWordInfo.ClassName = variableMatchResult[1];}
             return retWordInfo
@@ -236,9 +222,9 @@ function findLocalVariableDefinitionPosition(document: vscode.TextDocument, word
     return retWordInfo;
 }
 
-function findGlobalDefinitionPosition(document: vscode.TextDocument, keyWord: string): KeywordInfo
+function findGlobalDefinitionPosition(document: vscode.TextDocument, keyWord: string): b4xStructure.KeywordInfo
 {   
-    let retWordInfo: KeywordInfo = {...new KeywordInfo(), KeywordName: keyWord, ModuleName: document.fileName};
+    let retWordInfo: b4xStructure.KeywordInfo = {...new b4xStructure.KeywordInfo(), KeywordName: keyWord, ModuleName: document.fileName};
     // loop through every line
     for (let line: number = 0; line < document.lineCount; line++) 
     {
@@ -247,12 +233,12 @@ function findGlobalDefinitionPosition(document: vscode.TextDocument, keyWord: st
         // cheching if this line is a comment line, if it is ignore
         if (lineText.trim().startsWith("'")) {continue;}
 
-        if (retWordInfo.ModuleType == ModuleType.Undefined)
+        if (retWordInfo.ModuleType == b4xStructure.ModuleType.Undefined)
         {
             const isClassGlobalFound: boolean = lowerCaseText.trim().includes("Sub Class_Globals".toLowerCase());
             const isProcessGlobalFound: boolean = lowerCaseText.trim().includes("Sub Process_Globals".toLowerCase());
-            if (isClassGlobalFound) {retWordInfo.ModuleType = ModuleType.Class;}
-            if (isProcessGlobalFound) {retWordInfo.ModuleType = ModuleType.StaticCode;}
+            if (isClassGlobalFound) {retWordInfo.ModuleType = b4xStructure.ModuleType.Class;}
+            if (isProcessGlobalFound) {retWordInfo.ModuleType = b4xStructure.ModuleType.StaticCode;}
         }
 
         // check whether including keyword
@@ -268,16 +254,16 @@ function findGlobalDefinitionPosition(document: vscode.TextDocument, keyWord: st
         {
             // return definition position
             retWordInfo.DefinitionPos = new vscode.Position(line, lineText.indexOf(keyWord));
-            retWordInfo.Scope = KeywordScope.Global;
-            if (functionMatchResult){retWordInfo.Type = KeywordType.Sub;}
+            retWordInfo.Scope = b4xStructure.KeywordScope.Global;
+            if (functionMatchResult){retWordInfo.Type = b4xStructure.KeywordType.Sub;}
             if (variableMatchResult)
             {
                 if (lineText.match(comRegExp.DeclarationMatchPattern(keyWord, 'i')))
                 {
-                    retWordInfo.Type = KeywordType.Variable;
+                    retWordInfo.Type = b4xStructure.KeywordType.Variable;
                 } else
                 {
-                    retWordInfo.Type = KeywordType.Parameter;
+                    retWordInfo.Type = b4xStructure.KeywordType.Parameter;
                 }
                 if (variableMatchResult.length > 1) {retWordInfo.ClassName = variableMatchResult[1];}
             }

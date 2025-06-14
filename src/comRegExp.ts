@@ -1,5 +1,17 @@
-export const EndOfWord:string = '\\b(?<=\\w)'
-export const StartOfWord:string = '\\b(?=\\w)'
+export const EndOfWord: string = '\\b(?<=\\w)';
+export const StartOfWord: string = '\\b(?=\\w)';
+
+export const StartOfStatment: string = '(?:^|\\r|\\n)\\s*(Public\\s+|Private\\s+)?\\b(Try|For|Select|Sub|If)\\b.*(?:$|\\r|\\n)';
+export const StartOfSub: string = '(?:^|\\r|\\n)\\s*(Public\\s+|Private\\s+)?\\bSub\\s+(\\w+)\\b.*(?:$|\\r|\\n)';
+export const EndOfSub: string = '(?:^|\\r|\\n)\\s*\\bEnd\\s+Sub\\b.*(?:$|\\r|\\n)';
+export const StartOfIf: string = '(?:^|\\r|\\n)\\s*\\bIf\\s+\\w+\\b.*\\bThen\\b.*(?:$|\\r|\\n)';
+export const EndOfIf: string = '(?:^|\\r|\\n)\\s*\\bEnd\\s+If\\b.*(?:$|\\r|\\n)';
+export const StartOfFor: string = '(?:^|\\r|\\n)\\s*\\b(For\\s+Each|For)\\s+\\w+\\b.*(?:$|\\r|\\n)';
+export const EndOfFor: string = '(?:^|\\r|\\n)\\s*\\bNext\\b.*(?:$|\\r|\\n)';
+export const StartOfSelect: string = '(?:^|\\r|\\n)\\s*\\b(Select Case)\\s+\\w+\\b.*(?:$|\\r|\\n)';
+export const EndOfSelect: string = '(?:^|\\r|\\n)\\s*\\bEnd\\s+Select\\b.*(?:$|\\r|\\n)';
+export const StartOfTry: string = '(?:^|\\r|\\n)\\s*\\b(Try)\\b.*(?:$|\\r|\\n)';
+export const EndOfTry: string = '(?:^|\\r|\\n)\\s*\\bEnd\\s+Try\\b.*(?:$|\\r|\\n)';
 
 export enum Flag
 {

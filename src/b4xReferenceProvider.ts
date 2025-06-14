@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import * as b4xStructure from './b4xStructure';
 import * as b4xDefinitionProvider from './b4xDefinitionProvider';
 
 export class b4xReferenceProvider implements vscode.ReferenceProvider
@@ -20,10 +21,10 @@ export class b4xReferenceProvider implements vscode.ReferenceProvider
             // check what type of keyword is it and act accordingly
             switch (definitionInfo.Scope)
             {
-                case b4xDefinitionProvider.KeywordScope.Local:
+                case b4xStructure.KeywordScope.Local:
                     // finding the local sub boundary
                     boundary = b4xDefinitionProvider.findLocalSubBoundary(document, position.line);
-                case b4xDefinitionProvider.KeywordScope.Global:
+                case b4xStructure.KeywordScope.Global:
                     // find the matching word in every single line within the same document
                     for (let line: number = boundary[0]; line < boundary[1]; line++) 
                     {
@@ -44,7 +45,7 @@ export class b4xReferenceProvider implements vscode.ReferenceProvider
                         }
                     }
                     break;
-                case b4xDefinitionProvider.KeywordScope.CodeSpace:
+                case b4xStructure.KeywordScope.CodeSpace:
                 default:
             }
         }

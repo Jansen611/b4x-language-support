@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import * as b4xStructure from './b4xStructure';
 import * as b4xDefinitionProvider from './b4xDefinitionProvider';
 import * as docMethods from './documentMethods';
 import * as b4xBaseClassInfo from './b4xBaseClassInfo'
@@ -45,16 +46,16 @@ export class b4xHoverProvider implements vscode.HoverProvider
                 declaration = b4xDefinitionProvider.getDeclarationStringFromSearch(document, word, wordLineNo) || "";                
                 if (declaration) 
                 {
-                    if (definitionInfo.Type == b4xDefinitionProvider.KeywordType.Variable)
+                    if (definitionInfo.Type == b4xStructure.KeywordType.Variable)
                     {
-                        if (definitionInfo.Scope == b4xDefinitionProvider.KeywordScope.Global)
+                        if (definitionInfo.Scope == b4xStructure.KeywordScope.Global)
                         {
                             declaration = "(global variable) " + declaration;
-                        } else if (definitionInfo.Scope == b4xDefinitionProvider.KeywordScope.Local)
+                        } else if (definitionInfo.Scope == b4xStructure.KeywordScope.Local)
                         {
                             declaration = "(local variable) " + declaration;
                         }
-                    } else if (definitionInfo.Type == b4xDefinitionProvider.KeywordType.Parameter)
+                    } else if (definitionInfo.Type == b4xStructure.KeywordType.Parameter)
                     {
                         declaration = "(parameter) " + declaration;
                     }
