@@ -62,14 +62,21 @@ export function onTextChange(textChangeEvent: vscode.TextDocumentChangeEvent)
                 // nextStartStatmentLine = nextLineNumSet[0];
                 // nextEndStatmentLine = nextLineNumSet[1];
                 originalLineText = originalLineText.replace(new RegExp('\\bIf\\b','gi'), 'If')
-                                                    .replace(new RegExp('\\bThen\\b','gi'), 'Then');
-
-                if (!isStatementMatchingInFunctionBlock(currentBlock, comRegExp.StartOfIf, comRegExp.EndOfIf))
+                                                   .replace(new RegExp('\\bThen\\b','gi'), 'Then');
+                const IfDifference : number = GetStatementDifferenceInFunctionBlock(currentBlock, comRegExp.StartOfIf, comRegExp.EndOfIf);
+                if (IfDifference > 0)
                 {
                     // great, this is a new if statement, need end if
                     //if (nextStartStatmentLine <= nextEndStatmentLine) {closingStatement = 'End If'; closingStatementLine = 1;}
-                    closingStatement = 'End If'; 
-                    closingStatementLine = 1;
+                    // calculate how many inline if occurance
+                    const inLineIfMatcher = currentBlock.BlockText.matchAll(new RegExp(comRegExp.InlineIf, 'gi'));
+                    let numOfInlineIf: number = 0;
+                    for (const match of inLineIfMatcher) {numOfInlineIf += 1;}
+                    if (IfDifference - numOfInlineIf > 0)
+                    {
+                        closingStatement = 'End If'; 
+                        closingStatementLine = 1;
+                    }
                 }
             } else if (lineText.match(new RegExp(comRegExp.StartOfFor, 'gi')))
             {
@@ -80,7 +87,7 @@ export function onTextChange(textChangeEvent: vscode.TextDocumentChangeEvent)
                                                     .replace(new RegExp('\\bAs\\b','gi'), 'As')
                                                     .replace(new RegExp('\\bTo\\b','gi'), 'To');
 
-                if (!isStatementMatchingInFunctionBlock(currentBlock, comRegExp.StartOfFor, comRegExp.EndOfFor))
+                if (GetStatementDifferenceInFunctionBlock(currentBlock, comRegExp.StartOfFor, comRegExp.EndOfFor) > 0)
                 {
                     // great, this is a new for statement, need next
                     closingStatement = 'Next'; 
@@ -92,7 +99,7 @@ export function onTextChange(textChangeEvent: vscode.TextDocumentChangeEvent)
                 originalLineText = originalLineText.replace(new RegExp('\\bSelect\\b','gi'), 'Select')
                                                     .replace(new RegExp('\\bCase\\b','gi'), 'Case');
 
-                if (!isStatementMatchingInFunctionBlock(currentBlock, comRegExp.StartOfSelect, comRegExp.EndOfSelect))
+                if (GetStatementDifferenceInFunctionBlock(currentBlock, comRegExp.StartOfSelect, comRegExp.EndOfSelect) > 0)
                 {
                     // great, this is a new select statement, need end select
                     closingStatement = 'End Select'; 
@@ -103,7 +110,7 @@ export function onTextChange(textChangeEvent: vscode.TextDocumentChangeEvent)
                 // getting the case right
                 originalLineText = originalLineText.replace(new RegExp('\\bTry\\b','gi'), 'Try');
 
-                if (!isStatementMatchingInFunctionBlock(currentBlock, comRegExp.StartOfTry, comRegExp.EndOfTry))
+                if (GetStatementDifferenceInFunctionBlock(currentBlock, comRegExp.StartOfTry, comRegExp.EndOfTry) > 0)
                 {
                     // great, this is a new try statement, need catch and end try
                     closingStatement = `Catch\n${leadingWhiteSpace}\tLog(LastException)\n${leadingWhiteSpace}End Try`;
@@ -127,7 +134,7 @@ export function onTextChange(textChangeEvent: vscode.TextDocumentChangeEvent)
                                                    .replace(new RegExp('\\bPrivate\\b','gi'), 'Private')
                                                    .replace(new RegExp('\\bSub\\b','gi'), 'Sub')
                                                    .replace(new RegExp('\\bAs\\b','gi'), 'As');
-                if (!isStatementMatchingInFunctionBlockText(document.getText(), comRegExp.StartOfSub, comRegExp.EndOfSub))
+                if (GetStatementDifferenceInFunctionBlockText(document.getText(), comRegExp.StartOfSub, comRegExp.EndOfSub) > 0)
                 {
                     // great, this is a new try statement, need catch and end try
                     closingStatement = 'End Sub';
@@ -231,18 +238,18 @@ export function analyzeDocumentForFunctionBlocks(document: vscode.TextDocument)
     console.log(globals.functionBlockList.length)
 }
 
-function isStatementMatchingInFunctionBlock(givenBlock: b4xStructure.FunctionBlock, 
+function GetStatementDifferenceInFunctionBlock(givenBlock: b4xStructure.FunctionBlock, 
                                             givenStartOfStatementPattern: string,
-                                            givenEndOfStatementPattern: string) : boolean
+                                            givenEndOfStatementPattern: string) : number
 {
-    return isStatementMatchingInFunctionBlockText(givenBlock.BlockText, 
-                                                  givenStartOfStatementPattern, 
-                                                  givenEndOfStatementPattern)
+    return GetStatementDifferenceInFunctionBlockText(givenBlock.BlockText, 
+                                                    givenStartOfStatementPattern, 
+                                                    givenEndOfStatementPattern);
 }
 
-function isStatementMatchingInFunctionBlockText(givenBlockText: string, 
-                                            givenStartOfStatementPattern: string,
-                                            givenEndOfStatementPattern: string) : boolean
+function GetStatementDifferenceInFunctionBlockText(givenBlockText: string, 
+                                                givenStartOfStatementPattern: string,
+                                                givenEndOfStatementPattern: string) : number
 {
     // calculate how many open statement occurance
     const startOfStatementMatcher = givenBlockText.matchAll(new RegExp(givenStartOfStatementPattern, 'gi'));
@@ -251,9 +258,6 @@ function isStatementMatchingInFunctionBlockText(givenBlockText: string,
     const endOfStatementMatcher = givenBlockText.matchAll(new RegExp(givenEndOfStatementPattern, 'gi'));
     let numOfEnd: number = 0;
     for (const match of endOfStatementMatcher) {numOfEnd += 1;}
-    if (numOfStart > numOfEnd)
-    {
-        // great, this is a new starting statement, need ending statement
-        return false;
-    } else {return true;}
+
+    return numOfStart - numOfEnd;
 }
