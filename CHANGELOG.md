@@ -4,6 +4,14 @@ All notable changes to the "b4x-language-support" extension will be documented i
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [0.1.8] - Auto keywords closes, B4X baseclass features and bug fixes
+- **Enhancements**:
+  - Added Hover support for b4x baseclass members.
+  - Added auto complete for b4x keywords such as "If (End If)" "For (Next)" ect.
+  - Removed snippets that create "Sub" since now auto complete can achieve the same.
+- **Bug fixes**:
+  - Fixed line comment not working when there is a '|' in the comment.
+
 ## [0.1.6] - More keywords support and bug fixes
 - **Enhancements**:
   - Added more keywords support including "DateTime", "Bit", "Regex"
