@@ -5,7 +5,7 @@
 <img src="assets/Logo.png" width="150">
 
 ## 当前版本
-- Version: 0.1.6
+- Version: 0.1.8
 
 ## 功能
 - **语法高亮**：支持 `.bas`、`.b4a`、`.b4i`和`.b4j` 文件的 B4X 语法着色。
@@ -27,6 +27,9 @@
 
 ## 问题反馈
 遇到问题？请提交到 [GitHub Issues](https://github.com/Jansen611/b4x-language-support/issues)。
+
+## 鸣谢
+- **Anywhere Software**: 感谢其创建了 [B4X 开发工具](https://www.b4x.com/), 并持续维护 [B4X 开发者社区](https://www.b4x.com/android/forum/). 
 
 ## 许可证
 MIT © [Jansen](https://github.com/Jansen611)
