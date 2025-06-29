@@ -32,7 +32,7 @@ export class B4XCompletionItemProvider implements vscode.CompletionItemProvider
         if (docMethods.isNamingDeclaration(document, position)){return itemsShow;}
 
         // seach current doc by default, but this can be changed to other doc
-        let fullDocString: string = document.getText();
+        let fullDocString: string = '';
 
         // check whether this is a member search or global search
         const parentObjectMatch = docMethods.getAllParentObjMatchFromDocPosition(document, position); // looking for '.' operator
@@ -54,8 +54,25 @@ export class B4XCompletionItemProvider implements vscode.CompletionItemProvider
                     }
                 }
             }
+            return itemsShow;
         }
 
+        // keyword shall only be in when start of string: 1. start of string; 2. after 'If'; 3. after 'For Each \w+ In'; 
+        //                          when middle of string: 1. after '='; 2. after '(';
+        // keyword shall not be in 1. If True 'Keyword'; 2. For Each 'Keyword'
+        const keyWordLineText: string = document.lineAt(position.line).text;
+        let isProceeding: boolean = false;
+        if (!isProceeding && keyWordLineText.match(new RegExp(`(?:^|\\r|\\n)[ \\t]*((Else[ \\t]+)?If[ \\t]+|(Select[ \\t]+)?Case[ \\t]+|For[ \\t]+Each[ \\t]+[ \\t\\w]+[ \\t]+In[ \\t]+)?\\b${wordToSearch}\\b.*(?:$|\\r|\\n)`, 'gi'))) 
+        {
+            isProceeding = true;
+        }
+
+        if (!isProceeding && keyWordLineText.match(new RegExp(`(?:^|\\r|\\n)[ \\t]*\\b[\\w]+[., \\t\\w]+\\b.*(=|<(=)?|>(=)?|<>|\\()[ \\t]*\\b${wordToSearch}`,'gi')))
+        {
+            isProceeding = true;
+        }
+
+        if (!isProceeding) {return itemsShow;}
         // give system keywords suggestion
         for (const keywordCompletion of b4xBaseClassInfo.B4X_SYSTEMKEYWORD_COMPLETION)
         {
@@ -74,6 +91,7 @@ export class B4XCompletionItemProvider implements vscode.CompletionItemProvider
             }
         }
 
+        fullDocString = document.getText();
         const fullDocStringLower: string = fullDocString.toLowerCase();
         const fullDocLines: string[] = fullDocString.split('\n');
         const fullDocLinesLower: string[] = fullDocStringLower.split('\n');

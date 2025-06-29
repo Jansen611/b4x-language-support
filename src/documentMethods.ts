@@ -18,8 +18,15 @@ export function getLinePrefixFromDocPosition(document: vscode.TextDocument, posi
 export function getAllParentObjMatchFromDocPosition(document: vscode.TextDocument, position: vscode.Position): RegExpMatchArray | null
 {
     const linePrefix: string = getLinePrefixFromDocPosition(document, position);
-    // check whether this is a member search or global search
-    return linePrefix.match(new RegExp('(\\w+)\\.', 'g'))
+    if (linePrefix.match(new RegExp('(?:^|\\r|\\n)[\\s\\S]+\\.[\\w]*(?:$|\\r|\\n)', 'gi')))
+    {
+        // check whether this is a member search or global search
+        return linePrefix.match(new RegExp('(\\w+)\\.', 'g'));
+    } else
+    {
+        return null;
+    }
+
 }
 
 export function isStartOfLine(document: vscode.TextDocument, position: vscode.Position): boolean
