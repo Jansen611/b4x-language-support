@@ -2,3 +2,13 @@
 .vscode-test/**
 .gitignore
 vsc-extension-quickstart.md
+src/**
+Reference/**
+.qwen/**
+AGENTS.md
+esbuild.webview.mjs
+tsconfig.json
+scripts/**
+README_CN.md
+node_modules/**
+*.vsix
