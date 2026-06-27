@@ -1,0 +1,11 @@
+node_modules
+out
+reference
+*.vsix
+.DS_Store
+vsc-extension-quickstart.md
+.vscode/
+
+# ignore AI Coding Agent setting files
+.qwen/
+AGENTS.md

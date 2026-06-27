@@ -1,0 +1,205 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/schemas/b4x-layout.schema.json",
+  "title": "B4X Layout JSON",
+  "type": "object",
+  "required": [
+    "version",
+    "gridSize",
+    "variants",
+    "manifest",
+    "fileReferences",
+    "scriptData",
+    "flags",
+    "rootControl"
+  ],
+  "properties": {
+    "version": { "type": "number" },
+    "gridSize": { "type": "number" },
+    "variants": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["scale", "width", "height"],
+        "properties": {
+          "scale": { "type": "number" },
+          "width": { "type": "number" },
+          "height": { "type": "number" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "manifest": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "javaType", "csType"],
+        "properties": {
+          "name": { "type": "string" },
+          "javaType": { "type": "string" },
+          "csType": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "fileReferences": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "scriptData": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "required": ["mainScript", "variantScripts"],
+          "properties": {
+            "mainScript": { "type": "string" },
+            "variantScripts": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["variant", "script"],
+                "properties": {
+                  "variant": {
+                    "type": "object",
+                    "required": ["scale", "width", "height"],
+                    "properties": {
+                      "scale": { "type": "number" },
+                      "width": { "type": "number" },
+                      "height": { "type": "number" }
+                    },
+                    "additionalProperties": false
+                  },
+                  "script": { "type": "string" }
+                },
+                "additionalProperties": false
+              }
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "flags": {
+      "type": "object",
+      "required": ["c", "d"],
+      "properties": {
+        "c": { "type": "boolean" },
+        "d": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "rootControl": { "$ref": "#/$defs/controlNode" }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "propertyValue": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["tag", "value"],
+          "properties": {
+            "tag": { "const": "Int32" },
+            "value": { "type": "number" }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["tag", "value"],
+          "properties": {
+            "tag": { "enum": ["String", "StringRef"] },
+            "value": { "type": "string" }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["tag", "value"],
+          "properties": {
+            "tag": { "enum": ["Float", "Double"] },
+            "value": { "type": "number" }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["tag", "value"],
+          "properties": {
+            "tag": { "const": "Bool" },
+            "value": { "type": "boolean" }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["tag", "value"],
+          "properties": {
+            "tag": { "const": "Color" },
+            "value": {
+              "type": "string",
+              "pattern": "^#?[0-9A-Fa-f]{8}$"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["tag", "x", "y", "width", "height"],
+          "properties": {
+            "tag": { "const": "Int32Rect" },
+            "x": { "type": "number" },
+            "y": { "type": "number" },
+            "width": { "type": "number" },
+            "height": { "type": "number" }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["tag"],
+          "properties": {
+            "tag": { "const": "Null" }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["tag", "value"],
+          "properties": {
+            "tag": { "const": "Object" },
+            "value": {
+              "type": "object",
+              "additionalProperties": { "$ref": "#/$defs/propertyValue" }
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["tag", "value"],
+          "properties": {
+            "tag": { "const": "ErRef" },
+            "value": { "type": "number" }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "controlNode": {
+      "type": "object",
+      "required": ["properties", "children"],
+      "properties": {
+        "properties": {
+          "type": "object",
+          "additionalProperties": { "$ref": "#/$defs/propertyValue" }
+        },
+        "children": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/controlNode" }
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

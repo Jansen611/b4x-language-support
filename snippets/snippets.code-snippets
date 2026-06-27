@@ -1,0 +1,215 @@
+{
+	"Private Object Property": {
+		"prefix": "Private Object Property",
+		"body": [
+			"Private Sub get$1 As $2",
+			"\tDim mObject As $2 : mObject.initialize",
+			"\tIf Not(fProperties.ContainsKey(\"$1\")) Then",
+			"\t\tfProperties.Put(\"$1\", mObject.fProperties)",
+			"\tEnd If",
+			"\tDim ObjectToReturn As $2 : ObjectToReturn.initialize",
+			"\tObjectToReturn.fProperties = fProperties.Get(\"$1\")",
+			"\tReturn ObjectToReturn",
+            "End Sub",
+			"Private Sub set$1(aValue As $2)",
+			"\tfProperties.Put(\"$1\", aValue.fproperties)",
+            "End Sub"
+		],
+		"description": "Create a private object property"
+	},
+	"Public Object Property": {
+		"prefix": "Public Object Property",
+		"body": [
+			"Public Sub get$1 As $2",
+			"\tDim mObject As $2 : mObject.initialize",
+			"\tIf Not(fProperties.ContainsKey(\"$1\")) Then",
+			"\t\tfProperties.Put(\"$1\", mObject.fProperties)",
+			"\tEnd If",
+			"\tDim ObjectToReturn As $2 : ObjectToReturn.initialize",
+			"\tObjectToReturn.fProperties = fProperties.Get(\"$1\")",
+			"\tReturn ObjectToReturn",
+            "End Sub",
+			"Public Sub set$1(aValue As $2)",
+			"\tfProperties.Put(\"$1\", aValue.fproperties)",
+            "End Sub"
+		],
+		"description": "Create a public object property"
+	},
+
+	"Private List Property": {
+		"prefix": "Private List Property",
+		"body": [
+			"Private Sub get$1 As List",
+			"\tDim EmptyList As List : EmptyList.initialize",
+			"\tIf Not(fProperties.ContainsKey(\"$1\")) Then",
+			"\t\tfProperties.Put(\"$1\", EmptyList)",
+			"\tEnd If",
+			"\tReturn fProperties.Get(\"$1\")",
+            "End Sub",
+			"Private Sub set$1(aValue As List)",
+			"\tfProperties.Put(\"$1\", aValue)",
+            "End Sub"
+		],
+		"description": "Create a private list property"
+	},
+	"Public List Property": {
+		"prefix": "Public List Property",
+		"body": [
+			"Public Sub get$1 As List",
+			"\tDim EmptyList As List : EmptyList.initialize",
+			"\tIf Not(fProperties.ContainsKey(\"$1\")) Then",
+			"\t\tfProperties.Put(\"$1\", EmptyList)",
+			"\tEnd If",
+			"\tReturn fProperties.Get(\"$1\")",
+            "End Sub",
+			"Public Sub set$1(aValue As List)",
+			"\tfProperties.Put(\"$1\", aValue)",
+            "End Sub"
+		],
+		"description": "Create a public list property"
+	},
+
+	"Create A Private String Property": {
+		"prefix": "Private String Property",
+		"body": [
+			"Private Sub get$1 As String",
+			"\tIf Not(fProperties.ContainsKey(\"$1\")) Then",
+			"\t\tfProperties.Put(\"$1\", \"\")",
+			"\tEnd If",
+			"\tReturn fProperties.Get(\"$1\")",
+            "End Sub",
+			"Private Sub set$1(aValue As String)",
+			"\tfProperties.Put(\"$1\", aValue)",
+            "End Sub"
+		],
+		"description": "Create a private string property"
+	},
+	"Public String Property": {
+		"prefix": "Public String Property",
+		"body": [
+			"Public Sub get$1 As String",
+			"\tIf Not(fProperties.ContainsKey(\"$1\")) Then",
+			"\t\tfProperties.Put(\"$1\", \"\")",
+			"\tEnd If",
+			"\tReturn fProperties.Get(\"$1\")",
+            "End Sub",
+			"Public Sub set$1(aValue As String)",
+			"\tfProperties.Put(\"$1\", aValue)",
+            "End Sub"
+		],
+		"description": "Create a public string property"
+	},
+
+	"Private Integer Property": {
+		"prefix": "Private Int Property",
+		"body": [
+			"Private Sub get$1 As Int",
+			"\tIf Not(fProperties.ContainsKey(\"$1\")) Then",
+			"\t\tfProperties.Put(\"$1\", 0)",
+			"\tEnd If",
+			"\tReturn fProperties.Get(\"$1\")",
+            "End Sub",
+			"Private Sub set$1(aValue As Int)",
+			"\tfProperties.Put(\"$1\", aValue)",
+            "End Sub"
+		],
+		"description": "Create a private int property"
+	},
+	"Public Integer Property": {
+		"prefix": "Public Int Property",
+		"body": [
+			"Public Sub get$1 As Int",
+			"\tIf Not(fProperties.ContainsKey(\"$1\")) Then",
+			"\t\tfProperties.Put(\"$1\", 0)",
+			"\tEnd If",
+			"\tReturn fProperties.Get(\"$1\")",
+            "End Sub",
+			"Public Sub set$1(aValue As Int)",
+			"\tfProperties.Put(\"$1\", aValue)",
+            "End Sub"
+		],
+		"description": "Create a public int property"
+	},
+
+	"Private Double Property": {
+		"prefix": "Private Double Property",
+		"body": [
+			"Private Sub get$1 As Double",
+			"\tIf Not(fProperties.ContainsKey(\"$1\")) Then",
+			"\t\tfProperties.Put(\"$1\", 0)",
+			"\tEnd If",
+			"\tReturn fProperties.Get(\"$1\")",
+            "End Sub",
+			"Private Sub set$1(aValue As Double)",
+			"\tfProperties.Put(\"$1\", aValue)",
+            "End Sub"
+		],
+		"description": "Create a private double property"
+	},
+	"Public Double Property": {
+		"prefix": "Public Double Property",
+		"body": [
+			"Public Sub get$1 As Double",
+			"\tIf Not(fProperties.ContainsKey(\"$1\")) Then",
+			"\t\tfProperties.Put(\"$1\", 0)",
+			"\tEnd If",
+			"\tReturn fProperties.Get(\"$1\")",
+            "End Sub",
+			"Public Sub set$1(aValue As Double)",
+			"\tfProperties.Put(\"$1\", aValue)",
+            "End Sub"
+		],
+		"description": "Create a public double property"
+	},
+
+	"Private Boolean Property": {
+		"prefix": "Private Bool Property",
+		"body": [
+			"Private Sub get$1 As Boolean",
+			"\tIf Not(fProperties.ContainsKey(\"$1\")) Then",
+			"\t\tfProperties.Put(\"$1\", False.As(Boolean))",
+			"\tEnd If",
+			"\tReturn fProperties.Get(\"$1\")",
+            "End Sub",
+			"Private Sub set$1(aValue As Boolean)",
+			"\tfProperties.Put(\"$1\", aValue)",
+            "End Sub"
+		],
+		"description": "Create a private bool property"
+	},
+	"Public Boolean Property": {
+		"prefix": "Public Bool Property",
+		"body": [
+			"Public Sub get$1 As Boolean",
+			"\tIf Not(fProperties.ContainsKey(\"$1\")) Then",
+			"\t\tfProperties.Put(\"$1\", False.As(Boolean))",
+			"\tEnd If",
+			"\tReturn fProperties.Get(\"$1\")",
+            "End Sub",
+			"Public Sub set$1(aValue As Boolean)",
+			"\tfProperties.Put(\"$1\", aValue)",
+            "End Sub"
+		],
+		"description": "Create a public bool property"
+	},
+	"If Statement With Else": {
+		"prefix": "If Else",
+		"body": [
+			"If $1 Then",
+			"\t$2",
+			"Else",
+			"\t$3",
+            "End If"
+		],
+		"description": "Create a if-statment with else"
+	},
+	"If Statement Without Else": {
+		"prefix": "If",
+		"body": [
+			"If $1 Then",
+			"\t$2",
+            "End If"
+		],
+		"description": "Create a if-statment without else"
+	}
+}

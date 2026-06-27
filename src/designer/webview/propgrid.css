@@ -1,0 +1,634 @@
+/* B4X Designer — Property Grid Styles */
+
+:root {
+    --pg-bg: var(--vscode-sideBar-background, #252526);
+    --pg-fg: var(--vscode-sideBar-foreground, #cccccc);
+    --pg-border: var(--vscode-panel-border, #444);
+    --pg-header-bg: var(--vscode-sideBarSectionHeader-background, #333);
+    --pg-header-fg: var(--vscode-sideBarSectionHeader-foreground, #ccc);
+    --pg-input-bg: var(--vscode-input-background, #3c3c3c);
+    --pg-input-fg: var(--vscode-input-foreground, #ccc);
+    --pg-input-border: var(--vscode-input-border, #555);
+    --pg-focus-border: var(--vscode-focusBorder, #007acc);
+    --pg-select-bg: var(--vscode-dropdown-background, #3c3c3c);
+    --pg-select-fg: var(--vscode-dropdown-foreground, #ccc);
+    --pg-select-border: var(--vscode-dropdown-border, #555);
+    --pg-readonly-fg: var(--vscode-disabledForeground, #888);
+    --pg-hover-bg: var(--vscode-list-hoverBackground, #2a2d2e);
+    --pg-cat-bg: var(--vscode-sideBarSectionHeader-background, #37373d);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: var(--pg-bg);
+    color: var(--pg-fg);
+    font-family: var(--vscode-font-family, 'Segoe UI', sans-serif);
+    font-size: 12px;
+}
+
+#propgrid-root {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* ── Properties Area ──────────────────────────────────── */
+
+.pg-props-area {
+    flex: 1 1 50%;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* ── Empty State ──────────────────────────────────────── */
+
+.pg-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: var(--pg-readonly-fg);
+    font-style: italic;
+    font-size: 12px;
+}
+
+/* ── Header ───────────────────────────────────────────── */
+
+.pg-header {
+    display: flex;
+    align-items: center;
+    padding: 6px 8px;
+    border-bottom: 1px solid var(--pg-border);
+    background: var(--pg-header-bg);
+    flex-shrink: 0;
+}
+
+.pg-title {
+    font-weight: 600;
+    font-size: 12px;
+    color: var(--pg-header-fg);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ── Tab Bar ───────────────────────────────────────────── */
+
+.pg-tab-bar {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0;
+    border-bottom: 1px solid var(--pg-border);
+    background: var(--pg-cat-bg);
+    flex-shrink: 0;
+}
+
+.pg-tab {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 5px 10px;
+    border: none;
+    border-bottom: 2px solid transparent;
+    background: transparent;
+    color: var(--pg-readonly-fg);
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    user-select: none;
+    transition: color 0.15s, border-color 0.15s;
+}
+
+.pg-tab:hover {
+    color: var(--pg-fg);
+    background: var(--pg-hover-bg);
+}
+
+.pg-tab-active {
+    color: var(--pg-header-fg);
+    border-bottom-color: var(--pg-focus-border);
+}
+
+.pg-tab-content {
+    flex: 1 1 50%;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.pg-tab-panel {
+    /* panels show/hide via inline display */
+}
+
+/* ── Property Row ─────────────────────────────────────── */
+
+.pg-row {
+    display: flex;
+    align-items: center;
+    min-height: 24px;
+    padding: 1px 8px;
+    border-bottom: 1px solid rgba(128, 128, 128, 0.1);
+}
+
+.pg-row:hover {
+    background: var(--pg-hover-bg);
+}
+
+.pg-label {
+    flex: 0 0 45%;
+    font-size: 12px;
+    color: var(--pg-fg);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-right: 6px;
+    cursor: default;
+}
+
+.pg-editor {
+    flex: 1 1 55%;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+}
+
+/* ── Read-Only ────────────────────────────────────────── */
+
+.pg-readonly {
+    font-size: 12px;
+    color: var(--pg-readonly-fg);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ── Text Input ───────────────────────────────────────── */
+
+.pg-input {
+    width: 100%;
+    background: var(--pg-input-bg);
+    color: var(--pg-input-fg);
+    border: 1px solid var(--pg-input-border);
+    border-radius: 2px;
+    padding: 2px 4px;
+    font-family: inherit;
+    font-size: 12px;
+    outline: none;
+}
+
+.pg-input:focus {
+    border-color: var(--pg-focus-border);
+}
+
+.pg-input-number {
+    -moz-appearance: textfield;
+}
+
+.pg-input-number::-webkit-inner-spin-button,
+.pg-input-number::-webkit-outer-spin-button {
+    opacity: 1;
+    height: 18px;
+}
+
+/* ── Checkbox ─────────────────────────────────────────── */
+
+.pg-checkbox-wrapper {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.pg-checkbox {
+    width: 14px;
+    height: 14px;
+    cursor: pointer;
+    accent-color: var(--pg-focus-border);
+}
+
+/* ── Color Picker ─────────────────────────────────────── */
+
+.pg-color-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    width: 100%;
+}
+
+.pg-color-preview {
+    width: 20px;
+    height: 18px;
+    border: 1px solid var(--pg-input-border);
+    border-radius: 2px;
+    flex-shrink: 0;
+    /* Checkerboard background for transparent colors */
+    background-image:
+        linear-gradient(45deg, #808080 25%, transparent 25%),
+        linear-gradient(-45deg, #808080 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #808080 75%),
+        linear-gradient(-45deg, transparent 75%, #808080 75%);
+    background-size: 8px 8px;
+    background-position: 0 0, 0 4px, 4px -4px, -4px 0;
+}
+
+.pg-color-none {
+    background: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 3px,
+        rgba(255, 0, 0, 0.3) 3px,
+        rgba(255, 0, 0, 0.3) 6px
+    ) !important;
+}
+
+.pg-color-input {
+    width: 22px;
+    height: 18px;
+    padding: 0;
+    border: 1px solid var(--pg-input-border);
+    border-radius: 2px;
+    cursor: pointer;
+    background: none;
+}
+
+.pg-color-input::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+.pg-color-input::-webkit-color-swatch {
+    border: none;
+    border-radius: 1px;
+}
+
+.pg-color-clear {
+    background: none;
+    border: 1px solid var(--pg-input-border);
+    border-radius: 2px;
+    color: var(--pg-fg);
+    font-size: 12px;
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    padding: 0;
+}
+
+.pg-color-clear:hover {
+    background: var(--pg-hover-bg);
+    border-color: var(--pg-focus-border);
+}
+
+/* ── Dropdown ─────────────────────────────────────────── */
+
+.pg-select {
+    width: 100%;
+    background: var(--pg-select-bg);
+    color: var(--pg-select-fg);
+    border: 1px solid var(--pg-select-border);
+    border-radius: 2px;
+    padding: 2px 4px;
+    font-family: inherit;
+    font-size: 12px;
+    outline: none;
+    cursor: pointer;
+}
+
+.pg-select:focus {
+    border-color: var(--pg-focus-border);
+}
+
+/* ── Rect Editor ──────────────────────────────────────── */
+
+.pg-rect-wrapper {
+    display: flex;
+    gap: 2px;
+    width: 100%;
+}
+
+.pg-rect-field {
+    display: flex;
+    align-items: center;
+    gap: 1px;
+    flex: 1;
+    min-width: 0;
+}
+
+.pg-rect-label {
+    font-size: 10px;
+    color: var(--pg-readonly-fg);
+    flex-shrink: 0;
+    width: 12px;
+    text-align: center;
+}
+
+.pg-rect-input {
+    width: 100%;
+    min-width: 0;
+    padding: 2px 2px;
+    font-size: 11px;
+}
+
+/* ── Scrollbar ────────────────────────────────────────── */
+
+.pg-tab-content::-webkit-scrollbar {
+    width: 10px;
+}
+
+.pg-tab-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.pg-tab-content::-webkit-scrollbar-thumb {
+    background: var(--vscode-scrollbarSlider-background, rgba(121, 121, 121, 0.4));
+    border-radius: 5px;
+}
+
+.pg-tab-content::-webkit-scrollbar-thumb:hover {
+    background: var(--vscode-scrollbarSlider-hoverBackground, rgba(100, 100, 100, 0.7));
+}
+
+/* ── Script Editor Panel ──────────────────────────────── */
+
+.pg-script-panel {
+    flex: 1 1 50%;
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    border-top: 1px solid var(--pg-border);
+    overflow: hidden;
+}
+
+.pg-script-header {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    background: var(--pg-header-bg);
+    border-bottom: 1px solid var(--pg-border);
+    flex-shrink: 0;
+}
+
+.pg-script-label {
+    font-weight: 600;
+    font-size: 11px;
+    color: var(--pg-header-fg);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    flex-shrink: 0;
+}
+
+.pg-script-select {
+    flex: 1;
+    min-width: 0;
+    background: var(--pg-select-bg);
+    color: var(--pg-select-fg);
+    border: 1px solid var(--pg-select-border);
+    border-radius: 2px;
+    padding: 2px 4px;
+    font-family: inherit;
+    font-size: 11px;
+    outline: none;
+    cursor: pointer;
+}
+
+.pg-script-select:focus {
+    border-color: var(--pg-focus-border);
+}
+
+.pg-script-run {
+    flex-shrink: 0;
+    background: var(--vscode-button-background, #0e639c);
+    color: var(--vscode-button-foreground, #fff);
+    border: none;
+    border-radius: 2px;
+    padding: 2px 8px;
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.pg-script-run:hover {
+    background: var(--vscode-button-hoverBackground, #1177bb);
+}
+
+.pg-script-error {
+    display: none;
+    padding: 3px 8px;
+    font-size: 11px;
+    flex-shrink: 0;
+}
+
+.pg-script-error-visible {
+    display: block;
+    background: var(--vscode-inputValidation-errorBackground, #5a1d1d);
+    color: var(--vscode-inputValidation-errorForeground, #f48771);
+    border-bottom: 1px solid var(--vscode-inputValidation-errorBorder, #be1100);
+}
+
+.pg-script-success-visible {
+    display: block;
+    background: var(--vscode-inputValidation-infoBackground, #063b49);
+    color: var(--vscode-inputValidation-infoForeground, #75beff);
+    border-bottom: 1px solid var(--vscode-inputValidation-infoBorder, #007acc);
+}
+
+/* ── Syntax-Highlighted Script Editor ─────────────────── */
+
+.se-container {
+    flex: 1;
+    min-height: 60px;
+    position: relative;
+    overflow: hidden;
+    background: var(--pg-input-bg);
+}
+
+.se-container:focus-within {
+    box-shadow: inset 0 0 0 1px var(--pg-focus-border);
+}
+
+/* Scroll wrapper — both layers live here, overflow scrolls them together */
+.se-scroller {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
+}
+
+/* Shared font settings for both layers — pixel line-height for exact match */
+.se-backdrop,
+.se-textarea {
+    font-family: var(--vscode-editor-font-family, 'Consolas', 'Courier New', monospace);
+    font-size: var(--vscode-editor-font-size, 13px);
+    line-height: 18px;
+    padding: 6px 8px;
+    margin: 0;
+    border: none;
+    white-space: pre;
+    word-wrap: normal;
+    tab-size: 4;
+    letter-spacing: normal;
+    box-sizing: border-box;
+}
+
+/* Backdrop <pre> — rendered highlight layer (behind textarea) */
+.se-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
+    pointer-events: none;
+    color: var(--pg-input-fg);
+    background: transparent;
+    z-index: 0;
+}
+
+/* Textarea (front, transparent text, visible caret) */
+.se-textarea {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    resize: none;
+    background: transparent;
+    color: transparent;
+    caret-color: var(--pg-input-fg);
+    outline: none;
+    overflow: auto;
+    z-index: 1;
+}
+
+.se-textarea::placeholder {
+    color: var(--pg-readonly-fg);
+    font-style: italic;
+}
+
+.se-textarea::selection {
+    background: var(--vscode-editor-selectionBackground, rgba(38, 79, 120, 0.7));
+    color: var(--pg-input-fg);
+}
+
+/* Scrollbar styling */
+.se-textarea::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+.se-textarea::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.se-textarea::-webkit-scrollbar-thumb {
+    background: var(--vscode-scrollbarSlider-background, rgba(121, 121, 121, 0.4));
+    border-radius: 5px;
+}
+
+.se-textarea::-webkit-scrollbar-thumb:hover {
+    background: var(--vscode-scrollbarSlider-hoverBackground, rgba(100, 100, 100, 0.7));
+}
+
+/* ── Syntax Highlight Colors ──────────────────────────── */
+
+.se-kw  { color: var(--vscode-symbolIcon-keywordForeground, #569cd6); }
+.se-bi  { color: var(--vscode-symbolIcon-functionForeground, #dcdcaa); }
+.se-str { color: var(--vscode-symbolIcon-stringForeground, #ce9178); }
+.se-num { color: var(--vscode-symbolIcon-numberForeground, #b5cea8); }
+.se-op  { color: var(--pg-input-fg); }
+.se-id  { color: var(--vscode-symbolIcon-variableForeground, #9cdcfe); }
+.se-cmt { color: var(--vscode-symbolIcon-commentForeground, #6a9955); font-style: italic; }
+.se-ctrl { color: var(--vscode-symbolIcon-classForeground, #4ec9b0); }
+
+/* ── Autocomplete Dropdown ────────────────────────────── */
+
+.se-autocomplete {
+    position: absolute;
+    z-index: 10;
+    min-width: 160px;
+    max-width: 280px;
+    max-height: 168px;
+    overflow-y: auto;
+    background: var(--vscode-editorSuggestWidget-background, #252526);
+    border: 1px solid var(--vscode-editorSuggestWidget-border, #454545);
+    border-radius: 3px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.36);
+    font-family: var(--vscode-font-family, 'Segoe UI', sans-serif);
+    font-size: 12px;
+}
+
+.se-ac-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 8px;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--vscode-editorSuggestWidget-foreground, #ccc);
+}
+
+.se-ac-item:hover {
+    background: var(--vscode-editorSuggestWidget-focusHighlightForeground, rgba(0, 120, 212, 0.1));
+}
+
+.se-ac-selected {
+    background: var(--vscode-editorSuggestWidget-selectedBackground, #04395e) !important;
+    color: var(--vscode-editorSuggestWidget-selectedForeground, #fff);
+}
+
+.se-ac-icon {
+    flex-shrink: 0;
+    width: 14px;
+    text-align: center;
+    font-size: 11px;
+}
+
+.se-ac-icon-control  { color: var(--vscode-symbolIcon-classForeground, #4ec9b0); }
+.se-ac-icon-property { color: var(--vscode-symbolIcon-propertyForeground, #9cdcfe); }
+.se-ac-icon-keyword  { color: var(--vscode-symbolIcon-keywordForeground, #569cd6); }
+.se-ac-icon-builtin  { color: var(--vscode-symbolIcon-functionForeground, #dcdcaa); }
+.se-ac-icon-function { color: var(--vscode-symbolIcon-methodForeground, #dcdcaa); }
+
+.se-ac-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.se-autocomplete::-webkit-scrollbar {
+    width: 6px;
+}
+
+.se-autocomplete::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.se-autocomplete::-webkit-scrollbar-thumb {
+    background: var(--vscode-scrollbarSlider-background, rgba(121, 121, 121, 0.4));
+    border-radius: 3px;
+}

@@ -1,0 +1,212 @@
+{
+  "name": "b4x-vscode",
+  "displayName": "B4X",
+  "description": "B4X Language Support",
+  "version": "0.1.11",
+  "publisher": "Jansen",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Jansen611/b4x-language-support.git"
+  },
+  "icon": "assets/Logo.png",
+  "engines": {
+    "vscode": "^1.96.2"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "keywords": [
+    "b4x",
+    "B4X"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "b4x",
+        "aliases": [
+          "B4X",
+          "b4x"
+        ],
+        "extensions": [
+          ".bas",
+          ".b4a",
+          ".b4i",
+          ".b4j"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "b4x",
+        "scopeName": "source.b4x",
+        "path": "./syntaxes/b4x.tmLanguage.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "b4x",
+        "path": "./snippets/snippets.code-snippets"
+      }
+    ],
+    "commands": [
+      {
+        "command": "b4x.openDesigner",
+        "title": "Open in B4X Designer"
+      },
+      {
+        "command": "b4x.createLayoutFile",
+        "title": "B4X: New Layout File..."
+      },
+      {
+        "command": "b4x.designer.copy",
+        "title": "B4X Designer: Copy"
+      },
+      {
+        "command": "b4x.designer.cut",
+        "title": "B4X Designer: Cut"
+      },
+      {
+        "command": "b4x.designer.paste",
+        "title": "B4X Designer: Paste"
+      },
+      {
+        "command": "b4x.designer.duplicate",
+        "title": "B4X Designer: Duplicate"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "b4x.designer.copy",
+        "key": "ctrl+c",
+        "mac": "cmd+c",
+        "when": "activeCustomEditorId == 'b4x.layoutEditor'"
+      },
+      {
+        "command": "b4x.designer.cut",
+        "key": "ctrl+x",
+        "mac": "cmd+x",
+        "when": "activeCustomEditorId == 'b4x.layoutEditor'"
+      },
+      {
+        "command": "b4x.designer.paste",
+        "key": "ctrl+v",
+        "mac": "cmd+v",
+        "when": "activeCustomEditorId == 'b4x.layoutEditor'"
+      },
+      {
+        "command": "b4x.designer.duplicate",
+        "key": "ctrl+d",
+        "mac": "cmd+d",
+        "when": "activeCustomEditorId == 'b4x.layoutEditor'"
+      }
+    ],
+    "menus": {
+      "file/newFile": [
+        {
+          "command": "b4x.createLayoutFile",
+          "group": "file@20"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "b4x.createLayoutFile",
+          "group": "navigation@3"
+        },
+        {
+          "when": "resourceExtname =~ /^\\.(bjl|bal)$/i",
+          "command": "b4x.openDesigner",
+          "group": "navigation"
+        }
+      ]
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "b4x-designer",
+          "title": "B4X Designer",
+          "icon": "assets/designer-icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "b4x-designer": [
+        {
+          "type": "webview",
+          "id": "b4x.propertyGrid",
+          "name": "Properties"
+        }
+      ]
+    },
+    "customEditors": [
+      {
+        "viewType": "b4x.layoutEditor",
+        "displayName": "B4X Layout",
+        "selector": [
+          {
+            "filenamePattern": "*.bjl"
+          },
+          {
+            "filenamePattern": "*.bal"
+          }
+        ],
+        "priority": "default"
+      }
+    ],
+    "configuration": {
+      "title": "B4X",
+      "properties": {
+        "b4x.libraryPaths": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "markdownDescription": "Paths to B4X library directories containing `.xml` descriptor files. Custom views with `designerProperty` entries will appear in the designer's **Add View > CustomView** submenu."
+        }
+      }
+    }
+  },
+  "main": "out/extension.js",
+  "bin": {
+    "b4x-cli": "./out/designer/cli/index.js"
+  },
+  "activationEvents": [
+    "onLanguage:b4x",
+    "onCommand:b4x.openDesigner",
+    "onCustomEditor:b4x.layoutEditor"
+  ],
+  "scripts": {
+    "sync-version": "ts-node scripts/sync-version.ts",
+    "clean": "node -e \"require('fs').rmSync('out',{recursive:true,force:true})\"",
+    "build:webview": "node esbuild.webview.mjs && node -e \"require('fs').cpSync('src/designer/webview/designer.css','out/webview/designer.css')\" && node -e \"require('fs').cpSync('src/designer/webview/propgrid.css','out/webview/propgrid.css')\"",
+    "cli:to-json": "node out/designer/cli/index.js to-json",
+    "cli:from-json": "node out/designer/cli/index.js from-json",
+    "prepare": "npm run clean && npm run sync-version",
+    "vscode:prepublish": "npm run prepare && npm run compile",
+    "compile": "tsc -p tsconfig.json && npm run build:webview",
+    "watch": "",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "vscode-test"
+  },
+  "overrides": {
+    "ajv": "~6.14.0",
+    "flatted": "~3.4.0",
+    "diff": "~5.2.2",
+    "serialize-javascript": "~7.0.5"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.6",
+    "@types/node": "18.x",
+    "@types/vscode": "^1.96.2",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
+    "@vscode/test-cli": "^0.0.12",
+    "@vscode/test-electron": "^2.3.8",
+    "esbuild": "^0.27.4",
+    "eslint": "^8.56.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.2"
+  }
+}

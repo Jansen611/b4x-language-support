@@ -1,0 +1,72 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "B4X",
+	"patterns": [
+		{
+			"include": "#keywords"
+		},
+		{
+			"include": "#strings"
+		},
+		{
+			"include": "source.asp.vb.net"
+		}
+	],
+	"repository": {
+		"keywords": {
+			"patterns": [
+				{
+					"name": "comment.line",
+					"match": "(?i)'([\\s\\S].*)"
+				},
+				{
+					"name":  "keyword.control.b4x",
+					"match": "(?i)\\b(end if|wait for|for each|end try)\\b"
+				},
+				{
+					"name":  "keyword.control.b4x",
+					"match": "(?i)\\b(if|then|else|elseif|while|loop|for|next|to|return|exit|try|catch|in)\\b"
+				},
+				{
+					"name": "keyword.other.b4x",
+					"match": "(?i)\\b(Mod|And|Not|Or|Xor|as|Is|Eqv)\\b"				
+				},
+				{
+					"name": "storage.type",
+					"match": "(?i)\\b(Crlf|Datetime|Tab|Quote|cPi|cE|Keycodes|Density|Colors|Gravity|File|Application|Bit|Typeface|DialogResponse|Regex|Random)\\b"				
+				},
+				{
+					"name": "markup.inserted.b4x",
+					"match": "(?i)#(end if|end region)\\b"
+				},
+				{
+					"name": "markup.inserted.b4x",
+					"match": "(?i)#(if|region|else if|else)\\b"
+				},
+				{
+					"name": "support.function.b4x",
+					"match": "(?i)\\b\\.(\\w+)\\b"
+				}, 
+				{
+					"name": "storage.type",
+					"match": "(?i)\\b(private sub|public sub|end sub)\\b"
+				},
+				{
+					"name": "storage.type",
+					"match": "(?i)\\b(dim|private|const|public|sub)\\b"
+				}]
+		},
+		"strings": {
+			"name": "string.quoted.double.b4x",
+			"begin": "\"",
+			"end": "\"",
+			"patterns": [
+				{
+					"name": "constant.character.escape.b4x",
+					"match": "\\\\."
+				}
+			]
+		}
+	},
+	"scopeName": "source.b4x"
+}

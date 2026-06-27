@@ -1,0 +1,465 @@
+/* B4X Designer Webview — Styles */
+
+:root {
+    --bg: var(--vscode-editor-background, #1e1e1e);
+    --fg: var(--vscode-foreground, #cccccc);
+    --border: var(--vscode-panel-border, #444);
+    --menu-bg: var(--vscode-menu-background, #252526);
+    --menu-fg: var(--vscode-menu-foreground, #cccccc);
+    --menu-highlight: var(--vscode-menu-selectionBackground, #094771);
+    --menu-sep: var(--vscode-menu-separatorBackground, #454545);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--vscode-font-family, 'Segoe UI', sans-serif);
+    font-size: 13px;
+}
+
+#designer-root {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ── Variant Toolbar ──────────────────────────────────────── */
+
+.variant-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px;
+    background: var(--vscode-titleBar-activeBackground, #3c3c3c);
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+    min-height: 30px;
+}
+
+.variant-toolbar-label {
+    font-weight: 600;
+    font-size: 12px;
+    color: var(--fg);
+    white-space: nowrap;
+}
+
+.variant-select {
+    flex: 0 1 auto;
+    min-width: 160px;
+    max-width: 300px;
+    background: var(--vscode-dropdown-background, #3c3c3c);
+    color: var(--vscode-dropdown-foreground, #cccccc);
+    border: 1px solid var(--vscode-dropdown-border, #555);
+    padding: 2px 4px;
+    font-size: 12px;
+    border-radius: 2px;
+    outline: none;
+}
+
+.variant-select:focus {
+    border-color: var(--vscode-focusBorder, #007acc);
+}
+
+.variant-btn {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--vscode-button-secondaryBackground, #3a3d41);
+    color: var(--vscode-button-secondaryForeground, #cccccc);
+    border: 1px solid var(--vscode-dropdown-border, #555);
+    border-radius: 3px;
+    font-size: 16px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+}
+
+.variant-btn:hover {
+    background: var(--vscode-button-secondaryHoverBackground, #45494e);
+}
+
+.variant-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.variant-info {
+    font-size: 11px;
+    color: var(--vscode-descriptionForeground, #888);
+    white-space: nowrap;
+}
+
+/* ── Add Variant Dialog ───────────────────────────────────── */
+
+.variant-dialog-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+}
+
+.variant-dialog {
+    background: var(--vscode-editorWidget-background, #252526);
+    border: 1px solid var(--vscode-editorWidget-border, #454545);
+    border-radius: 6px;
+    padding: 16px;
+    min-width: 280px;
+    max-width: 350px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.variant-dialog-title {
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 4px;
+    color: var(--fg);
+}
+
+.variant-dialog-label {
+    font-size: 12px;
+    color: var(--vscode-descriptionForeground, #aaa);
+    margin-top: 4px;
+}
+
+.variant-dialog-select,
+.variant-dialog-input {
+    width: 100%;
+    padding: 4px 6px;
+    background: var(--vscode-input-background, #3c3c3c);
+    color: var(--vscode-input-foreground, #cccccc);
+    border: 1px solid var(--vscode-input-border, #555);
+    border-radius: 3px;
+    font-size: 12px;
+    outline: none;
+}
+
+.variant-dialog-select:focus,
+.variant-dialog-input:focus {
+    border-color: var(--vscode-focusBorder, #007acc);
+}
+
+.variant-dialog-buttons {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    margin-top: 8px;
+}
+
+.variant-dialog-ok {
+    padding: 4px 14px;
+    background: var(--vscode-button-background, #0e639c);
+    color: var(--vscode-button-foreground, #ffffff);
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.variant-dialog-ok:hover {
+    background: var(--vscode-button-hoverBackground, #1177bb);
+}
+
+.variant-dialog-cancel {
+    padding: 4px 14px;
+    background: var(--vscode-button-secondaryBackground, #3a3d41);
+    color: var(--vscode-button-secondaryForeground, #cccccc);
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.variant-dialog-cancel:hover {
+    background: var(--vscode-button-secondaryHoverBackground, #45494e);
+}
+
+/* ── Canvas Container ─────────────────────────────────────── */
+
+.designer-canvas-container {
+    width: 100%;
+    flex: 1 1 0;
+    overflow: hidden;
+    position: relative;
+    background: var(--bg);
+    /* Checkerboard pattern for empty canvas */
+    background-image:
+        linear-gradient(45deg, rgba(128,128,128,0.05) 25%, transparent 25%),
+        linear-gradient(-45deg, rgba(128,128,128,0.05) 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, rgba(128,128,128,0.05) 75%),
+        linear-gradient(-45deg, transparent 75%, rgba(128,128,128,0.05) 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0;
+}
+
+/* ── Script Mode Overlay ──────────────────────────────────── */
+
+.script-mode-overlay {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    padding: 4px 10px;
+    background: var(--vscode-statusBarItem-warningBackground, rgba(200, 150, 0, 0.85));
+    color: var(--vscode-statusBarItem-warningForeground, #fff);
+    font-size: 11px;
+    font-weight: 600;
+    border-radius: 3px;
+    z-index: 100;
+    pointer-events: none;
+    user-select: none;
+}
+
+.designer-canvas-content {
+    position: absolute;
+    left: 0;
+    top: 0;
+    transform-origin: 0 0;
+}
+
+/* ── Control Views ────────────────────────────────────────── */
+
+.control-view {
+    position: absolute;
+    border: 1px solid #000;
+    border-radius: 2px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.2s, border-width 0.2s;
+    cursor: default;
+    user-select: none;
+}
+
+.control-view.root-control {
+    border: none;
+    border-radius: 0;
+    background: var(--vscode-editor-background, #1e1e1e);
+    box-shadow: 0 0 0 1px var(--border), 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.control-label {
+    color: white;
+    font-size: 11px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0 4px;
+    pointer-events: none;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
+/* ── Anchor Dots ──────────────────────────────────────────── */
+
+.anchor-dot {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: white;
+    pointer-events: none;
+    display: none;
+}
+
+/* ── Selection Overlay ────────────────────────────────────── */
+
+.selection-overlay {
+    position: absolute;
+    pointer-events: none;
+    z-index: 1000;
+}
+
+.edge-line {
+    position: absolute;
+    background: rgba(170, 170, 200, 0.5);
+    pointer-events: auto;
+}
+
+.resize-handle {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: rgba(170, 170, 200, 1);
+    border-radius: 1px;
+    pointer-events: auto;
+    z-index: 1001;
+}
+
+/* ── Rubber Band ──────────────────────────────────────────── */
+
+.rubber-band {
+    position: absolute;
+    border: 1px solid rgba(0, 120, 255, 1);
+    background: rgba(0, 120, 255, 0.27);
+    pointer-events: none;
+    z-index: 2000;
+}
+
+/* ── Context Menu ─────────────────────────────────────────── */
+
+.context-menu {
+    position: fixed;
+    background: var(--menu-bg);
+    color: var(--menu-fg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 4px 0;
+    min-width: 200px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    z-index: 10000;
+    font-size: 13px;
+    /* No overflow clipping — submenu children must be able to render outside */
+}
+
+.context-menu-item {
+    padding: 4px 24px 4px 12px;
+    cursor: pointer;
+    white-space: nowrap;
+    position: relative;
+}
+
+.context-menu-item:hover:not(.disabled) {
+    background: var(--menu-highlight);
+}
+
+.context-menu-item.disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+
+.context-menu-item.has-submenu::after {
+    content: '▸';
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.context-menu-separator {
+    height: 1px;
+    background: var(--menu-sep);
+    margin: 4px 8px;
+}
+
+.context-submenu {
+    display: none;
+    position: absolute;
+    left: 100%;
+    top: 0;
+    background: var(--menu-bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 4px 0;
+    min-width: 180px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    z-index: 10001;
+    /* No overflow clipping — nested submenus position outside parent bounds */
+}
+
+.context-menu-item.has-submenu:hover > .context-submenu {
+    display: block;
+}
+
+/* ── Navigation Overlay (D-pad + Zoom) ────────────────────── */
+
+.nav-overlay {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+    z-index: 5000;
+    pointer-events: none;
+    user-select: none;
+}
+
+/* Zoom bar */
+.nav-zoom-bar {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    pointer-events: auto;
+    background: var(--vscode-editorWidget-background, #252526);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 2px 4px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+
+.nav-zoom-label {
+    font-size: 11px;
+    color: var(--fg);
+    min-width: 38px;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+}
+
+.nav-btn {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--vscode-button-secondaryBackground, #3a3d41);
+    color: var(--vscode-button-secondaryForeground, #cccccc);
+    border: 1px solid transparent;
+    border-radius: 3px;
+    font-size: 14px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+    pointer-events: auto;
+}
+
+.nav-btn:hover {
+    background: var(--vscode-button-secondaryHoverBackground, #45494e);
+    border-color: var(--vscode-focusBorder, #007acc);
+}
+
+.nav-btn:active {
+    background: var(--vscode-button-background, #0e639c);
+    color: var(--vscode-button-foreground, #ffffff);
+}
+
+/* D-pad container */
+.nav-dpad {
+    display: grid;
+    grid-template-columns: 24px 24px 24px;
+    grid-template-rows: 24px 24px 24px;
+    gap: 2px;
+    pointer-events: auto;
+    background: var(--vscode-editorWidget-background, #252526);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 3px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+
+.nav-dpad .nav-btn {
+    font-size: 12px;
+}
+
+.nav-dpad-center {
+    width: 24px;
+    height: 24px;
+}
