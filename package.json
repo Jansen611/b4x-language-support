@@ -2,7 +2,7 @@
   "name": "b4x-vscode",
   "displayName": "B4X",
   "description": "B4X Language Support",
-  "version": "0.1.11",
+  "version": "1.0.0",
   "publisher": "Jansen",
   "repository": {
     "type": "git",

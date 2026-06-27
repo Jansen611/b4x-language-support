@@ -2,7 +2,18 @@
 
 All notable changes to the "b4x-language-support" extension will be documented in this file.
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
+## [1.0.0] - Visual Layout Designer & Language Server
+- **Features**:
+  - Visual Layout Designer with drag-and-drop support for `.bjl`/`.bal` files
+  - Property grid panel for editing view properties
+  - Multi-screen variant support
+  - Custom view library loader
+  - Layout scripting engine
+  - JSON schema validation for layout files
+  - Code completion, hover, go-to-definition, and signature help
+  - Syntax highlighting for B4X (B4A/B4i/B4J) `.bas` files
+  - Code snippets for common B4X structures
+  - CLI tools for layout file conversion (to-json/from-json)
 
 ## [0.1.8] - Auto keywords closes, B4X baseclass features and bug fixes
 - **Enhancements**:
