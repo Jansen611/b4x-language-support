@@ -5,6 +5,7 @@ reference
 .DS_Store
 vsc-extension-quickstart.md
 .vscode/
+.vscode-test/
 
 # ignore AI Coding Agent setting files
 .qwen/
