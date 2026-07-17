@@ -68,7 +68,7 @@ export interface WebviewLayout {
     variantIndex: number;
     variants: WebviewVariant[];
     predefinedLayouts: WebviewPredefinedLayout[];
-    platform: 'B4A' | 'B4J';
+    platform: 'B4A' | 'B4i' | 'B4J';
     /** Control type display names available for this platform (for Add View menu). */
     availableControlTypes: string[];
     /** Custom view short names for the "CustomView >" submenu. */

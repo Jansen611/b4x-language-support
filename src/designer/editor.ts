@@ -19,6 +19,7 @@ import { createCustomViewControl } from './services/controlRegistry';
 import { generateDim, generateEventSub, viewCode } from './codeGen';
 
 const LAYOUT_EXTENSIONS: Record<string, string> = {
+    '.bil': 'B4i',
     '.bjl': 'B4J',
     '.bal': 'B4A'
 };
@@ -31,7 +32,7 @@ interface WebviewLayout {
     variantIndex: number;
     variants: { scale: number; width: number; height: number }[];
     predefinedLayouts: { label: string; width: number; height: number; scale: number }[];
-    platform: 'B4A' | 'B4J';
+    platform: 'B4A' | 'B4i' | 'B4J';
     availableControlTypes: string[];
     customViewTypes: string[];
     root: WebviewControl;
@@ -274,7 +275,7 @@ export class B4XLayoutEditorProvider implements vscode.CustomEditorProvider<B4XL
     ): void {
         const filePath = document.uri.fsPath;
         const ext = path.extname(filePath).toLowerCase();
-        const platform = (LAYOUT_EXTENSIONS[ext] || 'B4A') as 'B4A' | 'B4J';
+        const platform = (LAYOUT_EXTENSIONS[ext] || 'B4A') as 'B4A' | 'B4i' | 'B4J';
 
         webviewPanel.webview.options = {
             enableScripts: true,
@@ -704,7 +705,7 @@ export class B4XLayoutEditorProvider implements vscode.CustomEditorProvider<B4XL
         action: string,
         names: string[],
         layout: LayoutFile | null,
-        platform: 'B4A' | 'B4J',
+        platform: 'B4A' | 'B4i' | 'B4J',
         document: B4XLayoutDocument,
         webviewPanel: vscode.WebviewPanel,
         variantIndex: number,
@@ -837,7 +838,7 @@ export class B4XLayoutEditorProvider implements vscode.CustomEditorProvider<B4XL
     private async handleGenerate(
         controlName: string,
         layout: LayoutFile,
-        platform: 'B4A' | 'B4J',
+        platform: 'B4A' | 'B4i' | 'B4J',
         document: B4XLayoutDocument,
     ): Promise<void> {
         const node = findControlByName(layout.rootControl, controlName);
@@ -980,7 +981,7 @@ export class B4XLayoutEditorProvider implements vscode.CustomEditorProvider<B4XL
 
     private async buildWebviewLayout(
         layout: LayoutFile,
-        platform: 'B4A' | 'B4J',
+        platform: 'B4A' | 'B4i' | 'B4J',
         variantIndex: number,
     ): Promise<WebviewLayout> {
         // Clamp variant index

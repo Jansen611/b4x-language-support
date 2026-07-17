@@ -166,12 +166,14 @@ export interface ErRefValue {
 
 export const enum Platform {
     B4A = 'B4A',
+    B4i = 'B4i',
     B4J = 'B4J',
 }
 
 export function detectPlatform(filePath: string): Platform {
     const ext = filePath.toLowerCase();
     if (ext.endsWith('.bal')) { return Platform.B4A; }
+    if (ext.endsWith('.bil')) { return Platform.B4i; }
     if (ext.endsWith('.bjl')) { return Platform.B4J; }
     return Platform.B4A; // default
 }

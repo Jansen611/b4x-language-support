@@ -114,7 +114,7 @@
           "group": "navigation@3"
         },
         {
-          "when": "resourceExtname =~ /^\\.(bjl|bal)$/i",
+          "when": "resourceExtname =~ /^\\.(bil|bjl|bal)$/i",
           "command": "b4x.openDesigner",
           "group": "navigation"
         }
@@ -143,12 +143,15 @@
         "viewType": "b4x.layoutEditor",
         "displayName": "B4X Layout",
         "selector": [
-          {
-            "filenamePattern": "*.bjl"
-          },
-          {
-            "filenamePattern": "*.bal"
-          }
+        {
+          "filenamePattern": "*.bil"
+        },
+        {
+          "filenamePattern": "*.bjl"
+        },
+        {
+          "filenamePattern": "*.bal"
+        }
         ],
         "priority": "default"
       }
