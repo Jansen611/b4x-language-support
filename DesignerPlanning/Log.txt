@@ -1,0 +1,16 @@
+2026-07-17 — Session 1 (Views Tree)
+
+- Added a default Views Tree tab to the designer property sidebar.
+- Added view search, Compact/Expand controls, persistent expansion state, selected-view indicators, multi-selection, and keyboard tree navigation.
+- Added drag-and-drop sibling reordering and validated container reparenting with cycle prevention.
+- Preserved visual bounds across all variants and anchor modes when changing parents.
+- Routed tree selection and right-click actions through the existing canvas context-menu behavior.
+- Made the Parent property use the same hierarchy mutation path and restricted it to valid containers.
+- Added incremental canvas subtree replacement after reparenting without resetting canvas zoom.
+- Fixed nested-selection movement/clipboard behavior, recursive canvas cleanup after container removal, and stable multi-selection z-order changes.
+- Validation: extension compile passed; webview TypeScript check passed; git diff whitespace check passed.
+- Lint remains blocked because the repository has an npm lint script but no ESLint configuration file.
+
+Open questions / blockers:
+- Manual Extension Development Host verification is still needed for visual styling and native-feel drag/drop behavior.
+- Designer-wide undo/redo remains unimplemented and is not specific to the Views Tree.

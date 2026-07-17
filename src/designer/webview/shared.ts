@@ -19,6 +19,8 @@ export type ExtToWebviewMessage =
     | { type: 'propertyUpdated'; name: string; key: string; value: unknown }
     | { type: 'scriptResults'; changes: Record<string, ScriptControlChange>; active: boolean; error?: string }
     | { type: 'zOrderUpdated'; parentName: string; childOrder: string[] }
+    | { type: 'controlsReparented'; names: string[]; parentName: string; childOrder: string[]; controls: WebviewControl[] }
+    | { type: 'invokeContextAction'; action: string; names: string[] }
     | { type: 'clipboardAction'; action: 'copy' | 'cut' | 'paste' | 'duplicate' };
 
 // ── Webview → Extension Messages ─────────────────────────────────────

@@ -16,6 +16,9 @@
     --pg-readonly-fg: var(--vscode-disabledForeground, #888);
     --pg-hover-bg: var(--vscode-list-hoverBackground, #2a2d2e);
     --pg-cat-bg: var(--vscode-sideBarSectionHeader-background, #37373d);
+    --pg-selection-bg: var(--vscode-list-activeSelectionBackground, #094771);
+    --pg-selection-fg: var(--vscode-list-activeSelectionForeground, #fff);
+    --pg-drop-bg: var(--vscode-list-dropBackground, rgba(0, 122, 204, 0.35));
 }
 
 * {
@@ -136,6 +139,240 @@ html, body {
 
 .pg-tab-panel {
     /* panels show/hide via inline display */
+    min-height: 100%;
+}
+
+/* ── Views Tree ───────────────────────────────────────── */
+
+.vt-wrapper {
+    height: 100%;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.vt-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 6px;
+    border-bottom: 1px solid var(--pg-border);
+    background: var(--pg-bg);
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+.vt-search {
+    flex: 1 1 auto;
+    min-width: 60px;
+    height: 23px;
+    padding: 2px 6px;
+    border: 1px solid var(--pg-input-border);
+    border-radius: 2px;
+    outline: none;
+    background: var(--pg-input-bg);
+    color: var(--pg-input-fg);
+    font: inherit;
+}
+
+.vt-search:focus {
+    border-color: var(--pg-focus-border);
+}
+
+.vt-toolbar-button {
+    flex: 0 0 auto;
+    height: 23px;
+    padding: 2px 6px;
+    border: 1px solid transparent;
+    border-radius: 2px;
+    background: transparent;
+    color: var(--pg-fg);
+    font: inherit;
+    cursor: pointer;
+}
+
+.vt-toolbar-button:hover,
+.vt-toolbar-button:focus-visible {
+    background: var(--pg-hover-bg);
+    border-color: var(--pg-input-border);
+    outline: none;
+}
+
+.vt-tree {
+    flex: 1 1 auto;
+    min-height: 80px;
+    padding: 2px 0 12px;
+    outline: none;
+}
+
+.vt-branch,
+.vt-children {
+    width: 100%;
+}
+
+.vt-row {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 23px;
+    padding-right: 6px;
+    color: var(--pg-fg);
+    cursor: default;
+    user-select: none;
+    white-space: nowrap;
+}
+
+.vt-row:hover {
+    background: var(--pg-hover-bg);
+}
+
+.vt-row:focus-visible {
+    outline: 1px solid var(--pg-focus-border);
+    outline-offset: -1px;
+}
+
+.vt-selected {
+    background: var(--pg-selection-bg) !important;
+    color: var(--pg-selection-fg);
+}
+
+.vt-selection-indicator {
+    width: 3px;
+    height: 13px;
+    margin-right: 3px;
+    border-radius: 2px;
+    background: transparent;
+    flex: 0 0 auto;
+}
+
+.vt-selected .vt-selection-indicator {
+    background: var(--vscode-list-activeSelectionIconForeground, var(--pg-selection-fg));
+}
+
+.vt-twisty {
+    width: 16px;
+    height: 20px;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: currentColor;
+    font: inherit;
+    line-height: 20px;
+    text-align: center;
+    cursor: pointer;
+    flex: 0 0 auto;
+}
+
+.vt-twisty:disabled {
+    cursor: default;
+}
+
+.vt-label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.vt-type {
+    margin-left: auto;
+    padding-left: 8px;
+    color: var(--pg-readonly-fg);
+    font-size: 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.vt-selected .vt-type {
+    color: inherit;
+    opacity: 0.75;
+}
+
+.vt-dragging {
+    opacity: 0.45;
+}
+
+.vt-drop-before::before,
+.vt-drop-after::after {
+    content: '';
+    position: absolute;
+    left: 4px;
+    right: 4px;
+    height: 2px;
+    z-index: 3;
+    background: var(--pg-focus-border);
+}
+
+.vt-drop-before::before { top: 0; }
+.vt-drop-after::after { bottom: 0; }
+
+.vt-drop-inside {
+    background: var(--pg-drop-bg) !important;
+    outline: 1px solid var(--pg-focus-border);
+    outline-offset: -1px;
+}
+
+/* ── View Context Menu ────────────────────────────────── */
+
+.context-menu,
+.context-submenu {
+    position: fixed;
+    min-width: 190px;
+    padding: 4px 0;
+    background: var(--vscode-menu-background, #252526);
+    color: var(--vscode-menu-foreground, #f0f0f0);
+    border: 1px solid var(--vscode-menu-border, #454545);
+    border-radius: 3px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.36);
+    z-index: 1000;
+}
+
+.context-menu-item {
+    position: relative;
+    min-height: 22px;
+    padding: 3px 28px 3px 20px;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    cursor: default;
+}
+
+.context-menu-item:not(.disabled):hover,
+.context-menu-item:not(.disabled):focus {
+    background: var(--vscode-menu-selectionBackground, #094771);
+    color: var(--vscode-menu-selectionForeground, #fff);
+    outline: none;
+}
+
+.context-menu-item.disabled {
+    color: var(--vscode-disabledForeground, #888);
+}
+
+.context-menu-separator {
+    height: 1px;
+    margin: 4px 8px;
+    background: var(--vscode-menu-separatorBackground, #606060);
+}
+
+.context-menu-item.has-submenu::after {
+    content: '›';
+    position: absolute;
+    right: 8px;
+    font-size: 16px;
+}
+
+.context-submenu {
+    display: none;
+    position: absolute;
+    left: calc(100% - 2px);
+    top: -5px;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.context-menu-item.has-submenu:hover > .context-submenu {
+    display: block;
 }
 
 /* ── Property Row ─────────────────────────────────────── */

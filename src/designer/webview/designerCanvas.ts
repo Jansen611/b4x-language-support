@@ -414,24 +414,24 @@ export class DesignerCanvas {
             if (view.parent) {
                 const idx = view.parent.children.indexOf(view);
                 if (idx >= 0) { view.parent.children.splice(idx, 1); }
+                view.parent.ctrl.children = view.parent.children.map(child => child.ctrl);
             }
 
-            // Remove DOM element
             view.el.remove();
-
-            // Remove selection overlay
-            const ov = this.selectionOverlays.get(name);
-            if (ov) {
-                ov.remove();
-                this.selectionOverlays.delete(name);
-            }
-            this.selectedNames.delete(name);
-
-            // Remove from maps
-            this.controlViews.delete(name);
+            this.removeControlViewData(view);
         }
         this.updateSelectionOverlays();
         this.notifySelection();
+    }
+
+    private removeControlViewData(view: ControlView): void {
+        for (const child of view.children) { this.removeControlViewData(child); }
+        this.controlViews.delete(view.ctrl.name);
+        this.selectedNames.delete(view.ctrl.name);
+        const overlay = this.selectionOverlays.get(view.ctrl.name);
+        overlay?.remove();
+        this.selectionOverlays.delete(view.ctrl.name);
+        if (this.glowView === view) { this.glowView = null; }
     }
 
     /**
@@ -458,6 +458,39 @@ export class DesignerCanvas {
         for (const child of sorted) {
             parentView.el.appendChild(child.el);
         }
+        parentView.ctrl.children = sorted.map(child => child.ctrl);
+    }
+
+    reparentControlViews(
+        names: string[],
+        parentName: string,
+        childOrder: string[],
+        controls: WebviewControl[],
+    ): void {
+        const newParent = this.controlViews.get(parentName);
+        if (!newParent) { return; }
+
+        for (const name of names) {
+            const view = this.controlViews.get(name);
+            if (!view) { continue; }
+            if (view.parent) {
+                view.parent.children = view.parent.children.filter(child => child !== view);
+                view.parent.ctrl.children = view.parent.children.map(child => child.ctrl);
+            }
+            view.el.remove();
+            this.removeControlViewData(view);
+        }
+
+        for (const control of controls) {
+            this.createControlView(control, newParent);
+        }
+        this.reorderChildren(parentName, childOrder);
+        this.selectByNames(names);
+    }
+
+    invokeContextAction(action: string, names: string[]): void {
+        this.selectByNames(names);
+        this.handleContextAction(action, { x: 10, y: 10 });
     }
 
     /**
@@ -1248,7 +1281,7 @@ export class DesignerCanvas {
 
         // Record initial bounds of all selected controls
         this.dragInitialBounds.clear();
-        for (const name of this.selectedNames) {
+        for (const name of this.getTopLevelSelectedNames()) {
             const v = this.controlViews.get(name);
             if (v && !v.ctrl.isRoot) {
                 this.dragInitialBounds.set(name, {
@@ -1424,7 +1457,7 @@ export class DesignerCanvas {
     private commitDrag(): void {
         const moves: ControlMoveData[] = [];
 
-        for (const name of this.selectedNames) {
+        for (const name of this.getTopLevelSelectedNames()) {
             const view = this.controlViews.get(name);
             if (!view || view.ctrl.isRoot) { continue; }
 
@@ -1615,7 +1648,7 @@ export class DesignerCanvas {
     }
 
     private nudgeSelected(dx: number, dy: number): void {
-        for (const name of this.selectedNames) {
+        for (const name of this.getTopLevelSelectedNames()) {
             const view = this.controlViews.get(name);
             if (!view || view.ctrl.isRoot) { continue; }
             const x = (parseFloat(view.el.style.left) || 0) + dx;
@@ -1628,10 +1661,7 @@ export class DesignerCanvas {
     }
 
     private deleteSelected(): void {
-        const names = [...this.selectedNames].filter(n => {
-            const v = this.controlViews.get(n);
-            return v && !v.ctrl.isRoot;
-        });
+        const names = this.getTopLevelSelectedNames();
         if (names.length === 0) { return; }
         this.postMessage({ type: 'controlDeleted', names });
     }
@@ -1647,27 +1677,20 @@ export class DesignerCanvas {
     }
 
     public copySelected(): void {
-        const names = [...this.selectedNames].filter(n => {
-            const v = this.controlViews.get(n);
-            return v && !v.ctrl.isRoot;
-        });
+        const names = this.getTopLevelSelectedNames();
         if (names.length === 0) { return; }
         this.clipboardNames = names;
         this.postMessage({ type: 'contextAction', action: 'copy', names });
     }
 
     public cutSelected(): void {
-        const names = [...this.selectedNames].filter(n => {
-            const v = this.controlViews.get(n);
-            return v && !v.ctrl.isRoot;
-        });
+        const names = this.getTopLevelSelectedNames();
         if (names.length === 0) { return; }
         this.clipboardNames = names;
         this.postMessage({ type: 'contextAction', action: 'cut', names });
     }
 
     public pasteClipboard(): void {
-        if (this.clipboardNames.length === 0) { return; }
         this.postMessage({
             type: 'contextAction',
             action: 'paste',
@@ -1676,12 +1699,28 @@ export class DesignerCanvas {
     }
 
     public duplicateSelected(): void {
-        const names = [...this.selectedNames].filter(n => {
-            const v = this.controlViews.get(n);
-            return v && !v.ctrl.isRoot;
-        });
+        const names = this.getTopLevelSelectedNames();
         if (names.length === 0) { return; }
         this.postMessage({ type: 'contextAction', action: 'duplicate', names });
+    }
+
+    private getTopLevelSelectedNames(): string[] {
+        const names: string[] = [];
+        for (const name of this.selectedNames) {
+            const view = this.controlViews.get(name);
+            if (!view || view.ctrl.isRoot) { continue; }
+            let ancestor = view.parent;
+            let nestedUnderSelection = false;
+            while (ancestor) {
+                if (this.selectedNames.has(ancestor.ctrl.name)) {
+                    nestedUnderSelection = true;
+                    break;
+                }
+                ancestor = ancestor.parent;
+            }
+            if (!nestedUnderSelection) { names.push(name); }
+        }
+        return names;
     }
 
     // ── Context Menu ─────────────────────────────────────────────
