@@ -50,6 +50,7 @@ export class ScriptEditor {
     private backdrop: HTMLPreElement;
     private acPanel: HTMLDivElement;
     private options: ScriptEditorOptions;
+    private resizeObserver: ResizeObserver;
 
     /** Known control names (set from extension). */
     private controlNames: string[] = [];
@@ -116,6 +117,9 @@ export class ScriptEditor {
 
         parent.appendChild(this.container);
 
+        this.resizeObserver = new ResizeObserver(() => this.syncScroll());
+        this.resizeObserver.observe(this.textarea);
+
         // Initial highlight
         this.rehighlight();
     }
@@ -164,6 +168,7 @@ export class ScriptEditor {
 
     /** Destroy the editor, removing DOM elements. */
     dispose(): void {
+        this.resizeObserver.disconnect();
         this.container.remove();
     }
 
@@ -204,15 +209,17 @@ export class ScriptEditor {
             }
         }
 
-        // Always end with a newline so the pre has matching height
-        parts.push('\n');
         this.backdrop.innerHTML = parts.join('');
         this.syncScroll();
     }
 
     private syncScroll(): void {
-        this.backdrop.scrollTop = this.textarea.scrollTop;
-        this.backdrop.scrollLeft = this.textarea.scrollLeft;
+        // The textarea owns the native caret, selection and scroll range. Size
+        // the highlight layer from that exact range and translate it rather
+        // than relying on a second, independently calculated scroll range.
+        this.backdrop.style.width = `${Math.max(this.textarea.scrollWidth, this.textarea.clientWidth)}px`;
+        this.backdrop.style.height = `${Math.max(this.textarea.scrollHeight, this.textarea.clientHeight)}px`;
+        this.backdrop.style.transform = `translate(${-this.textarea.scrollLeft}px, ${-this.textarea.scrollTop}px)`;
     }
 
     // ── Undo / Redo ──────────────────────────────────────────────
