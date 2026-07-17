@@ -185,6 +185,7 @@
     "prepare": "npm run clean && npm run sync-version",
     "vscode:prepublish": "npm run prepare && npm run compile",
     "compile": "tsc -p tsconfig.json && npm run build:webview",
+    "check:designer-script": "npm run compile && node scripts/check-designer-script.js",
     "watch": "",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
