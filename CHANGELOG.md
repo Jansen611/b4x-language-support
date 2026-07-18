@@ -2,6 +2,16 @@
 
 All notable changes to the "b4x-language-support" extension will be documented in this file.
 
+## [1.0.1] - B4i Layout Designer (.bil) Support
+- **Features**:
+  - Added full B4i layout designer support for `.bil` files — visual editor, property grid, and variants
+  - Added B4i control registry with platform-specific controls and property descriptors
+  - Added B4i layout creation support in the `B4X: New Layout File...` command
+  - Added `.bil` support to CLI tools (`b4x-cli to-json` / `from-json`)
+  - Added B4i code generation support
+- **Credits**:
+  - Special thanks to **Erel** from Anywhere Software for granting permission to include the `.bil` layout designer in this extension.
+
 ## [1.0.0] - Visual Layout Designer & Language Server
 - **Features**:
   - Visual Layout Designer with drag-and-drop support for `.bjl`/`.bal` files

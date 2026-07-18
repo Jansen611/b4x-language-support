@@ -20,17 +20,17 @@ Provides enhanced language support for B4X (B4A, B4i, B4J) in Visual Studio Code
 - **Auto-Closing Statements**: Typing `If` automatically inserts `End If`, `For` inserts `Next`, etc.
 
 ### Integrated B4X Layout View
-- **Visual Layout Editor**: Open `.bjl` (B4J) and `.bal` (B4A) files in a visual designer canvas with drag, resize, select, zoom, and pan.
+- **Visual Layout Editor**: Open `.bil` (B4i), `.bjl` (B4J) and `.bal` (B4A) files in a visual designer canvas with drag, resize, select, zoom, and pan.
 - **Property Grid**: Sidebar panel for editing control properties (name, position, size, anchors, etc.) with platform-specific editors.
 - **Multi-Variant Support**: Manage screen size variants — phone, tablet, portrait, landscape — with predefined layouts and a closest-match algorithm. Add/remove/switch variants on the fly.
 - **Designer Script Engine**: Run B4X-dialect designer scripts (e.g. `AutoScaleAll`, `AutoScaleRate`) that programmatically adjust control positions and sizes per variant.
 - **Custom View Support**: Load custom views from B4X library XML descriptors via the `b4x.libraryPaths` setting. Custom views appear in the **Add View > CustomView** menu.
 - **Clipboard Operations**: Copy, Cut, Paste, and Duplicate controls with standard keyboard shortcuts (Ctrl/Cmd+C/X/V/D).
 - **Code Generation**: Insert `Dim` declarations and event `Sub` handlers directly into the associated `.bas` source file from the designer.
-- **New Layout File**: Create new `.bjl`/`.bal` layout files with the `B4X: New Layout File...` command. Automatically discovers B4A/B4J projects in the workspace.
+- **New Layout File**: Create new `.bil`/`.bjl`/`.bal` layout files with the `B4X: New Layout File...` command. Automatically discovers B4A/B4i/B4J projects in the workspace.
 
 ### AI Agent CLI Tools
-- **`b4x-cli`**: A CLI tool automatically available in the integrated terminal for converting layout files between binary (`.bjl`/`.bal`) and JSON formats — designed for AI agent consumption.
+- **`b4x-cli`**: A CLI tool automatically available in the integrated terminal for converting layout files between binary (`.bil`/`.bjl`/`.bal`) and JSON formats — designed for AI agent consumption.
   - `b4x-cli to-json <layout>` — binary to JSON
   - `b4x-cli from-json <json> -o <layout>` — JSON to binary
 
