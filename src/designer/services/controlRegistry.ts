@@ -65,7 +65,7 @@ function boolVal(b: boolean): BoolValue { return { tag: TypeTag.Bool, value: b }
 function colorVal(a: number, r: number, g: number, b: number): ColorValue { return { tag: TypeTag.Color, a, r, g, b }; }
 function nullVal(): NullValue { return { tag: TypeTag.Null }; }
 
-const ALL_PLATFORMS: Platform[] = [Platform.B4A, Platform.B4J];
+const ALL_PLATFORMS: Platform[] = [Platform.B4A, Platform.B4i, Platform.B4J];
 
 // ── Common Event Sets (from library XML files) ───────────────────────
 
@@ -98,14 +98,17 @@ const REGISTRY: ControlTypeDef[] = [
         metaType: 'MetaPanel',
         javaType: {
             [Platform.B4A]: 'anywheresoftware.b4a.objects.PanelWrapper',
+            [Platform.B4i]: 'B4IPanelWrapper',
             [Platform.B4J]: 'javafx.scene.layout.Pane',
         },
         csType: {
             [Platform.B4A]: 'Dbasic.Designer.MetaPanel',
+            [Platform.B4i]: 'Dbasic.Designer.MetaPanel',
             [Platform.B4J]: 'Dbasic.Designer.MetaPane',
         },
         shortTypeName: {
             [Platform.B4A]: 'Panel',
+            [Platform.B4i]: 'Panel',
             [Platform.B4J]: 'Pane',
         },
         defaultSize: { width: 200, height: 200 },
@@ -119,6 +122,7 @@ const REGISTRY: ControlTypeDef[] = [
         nullableColorKeys: [],
         events: {
             [Platform.B4A]: ['Touch(Action As Int, X As Float, Y As Float)', 'Click', 'LongClick'],
+            [Platform.B4i]: ['Touch(Action As Int, X As Float, Y As Float)', 'Resize(Width As Float, Height As Float)', 'Click', 'LongClick'],
             [Platform.B4J]: ['Resize(Width As Double, Height As Double)', 'Touch(Action As Int, X As Float, Y As Float)', ...B4J_NODE_EVENTS],
         },
     },
@@ -129,14 +133,17 @@ const REGISTRY: ControlTypeDef[] = [
         metaType: 'MetaLabel',
         javaType: {
             [Platform.B4A]: 'anywheresoftware.b4a.objects.LabelWrapper',
+            [Platform.B4i]: 'B4ILabelWrapper',
             [Platform.B4J]: 'javafx.scene.control.Label',
         },
         csType: {
             [Platform.B4A]: 'Dbasic.Designer.MetaLabel',
+            [Platform.B4i]: 'Dbasic.Designer.MetaLabel',
             [Platform.B4J]: 'Dbasic.Designer.MetaLabel',
         },
         shortTypeName: {
             [Platform.B4A]: 'Label',
+            [Platform.B4i]: 'Label',
             [Platform.B4J]: 'Label',
         },
         defaultSize: { width: 100, height: 40 },
@@ -154,6 +161,7 @@ const REGISTRY: ControlTypeDef[] = [
         nullableColorKeys: ['textColor'],
         events: {
             [Platform.B4A]: ['Click', 'LongClick'],
+            [Platform.B4i]: ['Click', 'LongClick'],
             [Platform.B4J]: [...B4J_CONTROL_EVENTS],
         },
     },
@@ -164,14 +172,17 @@ const REGISTRY: ControlTypeDef[] = [
         metaType: 'MetaButton',
         javaType: {
             [Platform.B4A]: 'anywheresoftware.b4a.objects.ButtonWrapper',
+            [Platform.B4i]: 'B4IButtonWrapper',
             [Platform.B4J]: 'javafx.scene.control.Button',
         },
         csType: {
             [Platform.B4A]: 'Dbasic.Designer.MetaButton',
+            [Platform.B4i]: 'Dbasic.Designer.MetaButton',
             [Platform.B4J]: 'Dbasic.Designer.MetaButton',
         },
         shortTypeName: {
             [Platform.B4A]: 'Button',
+            [Platform.B4i]: 'Button',
             [Platform.B4J]: 'Button',
         },
         defaultSize: { width: 100, height: 40 },
@@ -190,6 +201,7 @@ const REGISTRY: ControlTypeDef[] = [
         nullableColorKeys: ['textColor', 'tintColor'],
         events: {
             [Platform.B4A]: ['Click', 'LongClick'],
+            [Platform.B4i]: ['Click', 'LongClick'],
             [Platform.B4J]: ['Click', ...B4J_CONTROL_EVENTS],
         },
     },
@@ -200,14 +212,17 @@ const REGISTRY: ControlTypeDef[] = [
         metaType: 'MetaTextField',
         javaType: {
             [Platform.B4A]: 'anywheresoftware.b4a.objects.EditTextWrapper',
+            [Platform.B4i]: 'B4ITextFieldWrapper',
             [Platform.B4J]: 'javafx.scene.control.TextField',
         },
         csType: {
             [Platform.B4A]: 'Dbasic.Designer.MetaTextField',
+            [Platform.B4i]: 'Dbasic.Designer.MetaTextField',
             [Platform.B4J]: 'Dbasic.Designer.MetaTextField',
         },
         shortTypeName: {
             [Platform.B4A]: 'EditText',
+            [Platform.B4i]: 'TextField',
             [Platform.B4J]: 'TextField',
         },
         defaultSize: { width: 150, height: 40 },
@@ -227,6 +242,7 @@ const REGISTRY: ControlTypeDef[] = [
         nullableColorKeys: ['textColor'],
         events: {
             [Platform.B4A]: ['TextChanged(Old As String, New As String)', 'EnterPressed', 'FocusChanged(HasFocus As Boolean)'],
+            [Platform.B4i]: ['TextChanged(OldText As String, NewText As String)', 'EnterPressed', 'BeginEdit', 'EndEdit', 'Click', 'LongClick'],
             [Platform.B4J]: ['Action', 'TextChanged(Old As String, New As String)', 'MouseClicked(EventData As MouseEvent)', 'FocusChanged(HasFocus As Boolean)'],
         },
     },
@@ -236,17 +252,20 @@ const REGISTRY: ControlTypeDef[] = [
         displayName: 'TextView',
         metaType: 'MetaTextView',
         javaType: {
+            [Platform.B4i]: 'B4ITextViewWrapper',
             [Platform.B4J]: 'javafx.scene.control.TextArea',
         },
         csType: {
+            [Platform.B4i]: 'Dbasic.Designer.MetaTextView',
             [Platform.B4J]: 'Dbasic.Designer.MetaTextArea',
         },
         shortTypeName: {
+            [Platform.B4i]: 'TextView',
             [Platform.B4J]: 'TextArea',
         },
         defaultSize: { width: 150, height: 150 },
         isContainer: false,
-        platforms: [Platform.B4J],
+        platforms: [Platform.B4i, Platform.B4J],
         defaults: {
             text: strVal(''),
             textColor: { ...ALICE_BLUE },  // nullable
@@ -258,6 +277,7 @@ const REGISTRY: ControlTypeDef[] = [
         },
         nullableColorKeys: ['textColor'],
         events: {
+            [Platform.B4i]: ['TextChanged(OldText As String, NewText As String)', 'BeginEdit', 'EndEdit', 'LinkClick(URL As String)', 'Click', 'LongClick'],
             [Platform.B4J]: ['TextChanged(Old As String, New As String)', 'MouseClicked(EventData As MouseEvent)', 'FocusChanged(HasFocus As Boolean)'],
         },
     },
@@ -268,14 +288,17 @@ const REGISTRY: ControlTypeDef[] = [
         metaType: 'MetaImageView',
         javaType: {
             [Platform.B4A]: 'anywheresoftware.b4a.objects.ImageViewWrapper',
+            [Platform.B4i]: 'B4IImageViewWrapper',
             [Platform.B4J]: 'javafx.scene.image.ImageView',
         },
         csType: {
             [Platform.B4A]: 'Dbasic.Designer.MetaImageView',
+            [Platform.B4i]: 'Dbasic.Designer.MetaImageView',
             [Platform.B4J]: 'Dbasic.Designer.MetaImageView',
         },
         shortTypeName: {
             [Platform.B4A]: 'ImageView',
+            [Platform.B4i]: 'ImageView',
             [Platform.B4J]: 'ImageView',
         },
         defaultSize: { width: 100, height: 100 },
@@ -288,6 +311,7 @@ const REGISTRY: ControlTypeDef[] = [
         nullableColorKeys: [],
         events: {
             [Platform.B4A]: ['Click', 'LongClick'],
+            [Platform.B4i]: ['Click', 'LongClick'],
             [Platform.B4J]: [...B4J_NODE_EVENTS],
         },
     },
@@ -298,14 +322,17 @@ const REGISTRY: ControlTypeDef[] = [
         metaType: 'MetaScrollView',
         javaType: {
             [Platform.B4A]: 'anywheresoftware.b4a.objects.ScrollViewWrapper',
+            [Platform.B4i]: 'B4IScrollView',
             [Platform.B4J]: 'javafx.scene.control.ScrollPane',
         },
         csType: {
             [Platform.B4A]: 'Dbasic.Designer.MetaScrollView',
+            [Platform.B4i]: 'Dbasic.Designer.MetaScrollView',
             [Platform.B4J]: 'Dbasic.Designer.MetaScrollPane',
         },
         shortTypeName: {
             [Platform.B4A]: 'ScrollView',
+            [Platform.B4i]: 'ScrollView',
             [Platform.B4J]: 'ScrollPane',
         },
         defaultSize: { width: 100, height: 100 },
@@ -322,6 +349,7 @@ const REGISTRY: ControlTypeDef[] = [
         nullableColorKeys: [],
         events: {
             [Platform.B4A]: ['ScrollChanged(Position As Int)'],
+            [Platform.B4i]: ['ScrollChanged(OffsetX As Int, OffsetY As Int)', 'Click', 'LongClick'],
             [Platform.B4J]: ['VScrollChanged(Position As Double)', 'HScrollChanged(Position As Double)', ...B4J_CONTROL_EVENTS],
         },
     },
@@ -332,14 +360,17 @@ const REGISTRY: ControlTypeDef[] = [
         metaType: 'MetaWebView',
         javaType: {
             [Platform.B4A]: 'anywheresoftware.b4a.objects.WebViewWrapper',
+            [Platform.B4i]: 'B4IWebViewWrapper',
             [Platform.B4J]: 'javafx.scene.web.WebView',
         },
         csType: {
             [Platform.B4A]: 'Dbasic.Designer.MetaWebView',
+            [Platform.B4i]: 'Dbasic.Designer.MetaWebView',
             [Platform.B4J]: 'Dbasic.Designer.MetaWebView',
         },
         shortTypeName: {
             [Platform.B4A]: 'WebView',
+            [Platform.B4i]: 'WebView',
             [Platform.B4J]: 'WebView',
         },
         defaultSize: { width: 200, height: 200 },
@@ -351,6 +382,7 @@ const REGISTRY: ControlTypeDef[] = [
         nullableColorKeys: [],
         events: {
             [Platform.B4A]: ['PageFinished(Url As String)', 'OverrideUrl(Url As String) As Boolean'],
+            [Platform.B4i]: ['PageFinished(Success As Boolean, Url As String)', 'OverrideUrl(Url As String) As Boolean', 'Click', 'LongClick'],
             [Platform.B4J]: ['PageFinished(Url As String)', 'LocationChanged(Location As String)', ...B4J_NODE_EVENTS],
         },
     },
@@ -361,10 +393,12 @@ const REGISTRY: ControlTypeDef[] = [
         metaType: 'MetaSwitch',
         javaType: {
             [Platform.B4A]: 'anywheresoftware.b4a.objects.CheckBoxWrapper',
+            [Platform.B4i]: 'B4ISwitchWrapper',
             [Platform.B4J]: 'javafx.scene.control.CheckBox',
         },
         csType: {
             [Platform.B4A]: 'Dbasic.Designer.MetaCheckBox',
+            [Platform.B4i]: 'Dbasic.Designer.MetaSwitch',
             [Platform.B4J]: 'Dbasic.Designer.MetaCheckBox',
         },
         defaultSize: { width: 100, height: 40 },
@@ -380,10 +414,12 @@ const REGISTRY: ControlTypeDef[] = [
         nullableColorKeys: ['onColor', 'offColor', 'thumbColor'],
         shortTypeName: {
             [Platform.B4A]: 'CheckBox',
+            [Platform.B4i]: 'Switch',
             [Platform.B4J]: 'CheckBox',
         },
         events: {
             [Platform.B4A]: ['CheckedChange(Checked As Boolean)'],
+            [Platform.B4i]: ['ValueChanged(Value As Boolean)'],
             [Platform.B4J]: ['CheckedChange(Checked As Boolean)', ...B4J_CONTROL_EVENTS],
         },
     },
@@ -394,10 +430,12 @@ const REGISTRY: ControlTypeDef[] = [
         metaType: 'MetaSlider',
         javaType: {
             [Platform.B4A]: 'anywheresoftware.b4a.objects.SeekBarWrapper',
+            [Platform.B4i]: 'B4ISliderWrapper',
             [Platform.B4J]: 'javafx.scene.control.Slider',
         },
         csType: {
             [Platform.B4A]: 'Dbasic.Designer.MetaSeekBar',
+            [Platform.B4i]: 'Dbasic.Designer.MetaSlider',
             [Platform.B4J]: 'Dbasic.Designer.MetaSlider',
         },
         defaultSize: { width: 150, height: 40 },
@@ -414,10 +452,12 @@ const REGISTRY: ControlTypeDef[] = [
         nullableColorKeys: ['minimumTrackTintColor'],
         shortTypeName: {
             [Platform.B4A]: 'SeekBar',
+            [Platform.B4i]: 'Slider',
             [Platform.B4J]: 'Slider',
         },
         events: {
             [Platform.B4A]: ['ValueChanged(Value As Int, FromUser As Boolean)'],
+            [Platform.B4i]: ['ValueChanged(Value As Float)'],
             [Platform.B4J]: ['ValueChanged(Value As Double)', ...B4J_CONTROL_EVENTS],
         },
     },
@@ -429,10 +469,12 @@ const REGISTRY: ControlTypeDef[] = [
         metaType: 'MetaProgressView',
         javaType: {
             [Platform.B4A]: 'anywheresoftware.b4a.objects.ProgressDialogWrapper',
+            [Platform.B4i]: 'B4IProgressWrapper',
             [Platform.B4J]: 'javafx.scene.control.ProgressBar',
         },
         csType: {
             [Platform.B4A]: 'Dbasic.Designer.MetaProgressBar',
+            [Platform.B4i]: 'Dbasic.Designer.MetaProgressView',
             [Platform.B4J]: 'Dbasic.Designer.MetaProgressBar',
         },
         defaultSize: { width: 100, height: 30 },
@@ -443,11 +485,13 @@ const REGISTRY: ControlTypeDef[] = [
         },
         shortTypeName: {
             [Platform.B4A]: 'ProgressBar',
+            [Platform.B4i]: 'ProgressView',
             [Platform.B4J]: 'ProgressBar',
         },
         nullableColorKeys: ['progressColor'],
         events: {
             [Platform.B4A]: [],
+            [Platform.B4i]: ['Click', 'LongClick'],
             [Platform.B4J]: [...B4J_CONTROL_EVENTS],
         },
     },
@@ -458,10 +502,12 @@ const REGISTRY: ControlTypeDef[] = [
         metaType: 'MetaCustomView',
         javaType: {
             [Platform.B4A]: 'anywheresoftware.b4a.objects.CustomViewWrapper',
+            [Platform.B4i]: 'B4ICustomViewWrapper',
             [Platform.B4J]: 'javafx.scene.layout.Pane',
         },
         csType: {
             [Platform.B4A]: 'Dbasic.Designer.MetaCustomView',
+            [Platform.B4i]: 'Dbasic.Designer.MetaCustomView',
             [Platform.B4J]: 'Dbasic.Designer.MetaCustomView',
         },
         defaultSize: { width: 100, height: 40 },
@@ -478,13 +524,107 @@ const REGISTRY: ControlTypeDef[] = [
         },
         shortTypeName: {
             [Platform.B4A]: 'CustomView',
+            [Platform.B4i]: 'CustomView',
             [Platform.B4J]: 'CustomView',
         },
         nullableColorKeys: ['textColor'],
         events: {
             [Platform.B4A]: ['Click', 'LongClick'],
+            [Platform.B4i]: ['Click', 'LongClick'],
             [Platform.B4J]: [...B4J_NODE_EVENTS],
         },
+    },
+
+    // ── B4i-only: Stepper ────────────────────────────────────────
+    {
+        displayName: 'Stepper',
+        metaType: 'MetaStepper',
+        javaType: { [Platform.B4i]: 'B4IStepperWrapper' },
+        csType: { [Platform.B4i]: 'Dbasic.Designer.MetaStepper' },
+        shortTypeName: { [Platform.B4i]: 'Stepper' },
+        defaultSize: { width: 100, height: 40 },
+        isContainer: false,
+        platforms: [Platform.B4i],
+        defaults: {
+            minimumValue: floatVal(0),
+            maximumValue: floatVal(100),
+            stepValue: floatVal(1),
+            tintColor: { ...ALICE_BLUE },
+            enabled: boolVal(true),
+        },
+        nullableColorKeys: ['tintColor'],
+        events: { [Platform.B4i]: ['ValueChanged(Value As Double)', 'Click', 'LongClick'] },
+    },
+
+    // ── B4i-only: SegmentedControl ────────────────────────────────
+    {
+        displayName: 'SegmentedControl',
+        metaType: 'MetaSegmentedControl',
+        javaType: { [Platform.B4i]: 'B4ISegmentedControlWrapper' },
+        csType: { [Platform.B4i]: 'Dbasic.Designer.MetaSegmentedControl' },
+        shortTypeName: { [Platform.B4i]: 'SegmentedControl' },
+        defaultSize: { width: 100, height: 40 },
+        isContainer: false,
+        platforms: [Platform.B4i],
+        defaults: {
+            items: strVal(''),
+            tintColor: { ...ALICE_BLUE },
+            momentary: boolVal(false),
+            enabled: boolVal(true),
+        },
+        nullableColorKeys: ['tintColor'],
+        events: { [Platform.B4i]: ['IndexChanged(Index As Int)', 'Click', 'LongClick'] },
+    },
+
+    // ── B4i-only: Picker ──────────────────────────────────────────
+    {
+        displayName: 'Picker',
+        metaType: 'MetaPicker',
+        javaType: { [Platform.B4i]: 'B4IPickerWrapper' },
+        csType: { [Platform.B4i]: 'Dbasic.Designer.MetaPicker' },
+        defaultSize: { width: 300, height: 160 },
+        isContainer: false,
+        platforms: [Platform.B4i],
+        shortTypeName: { [Platform.B4i]: 'Picker' },
+        defaults: {},
+        nullableColorKeys: [],
+        events: { [Platform.B4i]: ['ItemSelected(Column As Int, Row As Int)', 'Click', 'LongClick'] },
+    },
+
+    // ── B4i-only: DatePicker ──────────────────────────────────────
+    {
+        displayName: 'DatePicker',
+        metaType: 'MetaDatePicker',
+        javaType: { [Platform.B4i]: 'B4IDatePickerWrapper' },
+        csType: { [Platform.B4i]: 'Dbasic.Designer.MetaDatePicker' },
+        defaultSize: { width: 300, height: 160 },
+        isContainer: false,
+        platforms: [Platform.B4i],
+        defaults: {
+            mode: intVal(1),
+            minuteInterval: intVal(1),
+        },
+        shortTypeName: { [Platform.B4i]: 'DatePicker' },
+        nullableColorKeys: [],
+        events: { [Platform.B4i]: ['ValueChanged', 'Click', 'LongClick'] },
+    },
+
+    // ── B4i-only: ActivityIndicator ───────────────────────────────
+    {
+        displayName: 'ActivityIndicator',
+        metaType: 'MetaActivityIndicator',
+        javaType: { [Platform.B4i]: 'B4IActivityIndicatorWrapper' },
+        csType: { [Platform.B4i]: 'Dbasic.Designer.MetaActivityIndicator' },
+        defaultSize: { width: 80, height: 80 },
+        isContainer: false,
+        platforms: [Platform.B4i],
+        defaults: {
+            style: intVal(2),
+            color: { ...ALICE_BLUE },
+        },
+        shortTypeName: { [Platform.B4i]: 'ActivityIndicator' },
+        nullableColorKeys: ['color'],
+        events: { [Platform.B4i]: ['Click', 'LongClick'] },
     },
 
     // ── B4A-only: EditText (MetaEditText) ────────────────────────

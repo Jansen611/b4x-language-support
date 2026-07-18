@@ -216,6 +216,7 @@ export function buildPropertyDescriptors(
     const typeName = isRoot ? 'MetaMain' : detectControlType(node);
     const name = getStr(node, 'name', '') || getStr(node, 'eventName', '');
     const isB4A = platform === Platform.B4A;
+    const isB4i = platform === Platform.B4i;
     const isB4J = platform === Platform.B4J;
 
     // ── Main Category ────────────────────────────────────────────
@@ -310,14 +311,12 @@ export function buildPropertyDescriptors(
         });
     }
 
-    if (isB4A || isB4J) {
-        props.push({
-            key: 'enabled', displayName: 'Enabled', category: catCommon,
-            description: 'Whether the view is enabled',
-            editor: EditorType.Bool, isMergeable: true, isReadOnly: false,
-            defaultValue: true,
-        });
-    }
+    props.push({
+        key: 'enabled', displayName: 'Enabled', category: catCommon,
+        description: 'Whether the view is enabled',
+        editor: EditorType.Bool, isMergeable: true, isReadOnly: false,
+        defaultValue: true,
+    });
 
     props.push({
         key: 'visible', displayName: 'Visible', category: catCommon,
@@ -332,8 +331,23 @@ export function buildPropertyDescriptors(
         editor: EditorType.String, isMergeable: true, isReadOnly: false,
     });
 
-    // ── Border Properties (B4J) ──────────────────────────────────
-    if (isB4J) {
+    if (isB4i) {
+        props.push({
+            key: 'backgroundColor', displayName: 'Background Color', category: catCommon,
+            description: 'Background color',
+            editor: EditorType.NullableColor, isMergeable: true, isReadOnly: false,
+            alphaEnabled: true,
+        });
+        props.push({
+            key: 'alpha', displayName: 'Alpha Level', category: catCommon,
+            description: 'Alpha level (0 - 1)',
+            editor: EditorType.Double, isMergeable: true, isReadOnly: false,
+            min: 0, max: 1, step: 0.1, defaultValue: 1.0,
+        });
+    }
+
+    // ── Border Properties (B4i / B4J) ────────────────────────────
+    if (isB4i || isB4J) {
         const catBorder = 'Border Properties';
         props.push({
             key: 'borderColor', displayName: 'Border Color', category: catBorder,
@@ -369,6 +383,7 @@ function addTypeSpecificProperties(
     platform: Platform,
     node: ControlNode,
 ): void {
+    const isB4i = platform === Platform.B4i;
 
     switch (typeName) {
         case 'MetaButton':
@@ -378,7 +393,7 @@ function addTypeSpecificProperties(
             addLabelProperties(props);
             break;
         case 'MetaTextField':
-            addTextFieldProperties(props);
+            addTextFieldProperties(props, isB4i);
             break;
         case 'MetaTextView':
             addTextViewProperties(props);
@@ -387,8 +402,10 @@ function addTypeSpecificProperties(
             addImageViewProperties(props);
             break;
         case 'MetaPanel':
+            addPanelProperties(props, isB4i);
             break;
         case 'MetaMain':
+            addMainProperties(props, isB4i);
             break;
         case 'MetaScrollView':
             addScrollViewProperties(props);
@@ -404,6 +421,20 @@ function addTypeSpecificProperties(
             break;
         case 'MetaProgressView':
             addProgressViewProperties(props);
+            break;
+        case 'MetaStepper':
+            addStepperProperties(props);
+            break;
+        case 'MetaSegmentedControl':
+            addSegmentedControlProperties(props);
+            break;
+        case 'MetaPicker':
+            break;
+        case 'MetaDatePicker':
+            addDatePickerProperties(props);
+            break;
+        case 'MetaActivityIndicator':
+            addActivityIndicatorProperties(props);
             break;
         case 'MetaCustomView':
             addCustomViewProperties(props, node);
@@ -509,7 +540,7 @@ function addLabelProperties(props: PropertyDescriptor[]): void {
     addTextAlignmentDropdown(props, cat);
 }
 
-function addButtonProperties(props: PropertyDescriptor[], _platform: Platform): void {
+function addButtonProperties(props: PropertyDescriptor[], platform: Platform): void {
     const cat = 'Button Properties';
     props.push({
         key: 'text', displayName: 'Text', category: cat,
@@ -526,6 +557,19 @@ function addButtonProperties(props: PropertyDescriptor[], _platform: Platform): 
         description: 'Material icon name',
         editor: EditorType.String, isMergeable: true, isReadOnly: false,
     });
+    if (platform === Platform.B4i) {
+        props.push({
+            key: 'style', displayName: 'Style', category: cat,
+            description: 'Button style',
+            editor: EditorType.Dropdown, isMergeable: true, isReadOnly: false,
+            options: [
+                { label: 'Custom', value: 'Custom' },
+                { label: 'SYSTEM', value: 'SYSTEM' },
+                { label: 'INFO', value: 'INFO' },
+                { label: 'CONTACT_ADD', value: 'CONTACT_ADD' },
+            ],
+        });
+    }
     props.push({
         key: 'textColor', displayName: 'Text Color', category: cat,
         description: 'Text color',
@@ -550,7 +594,7 @@ function addButtonProperties(props: PropertyDescriptor[], _platform: Platform): 
     });
 }
 
-function addTextFieldProperties(props: PropertyDescriptor[]): void {
+function addTextFieldProperties(props: PropertyDescriptor[], isB4i: boolean): void {
     const cat = 'Text Properties';
     props.push({
         key: 'text', displayName: 'Text', category: cat,
@@ -570,12 +614,40 @@ function addTextFieldProperties(props: PropertyDescriptor[]): void {
         editor: EditorType.String, isMergeable: true, isReadOnly: false,
     });
 
+    if (isB4i) {
+        props.push({
+            key: 'borderStyle', displayName: 'Border Style', category: cat,
+            description: 'Text field border style',
+            editor: EditorType.Dropdown, isMergeable: true, isReadOnly: false,
+            options: [
+                { label: 'NONE', value: 0 },
+                { label: 'LINE', value: 1 },
+                { label: 'BEZEL', value: 2 },
+                { label: 'ROUNDEDRECT', value: 3 },
+            ],
+        });
+        props.push({
+            key: 'adjustFontSizeToFit', displayName: 'Adjust Font Size To Fit', category: cat,
+            description: 'Automatically adjust font size',
+            editor: EditorType.Bool, isMergeable: true, isReadOnly: false,
+        });
+        props.push({
+            key: 'showClearButton', displayName: 'Show Clear Button', category: cat,
+            description: 'Show clear button',
+            editor: EditorType.Bool, isMergeable: true, isReadOnly: false,
+        });
+    }
+
     props.push({
         key: 'passwordMode', displayName: 'Password Mode', category: cat,
         description: 'Hide typed text',
         editor: EditorType.Bool, isMergeable: true, isReadOnly: false,
         defaultValue: false,
     });
+
+    if (isB4i) {
+        addTextInputProperties(props, cat, true);
+    }
 }
 
 function addTextViewProperties(props: PropertyDescriptor[]): void {
@@ -738,6 +810,112 @@ function addProgressViewProperties(props: PropertyDescriptor[]): void {
         editor: EditorType.NullableColor, isMergeable: true, isReadOnly: false,
         alphaEnabled: false,
     });
+}
+
+function addTextInputProperties(props: PropertyDescriptor[], cat: string, includeReturnKey: boolean): void {
+    props.push({ key: 'autocorrection', displayName: 'Auto Correction', category: cat,
+        description: 'Auto-correction mode', editor: EditorType.Dropdown, isMergeable: true, isReadOnly: false,
+        options: [{ label:'DEFAULT',value:0},{ label:'NO',value:1},{ label:'YES',value:2 }] });
+    props.push({ key: 'spellcheck', displayName: 'Spell Check', category: cat,
+        description: 'Spell check mode', editor: EditorType.Dropdown, isMergeable: true, isReadOnly: false,
+        options: [{ label:'DEFAULT',value:0},{ label:'NO',value:1},{ label:'YES',value:2 }] });
+    props.push({ key: 'autocapitalization', displayName: 'Auto Capitalization', category: cat,
+        description: 'Auto-capitalization mode', editor: EditorType.Dropdown, isMergeable: true, isReadOnly: false,
+        options: [{ label:'NONE',value:0},{ label:'WORDS',value:1},{ label:'SENTENCES',value:2},{ label:'ALL',value:3 }] });
+    props.push({ key: 'keyboardType', displayName: 'Keyboard Type', category: cat,
+        description: 'Keyboard type', editor: EditorType.Dropdown, isMergeable: true, isReadOnly: false,
+        options: [{ label:'DEFAULT',value:0},{ label:'ASCII_CAPABLE',value:1},{ label:'NUMBERS_AND_PUNCTUATIONS',value:2},
+                  { label:'URL',value:3},{ label:'NUMBER_PAD',value:4},{ label:'PHONE_PAD',value:5},
+                  { label:'NAME_PHONE_PAD',value:6},{ label:'EMAIL_ADDRESS',value:7},{ label:'DECIMAL_PAD',value:8},
+                  { label:'WEB_SEARCH',value:10 }] });
+    props.push({ key: 'keyboardAppearance', displayName: 'Keyboard Appearance', category: cat,
+        description: 'Keyboard appearance', editor: EditorType.Dropdown, isMergeable: true, isReadOnly: false,
+        options: [{ label:'DEFAULT',value:0},{ label:'DARK',value:1},{ label:'LIGHT',value:2 }] });
+    if (includeReturnKey) {
+        props.push({ key: 'returnKey', displayName: 'Return Key', category: cat,
+            description: 'Return key type', editor: EditorType.Dropdown, isMergeable: true, isReadOnly: false,
+            options: [{ label:'DEFAULT',value:0},{ label:'GO',value:1},{ label:'NEXT',value:4},
+                      { label:'SEARCH',value:6},{ label:'SEND',value:7},{ label:'DONE',value:9 }] });
+    }
+}
+
+function addPanelProperties(props: PropertyDescriptor[], isB4i: boolean): void {
+    if (!isB4i) { return; }
+    const cat = 'Panel Properties';
+    props.push({ key: 'verticalParallax', displayName: 'Vertical Parallax', category: cat,
+        description: 'Vertical parallax offset (-50 to 50)', editor: EditorType.Int, isMergeable: true, isReadOnly: false,
+        min: -50, max: 50, defaultValue: 0 });
+    props.push({ key: 'horizontalParallax', displayName: 'Horizontal Parallax', category: cat,
+        description: 'Horizontal parallax offset (-50 to 50)', editor: EditorType.Int, isMergeable: true, isReadOnly: false,
+        min: -50, max: 50, defaultValue: 0 });
+}
+
+function addMainProperties(props: PropertyDescriptor[], isB4i: boolean): void {
+    if (!isB4i) { return; }
+    const cat = 'Page Properties';
+    props.push({ key: 'handleResizeEvent', displayName: 'Handle Resize Event', category: cat,
+        description: 'Handle resize events', editor: EditorType.Bool, isMergeable: false, isReadOnly: false, defaultValue: false });
+    props.push({ key: 'backgroundColor', displayName: 'Background Color', category: cat,
+        description: 'Page background color', editor: EditorType.NullableColor, isMergeable: true, isReadOnly: false, alphaEnabled: true });
+    props.push({ key: 'title', displayName: 'Title', category: cat,
+        description: 'Navigation bar title', editor: EditorType.String, isMergeable: false, isReadOnly: false });
+    props.push({ key: 'prompt', displayName: 'Prompt', category: cat,
+        description: 'Navigation bar prompt', editor: EditorType.String, isMergeable: false, isReadOnly: false });
+    props.push({ key: 'hideBackButton', displayName: 'Hide Back Button', category: cat,
+        description: 'Hide the navigation back button', editor: EditorType.Bool, isMergeable: false, isReadOnly: false, defaultValue: false });
+    props.push({ key: 'navigationBarVisible', displayName: 'Navigation Bar Visible', category: cat,
+        description: 'Show the navigation bar', editor: EditorType.Bool, isMergeable: false, isReadOnly: false, defaultValue: true });
+    props.push({ key: 'navigationToolbarVisible', displayName: 'Navigation Toolbar Visible', category: cat,
+        description: 'Show the navigation toolbar', editor: EditorType.Bool, isMergeable: false, isReadOnly: false, defaultValue: false });
+    props.push({ key: 'duration', displayName: 'Duration', category: cat,
+        description: 'Animation duration (ms)', editor: EditorType.Int, isMergeable: false, isReadOnly: false, defaultValue: 400 });
+    props.push({ key: 'dumpingRatio', displayName: 'Dumping Ratio', category: cat,
+        description: 'Dumping ratio (0.1 - 1.0)', editor: EditorType.Double, isMergeable: false, isReadOnly: false,
+        min: 0.1, max: 1.0, step: 0.1, defaultValue: 0.6 });
+}
+
+function addStepperProperties(props: PropertyDescriptor[]): void {
+    const cat = 'Stepper Properties';
+    props.push({ key: 'minimumValue', displayName: 'Minimum Value', category: cat,
+        description: 'Minimum value', editor: EditorType.Double, isMergeable: true, isReadOnly: false, defaultValue: 0 });
+    props.push({ key: 'maximumValue', displayName: 'Maximum Value', category: cat,
+        description: 'Maximum value', editor: EditorType.Double, isMergeable: true, isReadOnly: false, defaultValue: 100 });
+    props.push({ key: 'stepValue', displayName: 'Step Value', category: cat,
+        description: 'Step increment', editor: EditorType.Double, isMergeable: true, isReadOnly: false, defaultValue: 1 });
+    props.push({ key: 'tintColor', displayName: 'Tint Color', category: cat,
+        description: 'Tint color', editor: EditorType.NullableColor, isMergeable: true, isReadOnly: false, alphaEnabled: false });
+}
+
+function addSegmentedControlProperties(props: PropertyDescriptor[]): void {
+    const cat = 'SegmentedControl Properties';
+    props.push({ key: 'items', displayName: 'Items', category: cat,
+        description: 'Comma-separated list of items', editor: EditorType.String, isMergeable: true, isReadOnly: false });
+    props.push({ key: 'tintColor', displayName: 'Tint Color', category: cat,
+        description: 'Control tint color', editor: EditorType.NullableColor, isMergeable: true, isReadOnly: false, alphaEnabled: false });
+    props.push({ key: 'momentary', displayName: 'Momentary', category: cat,
+        description: 'Whether selection is momentary', editor: EditorType.Bool, isMergeable: true, isReadOnly: false, defaultValue: false });
+}
+
+function addDatePickerProperties(props: PropertyDescriptor[]): void {
+    const cat = 'DatePicker Properties';
+    props.push({ key: 'mode', displayName: 'Mode', category: cat,
+        description: 'Date picker mode', editor: EditorType.Dropdown, isMergeable: true, isReadOnly: false,
+        options: [{ label:'TIME',value:0},{ label:'DATE',value:1},{ label:'DATE & TIME',value:2 }], defaultValue: 1 });
+    props.push({ key: 'minuteInterval', displayName: 'Minute Interval', category: cat,
+        description: 'Minute picker interval', editor: EditorType.Dropdown, isMergeable: true, isReadOnly: false,
+        options: [{ label:'1',value:1},{ label:'5',value:5},{ label:'10',value:10},{ label:'15',value:15},{ label:'20',value:20},{ label:'30',value:30 }],
+        defaultValue: 1 });
+}
+
+function addActivityIndicatorProperties(props: PropertyDescriptor[]): void {
+    const cat = 'ActivityIndicator Properties';
+    props.push({ key: 'style', displayName: 'Style', category: cat,
+        description: 'Indicator style', editor: EditorType.Dropdown, isMergeable: true, isReadOnly: false,
+        options: [{ label:'WHITE_LARGE',value:0},{ label:'WHITE',value:1},{ label:'GRAY',value:2 }],
+        defaultValue: 2 });
+    props.push({ key: 'color', displayName: 'Color', category: cat,
+        description: 'Indicator color', editor: EditorType.NullableColor, isMergeable: true, isReadOnly: false,
+        alphaEnabled: false });
 }
 
 

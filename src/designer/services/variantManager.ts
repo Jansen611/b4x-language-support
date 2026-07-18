@@ -24,6 +24,21 @@ export interface PredefinedLayout {
 // ── Built-in AbstractLayouts per platform ────────────────────────────
 // Embedded so the extension works without external runtime data files.
 
+const B4I_LAYOUTS: PredefinedLayout[] = [
+    { label: "3.5'' Phone (portrait)", width: 320, height: 480, scale: 1 },
+    { label: "3.5'' Phone (landscape)", width: 480, height: 320, scale: 1 },
+    { label: "4'' Phone (portrait)", width: 320, height: 568, scale: 1 },
+    { label: "4'' Phone (landscape)", width: 568, height: 320, scale: 1 },
+    { label: "4.7'' Phone (portrait)", width: 375, height: 667, scale: 1 },
+    { label: "4.7'' Phone (landscape)", width: 667, height: 375, scale: 1 },
+    { label: "5.5'' Phone (portrait)", width: 414, height: 736, scale: 1 },
+    { label: "5.5'' Phone (landscape)", width: 736, height: 414, scale: 1 },
+    { label: "5.7'' Phone (portrait)", width: 375, height: 812, scale: 1 },
+    { label: "5.7'' Phone (landscape)", width: 812, height: 375, scale: 1 },
+    { label: 'iPad (portrait)', width: 768, height: 1024, scale: 1 },
+    { label: 'iPad (landscape)', width: 1024, height: 768, scale: 1 },
+];
+
 const B4A_LAYOUTS: PredefinedLayout[] = [
     { label: 'Phone (portrait)', width: 320, height: 480, scale: 1 },
     { label: 'Phone (landscape)', width: 480, height: 320, scale: 1 },
@@ -53,6 +68,7 @@ const B4J_LAYOUTS: PredefinedLayout[] = [
 export function getPredefinedLayouts(platform: Platform): PredefinedLayout[] {
     switch (platform) {
         case Platform.B4A: return B4A_LAYOUTS;
+        case Platform.B4i: return B4I_LAYOUTS;
         case Platform.B4J: return B4J_LAYOUTS;
         default: return B4A_LAYOUTS;
     }
@@ -154,6 +170,8 @@ export function getDefaultVariant(platform: Platform): Variant {
     switch (platform) {
         case Platform.B4J:
             return { scale: 1, width: 600, height: 600 };
+        case Platform.B4i:
+            return { scale: 1, width: 320, height: 568 };
         case Platform.B4A:
         default:
             return { scale: 1, width: 320, height: 480 };
