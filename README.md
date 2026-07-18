@@ -21,6 +21,7 @@ Provides enhanced language support for B4X (B4A, B4i, B4J) in Visual Studio Code
 
 ### Integrated B4X Layout View
 - **Visual Layout Editor**: Open `.bil` (B4i), `.bjl` (B4J) and `.bal` (B4A) files in a visual designer canvas with drag, resize, select, zoom, and pan.
+- **Views Tree**: Sidebar panel showing the full control hierarchy with search, multi-select, keyboard navigation, and drag-and-drop reparenting into container views.
 - **Property Grid**: Sidebar panel for editing control properties (name, position, size, anchors, etc.) with platform-specific editors.
 - **Multi-Variant Support**: Manage screen size variants — phone, tablet, portrait, landscape — with predefined layouts and a closest-match algorithm. Add/remove/switch variants on the fly.
 - **Designer Script Engine**: Run B4X-dialect designer scripts (e.g. `AutoScaleAll`, `AutoScaleRate`) that programmatically adjust control positions and sizes per variant.

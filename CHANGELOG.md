@@ -2,6 +2,15 @@
 
 All notable changes to the "b4x-language-support" extension will be documented in this file.
 
+## [1.0.2] - Views Tree & Designer Enhancements
+- **Features**:
+  - Added **Views Tree** panel in the Property Grid sidebar, displaying the full control hierarchy
+  - Tree search/filter by control name with expand/collapse all
+  - Multi-selection with keyboard navigation (arrow keys, Enter)
+  - Drag and drop to reparent controls into container views
+  - Synchronized selection between tree and canvas
+  - Improved Z-order operations (bring to front, send to back, bring forward, send backward) work correctly with multi-selected controls
+
 ## [1.0.1] - B4i Layout Designer (.bil) Support
 - **Features**:
   - Added full B4i layout designer support for `.bil` files — visual editor, property grid, and variants
