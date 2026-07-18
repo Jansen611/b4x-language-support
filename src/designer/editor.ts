@@ -334,6 +334,7 @@ export class B4XLayoutEditorProvider implements vscode.CustomEditorProvider<B4XL
             }
         };
         updateContext();
+        vscode.commands.executeCommand('workbench.view.extension.b4x-designer');
         webviewPanel.onDidChangeViewState(() => {
             // Re-anchor if dragged to a floating window (viewColumn is undefined when floating)
             if (webviewPanel.viewColumn === undefined) {
