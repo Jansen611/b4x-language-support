@@ -48,14 +48,11 @@ Examples:
   # Print JSON to terminal
   b4x-cli to-json MyLayout.bal
 
-  # .bil (B4i) files are supported too
-  b4x-cli to-json MyLayout.bil
-
   # Save JSON to file
   b4x-cli to-json MyLayout.bjl -o MyLayout.json
 
   # Pipe to jq for quick inspection
-  b4x-cli to-json MyLayout.bal | jq '.rootControl.children[0].properties.name'
+  b4x-cli to-json MyLayout.bil | jq '.rootControl.children[0].properties.name'
 `.trim());
         return;
     }
@@ -78,10 +75,6 @@ Examples:
   b4x-cli to-json   MyLayout.bal -o MyLayout.json
   # ... edit MyLayout.json with your agent or editor ...
   b4x-cli from-json MyLayout.json -o MyLayout.bal
-
-  # .bil (B4i) round-trip
-  b4x-cli to-json   MyLayout.bil -o MyLayout.json
-  b4x-cli from-json MyLayout.json -o MyLayout.bil
 `.trim());
         return;
     }
@@ -102,7 +95,6 @@ Run "b4x-cli <subcommand> --help" for more details.
 Examples:
   b4x-cli to-json   MyLayout.bal -o MyLayout.json
   b4x-cli from-json MyLayout.json -o MyLayout.bal
-  b4x-cli to-json   MyLayout.bil -o MyLayout.json
 `.trim());
 }
 
