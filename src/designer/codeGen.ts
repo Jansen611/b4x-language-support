@@ -101,7 +101,7 @@ async function openSourceEditor(layoutFile: string): Promise<vscode.TextEditor |
  */
 async function findSourceFile(layoutFile: string): Promise<vscode.Uri | null> {
     const layoutExt = path.extname(layoutFile).toLowerCase();
-    if (!['.bjl', '.bal'].includes(layoutExt)) { return null; }
+    if (!['.bil', '.bjl', '.bal'].includes(layoutExt)) { return null; }
 
     const layoutName = path.basename(layoutFile, layoutExt).toLowerCase();
 

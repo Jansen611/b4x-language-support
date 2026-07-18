@@ -36,6 +36,12 @@ const PROJECT_CONFIGS: PlatformProjectConfig[] = [
         layoutExtension: '.bal',
     },
     {
+        platform: Platform.B4i,
+        projectFolderName: 'B4i',
+        projectExtension: '.b4i',
+        layoutExtension: '.bil',
+    },
+    {
         platform: Platform.B4J,
         projectFolderName: 'B4J',
         projectExtension: '.b4j',
@@ -60,7 +66,7 @@ export function registerCreateLayoutFileCommand(customEditorViewType: string): v
 async function createLayoutFile(resource: vscode.Uri | undefined, customEditorViewType: string): Promise<void> {
     const targets = await discoverProjectTargets();
     if (targets.length === 0) {
-        throw new Error('No B4X project was detected. Expected B4A/B4J folders with .b4a/.b4j project files.');
+        throw new Error('No B4X project was detected. Expected B4A/B4i/B4J folders with .b4a/.b4i/.b4j project files.');
     }
 
     const contextUri = resource ?? vscode.window.activeTextEditor?.document.uri;
@@ -272,7 +278,7 @@ function normalizeLayoutFileName(input: string, extension: string): string {
 
 function normalizeLayoutBaseName(input: string): string {
     const trimmed = input.trim();
-    const noExt = trimmed.replace(/\.(bal|bjl)$/i, '');
+    const noExt = trimmed.replace(/\.(bal|bil|bjl)$/i, '');
     return noExt.toLowerCase();
 }
 
@@ -376,6 +382,8 @@ function createRootControl(platform: Platform): ControlNode {
     switch (platform) {
         case Platform.B4A:
             return createB4ARoot();
+        case Platform.B4i:
+            return createB4iRoot();
         case Platform.B4J:
         default:
             return createB4jRoot();
@@ -406,6 +414,55 @@ function createB4ARoot(): ControlNode {
     props.set('variant0', variant(100, 100, 100, 100));
 
     return { properties: props, children: [] };
+}
+
+function createB4iRoot(): ControlNode {
+    const props = new Map<string, PropertyValue>();
+    props.set('csType', s('Dbasic.Designer.MetaMain'));
+    props.set('type', s('B4IPanelWrapper'));
+    props.set('alpha', f(1));
+    props.set('backgroundColor', c(255, 245, 245, 245));
+    props.set('borderWidth', f(1));
+    props.set('cornerRadius', f(3));
+    props.set('dumpingRatio', f(0.6));
+    props.set('duration', i(400));
+    props.set('eventName', s('Page1'));
+    props.set('handleResizeEvent', b(true));
+    props.set('hideBackButton', b(false));
+    props.set('javaType', s('B4IPanelWrapper'));
+    props.set('name', s('Main'));
+    props.set('navigationBarVisible', b(true));
+    props.set('navigationToolbarVisible', b(true));
+    props.set('parent', s(''));
+    props.set('prompt', s(''));
+    props.set('tag', s(''));
+    props.set('title', s('Page'));
+    for (let index = 0; index < 5; index++) {
+        props.set(`toolbar${index}`, createB4iBarButton());
+        props.set(`topRight${index}`, createB4iBarButton());
+    }
+    props.set('visible', b(true));
+    props.set('variant0', variant(100, 100, 200, 200));
+    return { properties: props, children: [] };
+}
+
+function createB4iBarButton(): PropertyValue {
+    return obj([
+        ['csType', s('Dbasic.Designer.BarButtonGrid')],
+        ['type', s('B4IBarButtonItemWrapper')],
+        ['btype', i(-3)],
+        ['enabled', b(true)],
+        ['font', obj([
+            ['csType', s('Dbasic.Designer.FontGrid')],
+            ['type', s('B4IFontWrapper')],
+            ['fontName', s('DEFAULT')],
+            ['fontSize', f(17)],
+        ])],
+        ['image', s('')],
+        ['tag', s('')],
+        ['text', s('')],
+        ['tintColor', c(255, 240, 248, 255)],
+    ]);
 }
 
 function createB4jRoot(): ControlNode {

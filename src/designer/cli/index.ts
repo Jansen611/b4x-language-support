@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 /**
- * b4x-cli — CLI tool for converting BJL/BAL layout files to/from JSON.
+ * b4x-cli — CLI tool for converting BIL/BJL/BAL layout files to/from JSON.
  *
  * Usage:
- *   b4x-cli to-json   <input.bal|bjl>  [-o output.json]  [--no-pretty]
- *   b4x-cli from-json <input.json>          -o output.bal|bjl
+ *   b4x-cli to-json   <input.bal|bil|bjl>  [-o output.json]  [--no-pretty]
+ *   b4x-cli from-json <input.json>               -o output.bal|bil|bjl
  *   b4x-cli --help
  *   b4x-cli <subcommand> --help
  *
@@ -34,10 +34,10 @@ function printHelp(subcommand?: string): void {
         console.log(`
 Usage: b4x-cli to-json <input> [options]
 
-Convert a binary BJL/BAL layout file to JSON.
+Convert a binary .bal/.bil/.bjl layout file to JSON.
 
 Arguments:
-  <input>           Path to a .bal or .bjl layout file
+  <input>           Path to a .bal, .bil or .bjl layout file
 
 Options:
   -o, --output <file>   Write JSON to this file instead of stdout
@@ -48,8 +48,11 @@ Examples:
   # Print JSON to terminal
   b4x-cli to-json MyLayout.bal
 
+  # .bil (B4i) files are supported too
+  b4x-cli to-json MyLayout.bil
+
   # Save JSON to file
-  b4x-cli to-json MyLayout.bal -o MyLayout.json
+  b4x-cli to-json MyLayout.bjl -o MyLayout.json
 
   # Pipe to jq for quick inspection
   b4x-cli to-json MyLayout.bal | jq '.rootControl.children[0].properties.name'
@@ -61,13 +64,13 @@ Examples:
         console.log(`
 Usage: b4x-cli from-json <input> -o <output> [options]
 
-Convert a JSON file back to a binary BJL/BAL layout file.
+Convert a JSON file back to a binary .bal/.bil/.bjl layout file.
 
 Arguments:
   <input>               Path to a .json file produced by "to-json"
 
 Options:
-  -o, --output <file>   (Required) Output path (.bal or .bjl)
+  -o, --output <file>   (Required) Output path (.bal, .bil or .bjl)
   -h, --help            Show this help message
 
 Examples:
@@ -75,6 +78,10 @@ Examples:
   b4x-cli to-json   MyLayout.bal -o MyLayout.json
   # ... edit MyLayout.json with your agent or editor ...
   b4x-cli from-json MyLayout.json -o MyLayout.bal
+
+  # .bil (B4i) round-trip
+  b4x-cli to-json   MyLayout.bil -o MyLayout.json
+  b4x-cli from-json MyLayout.json -o MyLayout.bil
 `.trim());
         return;
     }
@@ -84,8 +91,8 @@ Examples:
 Usage: b4x-cli <subcommand> [options]
 
 Subcommands:
-  to-json     Convert a binary BJL/BAL layout file → JSON
-  from-json   Convert a JSON file → binary BJL/BAL layout file
+  to-json     Convert a binary .bal/.bil/.bjl layout file → JSON
+  from-json   Convert a JSON file → binary .bal/.bil/.bjl layout file
 
 Options:
   -h, --help  Show help for a subcommand
@@ -95,6 +102,7 @@ Run "b4x-cli <subcommand> --help" for more details.
 Examples:
   b4x-cli to-json   MyLayout.bal -o MyLayout.json
   b4x-cli from-json MyLayout.json -o MyLayout.bal
+  b4x-cli to-json   MyLayout.bil -o MyLayout.json
 `.trim());
 }
 
@@ -153,7 +161,7 @@ function parseArgs(argv: string[]): ParsedArgs | null {
     }
 
     if (subcommand === 'from-json' && output === null) {
-        console.error('Error: "from-json" requires an output file (-o <file.bal|bjl>).');
+        console.error('Error: "from-json" requires an output file (-o <file.bal|bil|bjl>).');
         console.error('');
         console.error('  b4x-cli from-json input.json -o output.bal');
         process.exit(1);
@@ -173,8 +181,8 @@ function cmdToJson(args: ParsedArgs): void {
     }
 
     const ext = path.extname(inputPath).toLowerCase();
-    if (ext !== '.bal' && ext !== '.bjl') {
-        console.error(`Error: input file must be .bal or .bjl (got "${ext}").`);
+    if (ext !== '.bal' && ext !== '.bil' && ext !== '.bjl') {
+        console.error(`Error: input file must be .bal, .bil or .bjl (got "${ext}").`);
         process.exit(1);
     }
 
@@ -228,8 +236,8 @@ function cmdFromJson(args: ParsedArgs): void {
     }
 
     const outExt = path.extname(outputPath).toLowerCase();
-    if (outExt !== '.bal' && outExt !== '.bjl') {
-        console.error(`Error: output file must be .bal or .bjl (got "${outExt}").`);
+    if (outExt !== '.bal' && outExt !== '.bil' && outExt !== '.bjl') {
+        console.error(`Error: output file must be .bal, .bil or .bjl (got "${outExt}").`);
         process.exit(1);
     }
 
