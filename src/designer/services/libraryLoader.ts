@@ -81,7 +81,7 @@ export async function getCustomViewDefs(): Promise<Map<string, CustomViewDef>> {
  */
 export async function getCustomViewDef(shortName: string): Promise<CustomViewDef | undefined> {
     const defs = await getCustomViewDefs();
-    return defs.get(shortName) ?? defs.get(shortName.toLowerCase());
+    return defs.get(shortName.toLowerCase());
 }
 
 /**
@@ -89,7 +89,7 @@ export async function getCustomViewDef(shortName: string): Promise<CustomViewDef
  */
 export async function getCustomViewNames(): Promise<string[]> {
     const defs = await getCustomViewDefs();
-    return [...defs.keys()].sort();
+    return [...defs.values()].map(view => view.shortName).sort();
 }
 
 /**
@@ -100,7 +100,7 @@ export async function getCustomViewNames(): Promise<string[]> {
  */
 export function getCustomViewDefSync(shortName: string): CustomViewDef | undefined {
     if (!cacheValid) { return undefined; }
-    return cachedViews.get(shortName) ?? cachedViews.get(shortName.toLowerCase());
+    return cachedViews.get(shortName.toLowerCase());
 }
 
 /**
@@ -184,9 +184,10 @@ async function scanLibraryPaths(): Promise<Map<string, CustomViewDef>> {
             try {
                 const views = parseB4xlibFile(filePath);
                 for (const view of views) {
-                    if (!result.has(view.shortName)) {
-                        result.set(view.shortName, view);
-                        fromB4xlib.add(view.shortName);
+                    const key = view.shortName.toLowerCase();
+                    if (!result.has(key)) {
+                        result.set(key, view);
+                        fromB4xlib.add(key);
                     }
                 }
             } catch {
@@ -203,8 +204,9 @@ async function scanLibraryPaths(): Promise<Map<string, CustomViewDef>> {
                 const views = parseLibraryXml(content, filePath);
                 for (const view of views) {
                     // First-found wins, but b4xlib always takes priority
-                    if (!result.has(view.shortName)) {
-                        result.set(view.shortName, view);
+                    const key = view.shortName.toLowerCase();
+                    if (!result.has(key)) {
+                        result.set(key, view);
                     }
                 }
             } catch {
