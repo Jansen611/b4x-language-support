@@ -206,6 +206,27 @@ html, body {
     outline: none;
 }
 
+/* ── Properties List ─────────────────────────────────── */
+
+.pg-property-groups {
+    flex: 1 1 auto;
+    min-height: 80px;
+    padding-bottom: 12px;
+}
+
+.pg-property-group {
+    width: 100%;
+}
+
+.pg-category-header {
+    padding: 4px 8px;
+    border-bottom: 1px solid var(--pg-border);
+    background: var(--pg-cat-bg);
+    color: var(--pg-header-fg);
+    font-size: 11px;
+    font-weight: 600;
+}
+
 .vt-branch,
 .vt-children {
     width: 100%;

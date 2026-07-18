@@ -73,10 +73,10 @@ type PropGridToExtMessage =
 
 let currentProperties: PropertyData[] = [];
 const VIEWS_TREE_TAB = '__viewsTree';
+const PROPERTIES_TAB = '__properties';
 let activeTab = VIEWS_TREE_TAB;
 let currentControlName = '';
 let currentControlCount = 0;
-let hasReceivedProperties = false;
 let rootEl: HTMLDivElement;
 let propsArea: HTMLDivElement;
 let viewTreeRoot: ViewTreeNode | null = null;
@@ -84,6 +84,7 @@ let treeSelectedNames: string[] = [];
 let treeExpandedNames = new Set<string>();
 let treeExpansionInitialized = false;
 let treeFilter = '';
+let propertyFilter = '';
 let availableControlTypes: string[] = [];
 let customViewTypes: string[] = [];
 let treeContextMenu: HTMLDivElement | null = null;
@@ -115,13 +116,14 @@ function init(): void {
     ensureScriptPanel();
 
     // Restore active tab from state
-    const state = vscode.getState() as { activeTab?: string; expandedNames?: string[]; treeFilter?: string } | null;
+    const state = vscode.getState() as { activeTab?: string; expandedNames?: string[]; treeFilter?: string; propertyFilter?: string } | null;
     if (state?.activeTab) {
         activeTab = state.activeTab;
     }
     treeExpandedNames = new Set(state?.expandedNames ?? []);
     treeExpansionInitialized = state?.expandedNames !== undefined;
     treeFilter = state?.treeFilter ?? '';
+    propertyFilter = state?.propertyFilter ?? '';
 
     renderProperties();
 
@@ -134,14 +136,12 @@ function init(): void {
         const msg = e.data;
         switch (msg.type) {
             case 'loadProperties':
-                hasReceivedProperties = true;
                 currentProperties = msg.properties;
                 currentControlName = msg.controlName;
                 currentControlCount = msg.controlCount;
                 renderProperties();
                 break;
             case 'clearProperties':
-                hasReceivedProperties = true;
                 currentProperties = [];
                 currentControlName = '';
                 currentControlCount = 0;
@@ -223,14 +223,14 @@ function renderProperties(): void {
         list.push(p);
     }
 
-    const catNames = [VIEWS_TREE_TAB, ...Array.from(categories.keys())];
+    const tabNames = [VIEWS_TREE_TAB, PROPERTIES_TAB];
 
-    // Default to first tab if saved tab doesn't exist in this set
-    if (!catNames.includes(activeTab) && (hasReceivedProperties || activeTab === VIEWS_TREE_TAB)) {
-        activeTab = VIEWS_TREE_TAB;
+    // Migrate saved category tabs from older versions to the unified Properties tab.
+    if (!tabNames.includes(activeTab)) {
+        activeTab = PROPERTIES_TAB;
     }
 
-    // Tab bar (vertical stack of tab buttons)
+    // Tab bar
     const tabBar = document.createElement('div');
     tabBar.className = 'pg-tab-bar';
 
@@ -238,51 +238,100 @@ function renderProperties(): void {
     const content = document.createElement('div');
     content.className = 'pg-tab-content';
 
-    for (const catName of catNames) {
+    for (const tabName of tabNames) {
         // Tab button
         const tab = document.createElement('button');
-        tab.className = 'pg-tab' + (catName === activeTab ? ' pg-tab-active' : '');
-        tab.textContent = catName === VIEWS_TREE_TAB ? 'Views Tree' : catName;
+        tab.className = 'pg-tab' + (tabName === activeTab ? ' pg-tab-active' : '');
+        tab.textContent = tabName === VIEWS_TREE_TAB ? 'Views Tree' : 'Properties';
         tab.addEventListener('click', () => {
-            activeTab = catName;
+            activeTab = tabName;
             saveState();
-            if (catName === VIEWS_TREE_TAB) {
-                renderProperties();
-                return;
-            }
-            // Update active class on all tabs
-            tabBar.querySelectorAll('.pg-tab').forEach(t => t.classList.remove('pg-tab-active'));
-            tab.classList.add('pg-tab-active');
-            // Show matching panel, hide others
-            content.querySelectorAll('.pg-tab-panel').forEach(p => {
-                (p as HTMLElement).style.display = (p as HTMLElement).dataset.cat === catName ? '' : 'none';
-            });
+            renderProperties();
         });
         tabBar.appendChild(tab);
 
         // Panel
         const panel = document.createElement('div');
         panel.className = 'pg-tab-panel';
-        panel.dataset.cat = catName;
-        panel.style.display = catName === activeTab ? '' : 'none';
+        panel.dataset.cat = tabName;
+        panel.style.display = tabName === activeTab ? '' : 'none';
 
-        if (catName === VIEWS_TREE_TAB) {
+        if (tabName === VIEWS_TREE_TAB) {
             panel.appendChild(renderViewsTree());
         } else {
-            const catProps = categories.get(catName) ?? [];
-            if (catProps.length === 0) {
-                panel.appendChild(createEmptyState('No control selected'));
-            } else {
-                for (const prop of catProps) {
-                    panel.appendChild(renderPropertyRow(prop));
-                }
-            }
+            panel.appendChild(renderPropertyList(categories));
         }
         content.appendChild(panel);
     }
 
     propsArea.appendChild(tabBar);
     propsArea.appendChild(content);
+}
+
+function renderPropertyList(categories: Map<string, PropertyData[]>): HTMLDivElement {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'vt-wrapper';
+
+    const toolbar = document.createElement('div');
+    toolbar.className = 'vt-toolbar';
+
+    const search = document.createElement('input');
+    search.type = 'search';
+    search.className = 'vt-search pg-property-search';
+    search.placeholder = 'Search properties';
+    search.setAttribute('aria-label', 'Search properties');
+    search.value = propertyFilter;
+    search.addEventListener('input', () => {
+        propertyFilter = search.value;
+        saveState();
+        renderProperties();
+        const replacement = propsArea.querySelector<HTMLInputElement>('.pg-property-search');
+        replacement?.focus();
+        replacement?.setSelectionRange(propertyFilter.length, propertyFilter.length);
+    });
+    toolbar.appendChild(search);
+    wrapper.appendChild(toolbar);
+
+    const groups = document.createElement('div');
+    groups.className = 'pg-property-groups';
+
+    const query = propertyFilter.trim().toLocaleLowerCase();
+    for (const [category, properties] of categories) {
+        const categoryMatches = category.toLocaleLowerCase().includes(query);
+        const matches = !query || categoryMatches
+            ? properties
+            : properties.filter(property => propertyMatchesFilter(property, query));
+        if (matches.length === 0) { continue; }
+
+        const group = document.createElement('section');
+        group.className = 'pg-property-group';
+        group.setAttribute('aria-label', category);
+
+        const heading = document.createElement('div');
+        heading.className = 'pg-category-header';
+        heading.textContent = category;
+        group.appendChild(heading);
+
+        for (const property of matches) {
+            group.appendChild(renderPropertyRow(property));
+        }
+        groups.appendChild(group);
+    }
+
+    if (currentProperties.length === 0) {
+        groups.appendChild(createEmptyState('No control selected'));
+    } else if (groups.children.length === 0) {
+        groups.appendChild(createEmptyState('No matching properties'));
+    }
+
+    wrapper.appendChild(groups);
+    return wrapper;
+}
+
+function propertyMatchesFilter(property: PropertyData, query: string): boolean {
+    return property.displayName.toLocaleLowerCase().includes(query) ||
+        property.key.toLocaleLowerCase().includes(query) ||
+        property.description.toLocaleLowerCase().includes(query);
 }
 
 // ── Render: Views Tree ───────────────────────────────────────────────
@@ -981,6 +1030,7 @@ function saveState(): void {
         activeTab,
         expandedNames: [...treeExpandedNames],
         treeFilter,
+        propertyFilter,
     });
 }
 
