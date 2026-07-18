@@ -255,7 +255,7 @@ export function buildPropertyDescriptors(
     }
 
     // ── Common Properties Category ───────────────────────────────
-    const catCommon = 'Common Properties';
+    const catCommon = 'Common';
 
     // Anchors
     props.push({
@@ -348,7 +348,7 @@ export function buildPropertyDescriptors(
 
     // ── Border Properties (B4i / B4J) ────────────────────────────
     if (isB4i || isB4J) {
-        const catBorder = 'Border Properties';
+        const catBorder = 'Border';
         props.push({
             key: 'borderColor', displayName: 'Border Color', category: catBorder,
             description: 'Border color',
@@ -449,7 +449,7 @@ function addCustomViewProperties(props: PropertyDescriptor[], node: ControlNode)
     const cvDef = getCustomViewDefSync(shortType);
     if (!cvDef) { return; }
 
-    const cat = `${shortType} Properties`;
+    const cat = `${shortType}`;
     for (const dp of cvDef.designerProperties) {
         props.push(designerPropertyToDescriptor(dp, cat));
     }
@@ -503,7 +503,7 @@ function addTextAlignmentDropdown(props: PropertyDescriptor[], category: string)
 }
 
 function addLabelProperties(props: PropertyDescriptor[]): void {
-    const cat = 'Label Properties';
+    const cat = 'Label';
     props.push({
         key: 'text', displayName: 'Text', category: cat,
         description: 'Label text',
@@ -541,7 +541,7 @@ function addLabelProperties(props: PropertyDescriptor[]): void {
 }
 
 function addButtonProperties(props: PropertyDescriptor[], platform: Platform): void {
-    const cat = 'Button Properties';
+    const cat = 'Button';
     props.push({
         key: 'text', displayName: 'Text', category: cat,
         description: 'Button text',
@@ -595,7 +595,7 @@ function addButtonProperties(props: PropertyDescriptor[], platform: Platform): v
 }
 
 function addTextFieldProperties(props: PropertyDescriptor[], isB4i: boolean): void {
-    const cat = 'Text Properties';
+    const cat = 'Text';
     props.push({
         key: 'text', displayName: 'Text', category: cat,
         description: 'Text field content',
@@ -651,7 +651,7 @@ function addTextFieldProperties(props: PropertyDescriptor[], isB4i: boolean): vo
 }
 
 function addTextViewProperties(props: PropertyDescriptor[]): void {
-    const cat = 'Text Properties';
+    const cat = 'Text';
     props.push({
         key: 'text', displayName: 'Text', category: cat,
         description: 'Text content',
@@ -674,7 +674,7 @@ function addTextViewProperties(props: PropertyDescriptor[]): void {
 
 
 function addImageViewProperties(props: PropertyDescriptor[]): void {
-    const cat = 'ImageView Properties';
+    const cat = 'ImageView';
     props.push({
         key: 'imageFile', displayName: 'Image File', category: cat,
         description: 'Image file name',
@@ -696,7 +696,7 @@ function addImageViewProperties(props: PropertyDescriptor[]): void {
 
 
 function addScrollViewProperties(props: PropertyDescriptor[]): void {
-    const cat = 'ScrollView Properties';
+    const cat = 'ScrollView';
     props.push({
         key: 'contentWidth', displayName: 'Content Width', category: cat,
         description: 'Scroll content width',
@@ -734,7 +734,7 @@ function addScrollViewProperties(props: PropertyDescriptor[]): void {
 }
 
 function addWebViewProperties(props: PropertyDescriptor[]): void {
-    const cat = 'WebView Properties';
+    const cat = 'WebView';
     props.push({
         key: 'suppressRendering', displayName: 'Suppress Rendering', category: cat,
         description: 'Suppress rendering on designer',
@@ -744,7 +744,7 @@ function addWebViewProperties(props: PropertyDescriptor[]): void {
 }
 
 function addSwitchProperties(props: PropertyDescriptor[]): void {
-    const cat = 'Switch Properties';
+    const cat = 'Switch';
     props.push({
         key: 'value', displayName: 'Value', category: cat,
         description: 'Switch state',
@@ -766,7 +766,7 @@ function addSwitchProperties(props: PropertyDescriptor[]): void {
 }
 
 function addSliderProperties(props: PropertyDescriptor[]): void {
-    const cat = 'Slider Properties';
+    const cat = 'Slider';
     props.push({
         key: 'value', displayName: 'Value', category: cat,
         description: 'Slider value',
@@ -803,7 +803,7 @@ function addSliderProperties(props: PropertyDescriptor[]): void {
 
 
 function addProgressViewProperties(props: PropertyDescriptor[]): void {
-    const cat = 'ProgressView Properties';
+    const cat = 'ProgressView';
     props.push({
         key: 'progressColor', displayName: 'Progress Color', category: cat,
         description: 'Progress indicator color',
@@ -841,7 +841,7 @@ function addTextInputProperties(props: PropertyDescriptor[], cat: string, includ
 
 function addPanelProperties(props: PropertyDescriptor[], isB4i: boolean): void {
     if (!isB4i) { return; }
-    const cat = 'Panel Properties';
+    const cat = 'Panel';
     props.push({ key: 'verticalParallax', displayName: 'Vertical Parallax', category: cat,
         description: 'Vertical parallax offset (-50 to 50)', editor: EditorType.Int, isMergeable: true, isReadOnly: false,
         min: -50, max: 50, defaultValue: 0 });
@@ -852,7 +852,7 @@ function addPanelProperties(props: PropertyDescriptor[], isB4i: boolean): void {
 
 function addMainProperties(props: PropertyDescriptor[], isB4i: boolean): void {
     if (!isB4i) { return; }
-    const cat = 'Page Properties';
+    const cat = 'Page';
     props.push({ key: 'handleResizeEvent', displayName: 'Handle Resize Event', category: cat,
         description: 'Handle resize events', editor: EditorType.Bool, isMergeable: false, isReadOnly: false, defaultValue: false });
     props.push({ key: 'backgroundColor', displayName: 'Background Color', category: cat,
@@ -875,7 +875,7 @@ function addMainProperties(props: PropertyDescriptor[], isB4i: boolean): void {
 }
 
 function addStepperProperties(props: PropertyDescriptor[]): void {
-    const cat = 'Stepper Properties';
+    const cat = 'Stepper';
     props.push({ key: 'minimumValue', displayName: 'Minimum Value', category: cat,
         description: 'Minimum value', editor: EditorType.Double, isMergeable: true, isReadOnly: false, defaultValue: 0 });
     props.push({ key: 'maximumValue', displayName: 'Maximum Value', category: cat,
@@ -887,7 +887,7 @@ function addStepperProperties(props: PropertyDescriptor[]): void {
 }
 
 function addSegmentedControlProperties(props: PropertyDescriptor[]): void {
-    const cat = 'SegmentedControl Properties';
+    const cat = 'SegmentedControl';
     props.push({ key: 'items', displayName: 'Items', category: cat,
         description: 'Comma-separated list of items', editor: EditorType.String, isMergeable: true, isReadOnly: false });
     props.push({ key: 'tintColor', displayName: 'Tint Color', category: cat,
@@ -897,7 +897,7 @@ function addSegmentedControlProperties(props: PropertyDescriptor[]): void {
 }
 
 function addDatePickerProperties(props: PropertyDescriptor[]): void {
-    const cat = 'DatePicker Properties';
+    const cat = 'DatePicker';
     props.push({ key: 'mode', displayName: 'Mode', category: cat,
         description: 'Date picker mode', editor: EditorType.Dropdown, isMergeable: true, isReadOnly: false,
         options: [{ label:'TIME',value:0},{ label:'DATE',value:1},{ label:'DATE & TIME',value:2 }], defaultValue: 1 });
@@ -908,7 +908,7 @@ function addDatePickerProperties(props: PropertyDescriptor[]): void {
 }
 
 function addActivityIndicatorProperties(props: PropertyDescriptor[]): void {
-    const cat = 'ActivityIndicator Properties';
+    const cat = 'ActivityIndicator';
     props.push({ key: 'style', displayName: 'Style', category: cat,
         description: 'Indicator style', editor: EditorType.Dropdown, isMergeable: true, isReadOnly: false,
         options: [{ label:'WHITE_LARGE',value:0},{ label:'WHITE',value:1},{ label:'GRAY',value:2 }],
