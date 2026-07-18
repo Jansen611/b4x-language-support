@@ -314,6 +314,7 @@ export class B4XLayoutEditorProvider implements vscode.CustomEditorProvider<B4XL
                 const webviewLayout = await this.buildWebviewLayout(currentLayout, platform, currentVariantIndex);
                 webviewPanel.webview.postMessage({ type: 'loadLayout', layout: webviewLayout });
                 propertyGridBus.session = {
+                    documentKey: document.uri.toString(),
                     layout: currentLayout,
                     platform: platform as any,
                     variantIndex: currentVariantIndex,
@@ -344,6 +345,7 @@ export class B4XLayoutEditorProvider implements vscode.CustomEditorProvider<B4XL
                 // Re-establish property grid session when panel regains focus
                 const prevLayout = propertyGridBus.session?.layout;
                 propertyGridBus.session = {
+                    documentKey: document.uri.toString(),
                     layout: currentLayout,
                     platform: platform as any,
                     variantIndex: currentVariantIndex,
@@ -364,6 +366,9 @@ export class B4XLayoutEditorProvider implements vscode.CustomEditorProvider<B4XL
             this.panelHandlers.delete(webviewPanel);
             vscode.commands.executeCommand('setContext', 'b4x.designerActive', false);
             propChangeDisposable.dispose();
+            selectionRequestDisposable.dispose();
+            contextActionRequestDisposable.dispose();
+            reparentRequestDisposable.dispose();
             scriptRunDisposable.dispose();
             scriptDeactivateDisposable.dispose();
             scriptChangeDisposable.dispose();
@@ -395,6 +400,29 @@ export class B4XLayoutEditorProvider implements vscode.CustomEditorProvider<B4XL
                 key,
                 value,
             });
+        });
+
+        const selectionRequestDisposable = propertyGridBus.onSelectionRequested(names => {
+            if (!currentLayout || propertyGridBus.session?.layout !== currentLayout) { return; }
+            webviewPanel.webview.postMessage({ type: 'selectControls', names });
+        });
+
+        const contextActionRequestDisposable = propertyGridBus.onContextActionRequested((action, names) => {
+            if (!currentLayout || propertyGridBus.session?.layout !== currentLayout) { return; }
+            webviewPanel.webview.postMessage({ type: 'invokeContextAction', action, names });
+        });
+
+        const reparentRequestDisposable = propertyGridBus.onReparentRequested((names, targetName, index) => {
+            if (!currentLayout || propertyGridBus.session?.layout !== currentLayout) { return; }
+            this.handleReparent(
+                names,
+                targetName,
+                index,
+                currentLayout,
+                webviewPanel,
+                currentVariantIndex,
+                notifyDirty,
+            );
         });
 
         // Script engine instance for this editor
@@ -490,6 +518,7 @@ export class B4XLayoutEditorProvider implements vscode.CustomEditorProvider<B4XL
                     webviewPanel.webview.postMessage({ type: 'loadLayout', layout: webviewLayout });
                     // Initialize property grid session
                     propertyGridBus.session = {
+                        documentKey: document.uri.toString(),
                         layout: currentLayout,
                         platform: platform as any,
                         variantIndex: currentVariantIndex,
@@ -923,41 +952,52 @@ export class B4XLayoutEditorProvider implements vscode.CustomEditorProvider<B4XL
         webviewPanel: vscode.WebviewPanel,
         notifyDirty: () => void,
     ): void {
+        let changed = false;
+        const groups = new Map<ControlNode, Set<ControlNode>>();
         for (const name of names) {
             const node = findControlByName(layout.rootControl, name);
-            if (!node) { continue; }
+            const parent = node ? this.findParentNode(layout.rootControl, name) : null;
+            if (!node || !parent) { continue; }
+            let selected = groups.get(parent);
+            if (!selected) {
+                selected = new Set<ControlNode>();
+                groups.set(parent, selected);
+            }
+            selected.add(node);
+        }
 
-            // Find parent
-            const parent = this.findParentNode(layout.rootControl, name);
-            if (!parent) { continue; }
+        for (const [parent, selected] of groups) {
+            const previous = [...parent.children];
+            let next = [...previous];
 
-            const idx = parent.children.indexOf(node);
-            if (idx < 0) { continue; }
-
-            switch (action) {
-                case 'bringToFront':
-                    parent.children.splice(idx, 1);
-                    parent.children.push(node);
-                    break;
-                case 'sendToBack':
-                    parent.children.splice(idx, 1);
-                    parent.children.unshift(node);
-                    break;
-                case 'bringForward':
-                    if (idx < parent.children.length - 1) {
-                        parent.children.splice(idx, 1);
-                        parent.children.splice(idx + 1, 0, node);
+            if (action === 'bringToFront') {
+                next = [
+                    ...previous.filter(node => !selected.has(node)),
+                    ...previous.filter(node => selected.has(node)),
+                ];
+            } else if (action === 'sendToBack') {
+                next = [
+                    ...previous.filter(node => selected.has(node)),
+                    ...previous.filter(node => !selected.has(node)),
+                ];
+            } else if (action === 'bringForward') {
+                for (let i = next.length - 2; i >= 0; i--) {
+                    if (selected.has(next[i]) && !selected.has(next[i + 1])) {
+                        [next[i], next[i + 1]] = [next[i + 1], next[i]];
                     }
-                    break;
-                case 'sendBackward':
-                    if (idx > 0) {
-                        parent.children.splice(idx, 1);
-                        parent.children.splice(idx - 1, 0, node);
+                }
+            } else if (action === 'sendBackward') {
+                for (let i = 1; i < next.length; i++) {
+                    if (selected.has(next[i]) && !selected.has(next[i - 1])) {
+                        [next[i - 1], next[i]] = [next[i], next[i - 1]];
                     }
-                    break;
+                }
             }
 
-            // Send updated child order to canvas
+            if (next.every((node, index) => node === previous[index])) { continue; }
+            parent.children = next;
+            changed = true;
+
             const parentName = getPropStr(parent, 'name', '') || getPropStr(parent, 'eventName', '');
             const childOrder = parent.children.map(c => getPropStr(c, 'name', '') || getPropStr(c, 'eventName', ''));
             webviewPanel.webview.postMessage({
@@ -965,7 +1005,11 @@ export class B4XLayoutEditorProvider implements vscode.CustomEditorProvider<B4XL
                 parentName,
                 childOrder,
             });
+        }
+        if (changed) {
+            layout.manifest = collectManifestEntries(layout.rootControl);
             notifyDirty();
+            propertyGridBus.fireLayoutUpdated();
         }
     }
 
@@ -977,6 +1021,109 @@ export class B4XLayoutEditorProvider implements vscode.CustomEditorProvider<B4XL
             if (found) { return found; }
         }
         return null;
+    }
+
+    private handleReparent(
+        names: string[],
+        targetName: string,
+        requestedIndex: number,
+        layout: LayoutFile,
+        webviewPanel: vscode.WebviewPanel,
+        variantIndex: number,
+        notifyDirty: () => void,
+    ): void {
+        const rootName = getPropStr(layout.rootControl, 'name', '') ||
+            getPropStr(layout.rootControl, 'eventName', '');
+        const target = targetName === rootName
+            ? layout.rootControl
+            : findControlByName(layout.rootControl, targetName);
+        if (!target) { return; }
+
+        const targetType = getControlTypeByCsType(getPropStr(target, 'csType', ''));
+        if (target !== layout.rootControl && targetType?.isContainer !== true) {
+            vscode.window.showWarningMessage(`${targetName} cannot contain child views.`);
+            return;
+        }
+
+        const requested = new Set(names);
+        const orderedNames = collectControlNames(layout.rootControl).filter(name => requested.has(name));
+        const moving: Array<{ name: string; node: ControlNode; parent: ControlNode; oldIndex: number; frames: LayoutFrame[] }> = [];
+
+        for (const name of orderedNames) {
+            const node = findControlByName(layout.rootControl, name);
+            const parent = node ? this.findParentNode(layout.rootControl, name) : null;
+            if (!node || !parent || node === layout.rootControl) { continue; }
+
+            // If an ancestor is already moving, this node moves with it.
+            if (moving.some(item => containsControl(item.node, name))) { continue; }
+            if (node === target || containsControl(node, targetName)) {
+                vscode.window.showWarningMessage('A view cannot be moved into itself or one of its descendants.');
+                return;
+            }
+
+            const frames: LayoutFrame[] = [];
+            for (let vi = 0; vi < layout.variants.length; vi++) {
+                const frame = findAbsoluteFrame(layout, name, vi);
+                if (!frame) { return; }
+                frames.push(frame);
+            }
+            moving.push({ name, node, parent, oldIndex: parent.children.indexOf(node), frames });
+        }
+
+        if (moving.length === 0) { return; }
+
+        let insertIndex = Math.max(0, Math.min(requestedIndex, target.children.length));
+        for (const item of moving) {
+            if (item.parent === target && item.oldIndex >= 0 && item.oldIndex < insertIndex) {
+                insertIndex--;
+            }
+        }
+
+        for (const item of moving) {
+            const index = item.parent.children.indexOf(item.node);
+            if (index >= 0) { item.parent.children.splice(index, 1); }
+        }
+
+        insertIndex = Math.max(0, Math.min(insertIndex, target.children.length));
+        target.children.splice(insertIndex, 0, ...moving.map(item => item.node));
+
+        const actualTargetName = getPropStr(target, 'name', '') || getPropStr(target, 'eventName', '');
+        for (const item of moving) {
+            item.node.properties.set('parent', { tag: TypeTag.StringRef, value: actualTargetName });
+
+            for (let vi = 0; vi < layout.variants.length; vi++) {
+                const parentFrame = target === layout.rootControl
+                    ? rootFrame(layout, vi)
+                    : findAbsoluteFrame(layout, actualTargetName, vi);
+                if (!parentFrame) { continue; }
+                const oldFrame = item.frames[vi];
+                setNodeFrameRelativeToParent(
+                    item.node,
+                    vi,
+                    oldFrame.x - parentFrame.x,
+                    oldFrame.y - parentFrame.y,
+                    oldFrame.width,
+                    oldFrame.height,
+                    parentFrame.width,
+                    parentFrame.height,
+                );
+            }
+        }
+
+        layout.manifest = collectManifestEntries(layout.rootControl);
+        const childOrder = target.children.map(child =>
+            getPropStr(child, 'name', '') || getPropStr(child, 'eventName', '')
+        );
+        webviewPanel.webview.postMessage({
+            type: 'controlsReparented',
+            names: moving.map(item => item.name),
+            parentName: actualTargetName,
+            childOrder,
+            controls: moving.map(item => controlNodeToWebview(item.node, variantIndex, false)),
+        });
+        notifyDirty();
+        propertyGridBus.fireSelectionChanged(moving.map(item => item.name));
+        propertyGridBus.fireLayoutUpdated();
     }
 
     private async buildWebviewLayout(
@@ -1053,6 +1200,103 @@ function getNonce(): string {
         text += chars.charAt(Math.floor(Math.random() * chars.length));
     }
     return text;
+}
+
+interface LayoutFrame {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+}
+
+function rootFrame(layout: LayoutFile, variantIndex: number): LayoutFrame {
+    const variant = layout.variants[Math.min(variantIndex, layout.variants.length - 1)];
+    return { x: 0, y: 0, width: variant?.width ?? 320, height: variant?.height ?? 480 };
+}
+
+function findAbsoluteFrame(layout: LayoutFile, controlName: string, variantIndex: number): LayoutFrame | null {
+    const root = rootFrame(layout, variantIndex);
+    const rootName = getPropStr(layout.rootControl, 'name', '') ||
+        getPropStr(layout.rootControl, 'eventName', '');
+    if (rootName === controlName) { return root; }
+
+    const visit = (node: ControlNode, parentFrame: LayoutFrame): LayoutFrame | null => {
+        for (const child of node.children) {
+            const data = getVariantData(child, variantIndex);
+            const width = data.hanchor === 2
+                ? parentFrame.width - data.left - data.width
+                : data.width;
+            const height = data.vanchor === 2
+                ? parentFrame.height - data.top - data.height
+                : data.height;
+            const x = data.hanchor === 1
+                ? parentFrame.width - data.left - width
+                : data.left;
+            const y = data.vanchor === 1
+                ? parentFrame.height - data.top - height
+                : data.top;
+            const frame = {
+                x: parentFrame.x + x,
+                y: parentFrame.y + y,
+                width,
+                height,
+            };
+            const name = getPropStr(child, 'name', '') || getPropStr(child, 'eventName', '');
+            if (name === controlName) { return frame; }
+            const nested = visit(child, frame);
+            if (nested) { return nested; }
+        }
+        return null;
+    };
+
+    return visit(layout.rootControl, root);
+}
+
+function containsControl(node: ControlNode, controlName: string): boolean {
+    const name = getPropStr(node, 'name', '') || getPropStr(node, 'eventName', '');
+    if (name === controlName) { return true; }
+    return node.children.some(child => containsControl(child, controlName));
+}
+
+function setNodeFrameRelativeToParent(
+    node: ControlNode,
+    variantIndex: number,
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    parentWidth: number,
+    parentHeight: number,
+): void {
+    const current = getVariantData(node, variantIndex);
+    const left = current.hanchor === 1 ? parentWidth - x - width : x;
+    const top = current.vanchor === 1 ? parentHeight - y - height : y;
+    const storedWidth = current.hanchor === 2 ? parentWidth - x - width : width;
+    const storedHeight = current.vanchor === 2 ? parentHeight - y - height : height;
+    const values = {
+        left: Math.round(left),
+        top: Math.round(top),
+        width: Math.round(storedWidth),
+        height: Math.round(storedHeight),
+    };
+
+    const variantKey = `variant${variantIndex}`;
+    let variant = node.properties.get(variantKey);
+    if (!variant || variant.tag !== TypeTag.Object) {
+        variant = { tag: TypeTag.Object, value: new Map<string, PropertyValue>() };
+        node.properties.set(variantKey, variant);
+    }
+    if (variant.tag === TypeTag.Object) {
+        for (const [key, value] of Object.entries(values)) {
+            variant.value.set(key, { tag: TypeTag.Int32, value });
+        }
+    }
+
+    if (variantIndex === 0) {
+        for (const [key, value] of Object.entries(values)) {
+            node.properties.set(key, { tag: TypeTag.Int32, value });
+        }
+    }
 }
 
 // ── Update a ControlNode's position from canvas move/resize data ─────

@@ -11,15 +11,18 @@ import {
     PropertyData,
     buildPropertyDataForControl,
     collectControlNames,
+    detectControlType,
     findControlByName,
-    readPropertyValue,
     EditorType,
 } from '../models/propertyModel';
 import { ControlNode, LayoutFile, Platform, TypeTag, PropertyValue, Variant } from '../models/types';
+import { getControlTypeByCsType, getControlTypesForPlatform } from '../services/controlRegistry';
+import { getCustomViewNames } from '../services/libraryLoader';
 
 // ── Shared state / event bus ─────────────────────────────────────────
 
 export interface DesignerSession {
+    documentKey: string;
     layout: LayoutFile;
     platform: Platform;
     variantIndex: number;
@@ -27,6 +30,9 @@ export interface DesignerSession {
 }
 
 type SelectionChangeListener = (names: string[]) => void;
+type SelectionRequestListener = (names: string[]) => void;
+type ContextActionRequestListener = (action: string, names: string[]) => void;
+type ReparentRequestListener = (names: string[], targetName: string, index: number) => void;
 type PropertyChangeListener = (controlName: string, key: string, value: unknown) => void;
 type LayoutUpdateListener = () => void;
 type ScriptChangeListener = (variantIndex: number, text: string) => void;
@@ -36,6 +42,9 @@ type ScriptDeactivateListener = () => void;
 
 class PropertyGridBus {
     private selectionListeners: SelectionChangeListener[] = [];
+    private selectionRequestListeners: SelectionRequestListener[] = [];
+    private contextActionRequestListeners: ContextActionRequestListener[] = [];
+    private reparentRequestListeners: ReparentRequestListener[] = [];
     private propertyChangeListeners: PropertyChangeListener[] = [];
     private layoutUpdateListeners: LayoutUpdateListener[] = [];
     private scriptChangeListeners: ScriptChangeListener[] = [];
@@ -58,6 +67,42 @@ class PropertyGridBus {
     fireSelectionChanged(names: string[]): void {
         if (this._session) { this._session.selectedNames = names; }
         for (const fn of this.selectionListeners) { fn(names); }
+    }
+
+    onSelectionRequested(fn: SelectionRequestListener): vscode.Disposable {
+        this.selectionRequestListeners.push(fn);
+        return new vscode.Disposable(() => {
+            const i = this.selectionRequestListeners.indexOf(fn);
+            if (i >= 0) { this.selectionRequestListeners.splice(i, 1); }
+        });
+    }
+
+    fireSelectionRequested(names: string[]): void {
+        for (const fn of this.selectionRequestListeners) { fn(names); }
+    }
+
+    onContextActionRequested(fn: ContextActionRequestListener): vscode.Disposable {
+        this.contextActionRequestListeners.push(fn);
+        return new vscode.Disposable(() => {
+            const i = this.contextActionRequestListeners.indexOf(fn);
+            if (i >= 0) { this.contextActionRequestListeners.splice(i, 1); }
+        });
+    }
+
+    fireContextActionRequested(action: string, names: string[]): void {
+        for (const fn of this.contextActionRequestListeners) { fn(action, names); }
+    }
+
+    onReparentRequested(fn: ReparentRequestListener): vscode.Disposable {
+        this.reparentRequestListeners.push(fn);
+        return new vscode.Disposable(() => {
+            const i = this.reparentRequestListeners.indexOf(fn);
+            if (i >= 0) { this.reparentRequestListeners.splice(i, 1); }
+        });
+    }
+
+    fireReparentRequested(names: string[], targetName: string, index: number): void {
+        for (const fn of this.reparentRequestListeners) { fn(names, targetName, index); }
     }
 
     onPropertyChanged(fn: PropertyChangeListener): vscode.Disposable {
@@ -136,6 +181,34 @@ class PropertyGridBus {
 /** Singleton event bus shared between editor provider and property grid provider. */
 export const propertyGridBus = new PropertyGridBus();
 
+interface ViewTreeNode {
+    name: string;
+    typeName: string;
+    isRoot: boolean;
+    isContainer: boolean;
+    children: ViewTreeNode[];
+}
+
+function buildViewTreeNode(node: ControlNode, isRoot: boolean): ViewTreeNode {
+    const getString = (key: string): string => {
+        const value = node.properties.get(key);
+        return value && (value.tag === TypeTag.String || value.tag === TypeTag.StringRef)
+            ? value.value
+            : '';
+    };
+    const name = getString('name') || getString('eventName');
+    const csType = getString('csType');
+    const detectedType = isRoot ? 'MetaMain' : detectControlType(node);
+
+    return {
+        name,
+        typeName: detectedType.replace(/^Meta/, '') || 'View',
+        isRoot,
+        isContainer: isRoot || getControlTypeByCsType(csType)?.isContainer === true,
+        children: node.children.map(child => buildViewTreeNode(child, false)),
+    };
+}
+
 // ── Property Grid Webview View Provider ──────────────────────────────
 
 export class B4XPropertyGridViewProvider implements vscode.WebviewViewProvider {
@@ -159,6 +232,7 @@ export class B4XPropertyGridViewProvider implements vscode.WebviewViewProvider {
                 const session = propertyGridBus.session;
                 if (session) {
                     this.updateSelection(session.selectedNames);
+                    void this.sendViewTree();
                     this.sendScriptData();
                 }
             })
@@ -204,9 +278,13 @@ export class B4XPropertyGridViewProvider implements vscode.WebviewViewProvider {
 
         // If there's already a selection, send it
         const session = propertyGridBus.session;
-        if (session && session.selectedNames.length > 0) {
+        if (session) {
             // Defer to let webview initialize
-            setTimeout(() => this.updateSelection(session.selectedNames), 100);
+            setTimeout(() => {
+                if (this.view !== webviewView || propertyGridBus.session !== session) { return; }
+                this.updateSelection(session.selectedNames);
+                void this.sendViewTree();
+            }, 100);
         }
     }
 
@@ -215,6 +293,7 @@ export class B4XPropertyGridViewProvider implements vscode.WebviewViewProvider {
     private updateSelection(names: string[]): void {
         if (!this.view) { return; }
         const session = propertyGridBus.session;
+        this.view.webview.postMessage({ type: 'treeSelection', names });
         if (!session) {
             this.view.webview.postMessage({ type: 'clearProperties' });
             return;
@@ -243,6 +322,7 @@ export class B4XPropertyGridViewProvider implements vscode.WebviewViewProvider {
                 isRoot,
                 session.variantIndex,
             );
+            restrictParentOptions(properties, session.layout.rootControl, node);
 
             this.view.webview.postMessage({
                 type: 'loadProperties',
@@ -264,12 +344,15 @@ export class B4XPropertyGridViewProvider implements vscode.WebviewViewProvider {
             }
 
             // Build property sets for each selected control
-            const propSets = nodes.map(({ node }) =>
-                buildPropertyDataForControl(node, session.platform, allNames, false, session.variantIndex)
-            );
+            const propSets = nodes.map(({ node }) => {
+                const properties = buildPropertyDataForControl(node, session.platform, allNames, false, session.variantIndex);
+                restrictParentOptions(properties, session.layout.rootControl, node);
+                return properties;
+            });
 
             // Merge: keep only properties that exist in all selections and are mergeable
-            const merged = mergePropertySets(propSets, nodes.map(n => n.node), session.variantIndex);
+            const merged = mergePropertySets(propSets)
+                .filter(property => property.key !== 'parent');
 
             this.view.webview.postMessage({
                 type: 'loadProperties',
@@ -282,10 +365,34 @@ export class B4XPropertyGridViewProvider implements vscode.WebviewViewProvider {
 
     // ── Handle messages from the property grid webview ────────────
 
-    private handleMessage(msg: { type: string; key?: string; value?: unknown; variantIndex?: number; text?: string }): void {
+    private handleMessage(msg: {
+        type: string;
+        key?: string;
+        value?: unknown;
+        variantIndex?: number;
+        text?: string;
+        names?: string[];
+        action?: string;
+        targetName?: string;
+        index?: number;
+    }): void {
         if (msg.type === 'propertyChanged' && msg.key !== undefined) {
             const session = propertyGridBus.session;
             if (!session) { return; }
+
+            if (msg.key === 'parent' && typeof msg.value === 'string') {
+                const rootName = controlNameOf(session.layout.rootControl);
+                const targetName = msg.value || rootName;
+                const target = findControlByName(session.layout.rootControl, targetName);
+                if (target) {
+                    propertyGridBus.fireReparentRequested(
+                        [...session.selectedNames],
+                        targetName,
+                        target.children.length,
+                    );
+                }
+                return;
+            }
 
             for (let i = 0; i < session.selectedNames.length; i++) {
                 const name = session.selectedNames[i];
@@ -305,6 +412,13 @@ export class B4XPropertyGridViewProvider implements vscode.WebviewViewProvider {
 
             // Refresh the property grid with updated values
             this.updateSelection(session.selectedNames);
+            void this.sendViewTree();
+        } else if (msg.type === 'treeSelectionChanged' && msg.names) {
+            propertyGridBus.fireSelectionRequested(msg.names);
+        } else if (msg.type === 'treeContextAction' && msg.action && msg.names) {
+            propertyGridBus.fireContextActionRequested(msg.action, msg.names);
+        } else if (msg.type === 'treeReparent' && msg.names && msg.targetName !== undefined && msg.index !== undefined) {
+            propertyGridBus.fireReparentRequested(msg.names, msg.targetName, msg.index);
         } else if (msg.type === 'scriptChanged' && msg.variantIndex !== undefined && msg.text !== undefined) {
             const session = propertyGridBus.session;
             if (!session || !session.layout.scriptData) { return; }
@@ -326,9 +440,33 @@ export class B4XPropertyGridViewProvider implements vscode.WebviewViewProvider {
             const session = propertyGridBus.session;
             if (session && session.selectedNames.length > 0) {
                 this.updateSelection(session.selectedNames);
+            } else {
+                this.updateSelection([]);
             }
+            void this.sendViewTree();
             this.sendScriptData();
         }
+    }
+
+    private async sendViewTree(): Promise<void> {
+        if (!this.view) { return; }
+        const session = propertyGridBus.session;
+        if (!session) {
+            this.view.webview.postMessage({ type: 'clearViewTree' });
+            return;
+        }
+
+        const customViewTypes = await getCustomViewNames();
+        if (!this.view || propertyGridBus.session !== session) { return; }
+
+        this.view.webview.postMessage({
+            type: 'loadViewTree',
+            treeKey: session.documentKey,
+            root: buildViewTreeNode(session.layout.rootControl, true),
+            selectedNames: session.selectedNames,
+            availableControlTypes: getControlTypesForPlatform(session.platform),
+            customViewTypes,
+        });
     }
 
     // ── Send script data to webview ──────────────────────────────
@@ -422,8 +560,6 @@ export class B4XPropertyGridViewProvider implements vscode.WebviewViewProvider {
 
 function mergePropertySets(
     propSets: PropertyData[][],
-    nodes: ControlNode[],
-    variantIndex: number,
 ): PropertyData[] {
     if (propSets.length === 0) { return []; }
 
@@ -453,6 +589,43 @@ function mergePropertySets(
     }
 
     return merged;
+}
+
+function controlNameOf(node: ControlNode): string {
+    for (const key of ['name', 'eventName']) {
+        const value = node.properties.get(key);
+        if (value && (value.tag === TypeTag.String || value.tag === TypeTag.StringRef)) {
+            return value.value;
+        }
+    }
+    return '';
+}
+
+function restrictParentOptions(properties: PropertyData[], root: ControlNode, selected: ControlNode): void {
+    const parentProperty = properties.find(property => property.key === 'parent');
+    if (!parentProperty) { return; }
+
+    const excluded = new Set<string>();
+    const collectExcluded = (node: ControlNode): void => {
+        excluded.add(controlNameOf(node));
+        for (const child of node.children) { collectExcluded(child); }
+    };
+    collectExcluded(selected);
+
+    const options: { label: string; value: unknown }[] = [{ label: '', value: '' }];
+    const visit = (node: ControlNode, isRoot: boolean): void => {
+        const name = controlNameOf(node);
+        const csType = node.properties.get('csType');
+        const csTypeName = csType && (csType.tag === TypeTag.String || csType.tag === TypeTag.StringRef)
+            ? csType.value
+            : '';
+        if (name && !excluded.has(name) && (isRoot || getControlTypeByCsType(csTypeName)?.isContainer === true)) {
+            options.push({ label: name, value: name });
+        }
+        for (const child of node.children) { visit(child, false); }
+    };
+    visit(root, true);
+    parentProperty.options = options;
 }
 
 // ── Apply a property value change to a ControlNode ───────────────────

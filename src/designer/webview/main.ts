@@ -62,6 +62,12 @@ window.addEventListener('message', (e: MessageEvent<ExtToWebviewMessage>) => {
         case 'zOrderUpdated':
             canvas?.reorderChildren(msg.parentName, msg.childOrder);
             break;
+        case 'controlsReparented':
+            canvas?.reparentControlViews(msg.names, msg.parentName, msg.childOrder, msg.controls);
+            break;
+        case 'invokeContextAction':
+            canvas?.invokeContextAction(msg.action, msg.names);
+            break;
         case 'clipboardAction':
             if (msg.action === 'copy') { canvas?.copySelected(); }
             else if (msg.action === 'cut') { canvas?.cutSelected(); }
