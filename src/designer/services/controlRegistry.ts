@@ -1139,7 +1139,8 @@ export function createCustomViewControl(
     if (!baseDef) { return null; }
 
     const name = generateControlName(customViewDef.shortName, existingNames);
-    const javaType = customViewDef.javaType;
+    const javaType = baseDef.javaType[platform] ?? '';
+    const customType = customViewDef.javaType;
     const csType = baseDef.csType[platform] ?? 'Dbasic.Designer.MetaCustomView';
 
     const snappedX = Math.round(x / gridSize) * gridSize;
@@ -1155,7 +1156,7 @@ export function createCustomViewControl(
     props.set('parent', strVal(''));
 
     // Custom view type identifiers
-    props.set('customType', strVal(javaType));
+    props.set('customType', strVal(customType));
     props.set('shortType', strVal(customViewDef.shortName));
 
     // Common defaults
@@ -1167,13 +1168,19 @@ export function createCustomViewControl(
         props.set(key, clonePropertyValue(value));
     }
 
-    // Apply designer property defaults from the library XML
+    // Custom designer properties are serialized in a nested object by B4X.
+    const customProperties = new Map<string, PropertyValue>();
+    customProperties.set('csType', strVal('Dbasic.Designer.MetaCustomView+CustomDataGrid'));
+    customProperties.set('type', strVal(''));
+    customProperties.set('customType', strVal(customType));
     for (const dp of customViewDef.designerProperties) {
         const pv = designerPropertyToValue(dp);
         if (pv) {
-            props.set(dp.key, pv);
+            customProperties.set(dp.key, pv);
         }
     }
+    customProperties.set('shortType', strVal(customViewDef.shortName));
+    props.set('customProperties', { tag: TypeTag.Object, value: customProperties });
 
     // Per-variant layout data
     for (let vi = 0; vi < variantCount; vi++) {

@@ -14,8 +14,9 @@ import {
     detectControlType,
     findControlByName,
     EditorType,
+    applyPropertyValue,
 } from '../models/propertyModel';
-import { ControlNode, LayoutFile, Platform, TypeTag, PropertyValue, Variant } from '../models/types';
+import { ControlNode, LayoutFile, Platform, TypeTag } from '../models/types';
 import { getControlTypeByCsType, getControlTypesForPlatform } from '../services/controlRegistry';
 import { getCustomViewNames } from '../services/libraryLoader';
 
@@ -380,6 +381,11 @@ export class B4XPropertyGridViewProvider implements vscode.WebviewViewProvider {
             const session = propertyGridBus.session;
             if (!session) { return; }
 
+            if (msg.key === 'name' && !isValidControlNameChange(session, msg.value)) {
+                this.updateSelection(session.selectedNames);
+                return;
+            }
+
             if (msg.key === 'parent' && typeof msg.value === 'string') {
                 const rootName = controlNameOf(session.layout.rootControl);
                 const targetName = msg.value || rootName;
@@ -398,16 +404,48 @@ export class B4XPropertyGridViewProvider implements vscode.WebviewViewProvider {
                 const name = session.selectedNames[i];
                 const node = findControlByName(session.layout.rootControl, name);
                 if (node) {
-                    applyPropertyValue(node, msg.key, msg.value, session.variantIndex);
+                    const allNames = collectControlNames(session.layout.rootControl);
+                    const property = buildPropertyDataForControl(
+                        node,
+                        session.platform,
+                        allNames,
+                        name === allNames[0],
+                        session.variantIndex,
+                    ).find(candidate => candidate.key === msg.key && !candidate.isReadOnly);
+                    if (!property) { continue; }
+                    const normalizedValue = normalizePropertyInput(property, msg.value);
+                    if (normalizedValue === INVALID_PROPERTY_VALUE) { continue; }
+                    applyPropertyValue(
+                        node,
+                        property.path,
+                        normalizedValue,
+                        session.variantIndex,
+                        property.valueTag,
+                    );
 
                     // When 'name' changes, also auto-populate eventName
-                    if (msg.key === 'name' && typeof msg.value === 'string') {
-                        applyPropertyValue(node, 'eventName', msg.value, session.variantIndex);
+                    if (msg.key === 'name' && typeof normalizedValue === 'string') {
+                        applyPropertyValue(
+                            node,
+                            ['eventName'],
+                            normalizedValue,
+                            session.variantIndex,
+                            node.properties.get('eventName')?.tag,
+                        );
+                        for (const child of node.children) {
+                            applyPropertyValue(
+                                child,
+                                ['parent'],
+                                normalizedValue,
+                                session.variantIndex,
+                                child.properties.get('parent')?.tag,
+                            );
+                        }
                         // Update selectedNames to track the new name
-                        session.selectedNames[i] = msg.value;
+                        session.selectedNames[i] = normalizedValue;
                     }
+                    propertyGridBus.firePropertyChanged(name, msg.key, normalizedValue);
                 }
-                propertyGridBus.firePropertyChanged(name, msg.key, msg.value);
             }
 
             // Refresh the property grid with updated values
@@ -571,7 +609,10 @@ function mergePropertySets(
         if (!prop.isMergeable) { continue; }
 
         // Check that this property exists in all other sets
-        const allHave = propSets.every(set => set.some(p => p.key === prop.key));
+        const allHave = propSets.every(set => {
+            const candidate = set.find(p => p.key === prop.key);
+            return candidate !== undefined && propertiesAreCompatible(prop, candidate);
+        });
         if (!allHave) { continue; }
 
         // For value: if all values are the same show it, otherwise show empty/mixed
@@ -589,6 +630,26 @@ function mergePropertySets(
     }
 
     return merged;
+}
+
+function propertiesAreCompatible(left: PropertyData, right: PropertyData): boolean {
+    return JSON.stringify(left.path) === JSON.stringify(right.path) &&
+        left.category === right.category &&
+        left.editor === right.editor &&
+        left.valueTag === right.valueTag &&
+        JSON.stringify(left.options) === JSON.stringify(right.options) &&
+        left.min === right.min &&
+        left.max === right.max &&
+        left.step === right.step;
+}
+
+function isValidControlNameChange(session: DesignerSession, value: unknown): value is string {
+    if (typeof value !== 'string' || !/^[A-Za-z_][A-Za-z0-9_]*$/.test(value)) { return false; }
+    const selectedName = session.selectedNames[0]?.toLowerCase();
+    const requestedName = value.toLowerCase();
+    return !collectControlNames(session.layout.rootControl).some(name =>
+        name.toLowerCase() === requestedName && name.toLowerCase() !== selectedName
+    );
 }
 
 function controlNameOf(node: ControlNode): string {
@@ -628,64 +689,62 @@ function restrictParentOptions(properties: PropertyData[], root: ControlNode, se
     parentProperty.options = options;
 }
 
-// ── Apply a property value change to a ControlNode ───────────────────
+const INVALID_PROPERTY_VALUE = Symbol('invalidPropertyValue');
 
-function applyPropertyValue(
-    node: ControlNode,
-    key: string,
-    value: unknown,
-    variantIndex: number,
-): void {
-    // Position/size properties go into the variant data
-    if (key === 'left' || key === 'top' || key === 'width' || key === 'height' || key === 'hanchor' || key === 'vanchor') {
-        applyVariantProperty(node, key, value as number, variantIndex);
-        return;
+function normalizePropertyInput(property: PropertyData, value: unknown): unknown | typeof INVALID_PROPERTY_VALUE {
+    if (value === null) {
+        return property.editor === EditorType.NullableColor ? null : INVALID_PROPERTY_VALUE;
     }
-
-    if (value === null || value === undefined) {
-        node.properties.delete(key);
-        return;
+    if (property.options && !property.options.some(option => JSON.stringify(option.value) === JSON.stringify(value))) {
+        return INVALID_PROPERTY_VALUE;
     }
-
-    if (typeof value === 'string') {
-        node.properties.set(key, { tag: TypeTag.String, value });
-    } else if (typeof value === 'number') {
-        if (Number.isInteger(value)) {
-            node.properties.set(key, { tag: TypeTag.Int32, value });
-        } else {
-            node.properties.set(key, { tag: TypeTag.Float, value });
-        }
-    } else if (typeof value === 'boolean') {
-        node.properties.set(key, { tag: TypeTag.Bool, value });
-    } else if (typeof value === 'object' && 'r' in value && 'g' in value && 'b' in value) {
-        const c = value as { a: number; r: number; g: number; b: number };
-        node.properties.set(key, { tag: TypeTag.Color, a: c.a, r: c.r, g: c.g, b: c.b });
-    } else if (typeof value === 'object' && 'x' in value && 'y' in value && 'width' in value && 'height' in value) {
-        const r = value as { x: number; y: number; width: number; height: number };
-        node.properties.set(key, { tag: TypeTag.Int32Rect, x: r.x, y: r.y, width: r.width, height: r.height });
+    switch (property.editor) {
+        case EditorType.String:
+        case EditorType.Font:
+            return typeof value === 'string' ? value : INVALID_PROPERTY_VALUE;
+        case EditorType.Int:
+            if (typeof value !== 'number' || !Number.isInteger(value) || value < -2147483648 || value > 2147483647) {
+                return INVALID_PROPERTY_VALUE;
+            }
+            if (property.min !== undefined && value < property.min) { return INVALID_PROPERTY_VALUE; }
+            if (property.max !== undefined && value > property.max) { return INVALID_PROPERTY_VALUE; }
+            return value;
+        case EditorType.Double:
+            if (typeof value !== 'number' || !Number.isFinite(value)) { return INVALID_PROPERTY_VALUE; }
+            if (property.valueTag === TypeTag.Float && Math.abs(value) > 3.4028234663852886e38) {
+                return INVALID_PROPERTY_VALUE;
+            }
+            if (property.min !== undefined && value < property.min) { return INVALID_PROPERTY_VALUE; }
+            if (property.max !== undefined && value > property.max) { return INVALID_PROPERTY_VALUE; }
+            return value;
+        case EditorType.Bool:
+            return typeof value === 'boolean' ? value : INVALID_PROPERTY_VALUE;
+        case EditorType.Color:
+        case EditorType.NullableColor:
+            return isColorInput(value) ? value : INVALID_PROPERTY_VALUE;
+        case EditorType.Dropdown:
+            return property.options ? value : INVALID_PROPERTY_VALUE;
+        case EditorType.Rect:
+            return isRectInput(value) ? value : INVALID_PROPERTY_VALUE;
+        default:
+            return INVALID_PROPERTY_VALUE;
     }
 }
 
-function applyVariantProperty(node: ControlNode, key: string, value: number, variantIndex: number): void {
-    const variantKey = `variant${variantIndex}`;
-    let variantObj = node.properties.get(variantKey);
+function isColorInput(value: unknown): value is { a: number; r: number; g: number; b: number } {
+    if (!value || typeof value !== 'object') { return false; }
+    const color = value as Record<string, unknown>;
+    return ['a', 'r', 'g', 'b'].every(key =>
+        typeof color[key] === 'number' && Number.isInteger(color[key]) && color[key] >= 0 && color[key] <= 255
+    );
+}
 
-    if (!variantObj || variantObj.tag !== TypeTag.Object) {
-        // Create variant object if it doesn't exist
-        variantObj = { tag: TypeTag.Object, value: new Map<string, PropertyValue>() };
-        node.properties.set(variantKey, variantObj);
-    }
-
-    if (variantObj.tag === TypeTag.Object) {
-        const intValue = Math.round(value);
-        variantObj.value.set(key, { tag: TypeTag.Int32, value: intValue });
-    }
-
-    // Also update the direct property for variant 0
-    if (variantIndex === 0) {
-        const intValue = Math.round(value);
-        node.properties.set(key, { tag: TypeTag.Int32, value: intValue });
-    }
+function isRectInput(value: unknown): value is { x: number; y: number; width: number; height: number } {
+    if (!value || typeof value !== 'object') { return false; }
+    const rect = value as Record<string, unknown>;
+    return ['x', 'y', 'width', 'height'].every(key =>
+        typeof rect[key] === 'number' && Number.isInteger(rect[key]) && rect[key] >= -32768 && rect[key] <= 32767
+    );
 }
 
 // ── Helpers ──────────────────────────────────────────────────────────

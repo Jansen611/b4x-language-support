@@ -9,7 +9,7 @@
  *   Trailing: flags c/d bytes
  *
  * All integers are plain little-endian int32 (NOT 7-bit encoded).
- * Doubles are stored as float32 (tag 7) — widened on read, truncated on write.
+ * Float and Double values preserve their respective tags and precision.
  */
 
 import * as zlib from 'zlib';
@@ -616,15 +616,14 @@ function writeTaggedValue(
             break;
 
         case TypeTag.Float:
-            // float32 (tag 7) — also used for double values (truncated)
+            // float32 (tag 7)
             writer.writeByte(7);
             writer.writeFloat(value.value);
             break;
 
         case TypeTag.Double:
-            // Doubles are written as float32 (tag 7) for byte-compatibility.
-            writer.writeByte(7);
-            writer.writeFloat(value.value);
+            writer.writeByte(10);
+            writer.writeDouble(value.value);
             break;
 
         case TypeTag.ErRef:

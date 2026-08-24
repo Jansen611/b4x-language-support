@@ -8,7 +8,7 @@ export {
     PropertyData, PropertyDescriptor, EditorType,
     buildPropertyDataForControl, buildPropertyDescriptors,
     collectControlNames, findControlByName,
-    readPropertyValue, applyAnchorLabels, detectControlType,
+    readPropertyValue, applyPropertyValue, applyAnchorLabels, detectControlType,
 } from './models/propertyModel';
 export {
     B4XPropertyGridViewProvider, propertyGridBus,

@@ -6,6 +6,7 @@
 
 import { ControlNode, PropertyValue, TypeTag, Platform } from './types';
 import { getCustomViewDefSync, DesignerProperty } from '../services/libraryLoader';
+import { getControlTypeByCsType } from '../services/controlRegistry';
 
 // ── Property Editor Types ────────────────────────────────────────────
 
@@ -57,6 +58,10 @@ export interface PropertyDescriptor {
     alphaEnabled?: boolean;
     /** Default value (used for reset). */
     defaultValue?: unknown;
+    /** Property path in the serialized control map. */
+    path?: string[];
+    /** Binary type to preserve when the value is edited. */
+    valueTag?: TypeTag;
 }
 
 // ── Serializable Property Data (sent to webview) ─────────────────────
@@ -75,6 +80,8 @@ export interface PropertyData {
     max?: number;
     step?: number;
     alphaEnabled?: boolean;
+    path: string[];
+    valueTag?: TypeTag;
 }
 
 // ── Extract a typed value from ControlNode ───────────────────────────
@@ -122,38 +129,51 @@ function getRect(node: ControlNode, key: string): { x: number; y: number; width:
 }
 
 /** Read a property value into a JS-friendly form for sending to webview. */
-export function readPropertyValue(node: ControlNode, key: string, editor: EditorType, variantIndex: number): unknown {
+export function readPropertyValue(
+    node: ControlNode,
+    key: string,
+    editor: EditorType,
+    variantIndex: number,
+    path: string[] = [key],
+): unknown {
     // Position/size properties come from the variant data
     if (key === 'left' || key === 'top' || key === 'width' || key === 'height' || key === 'hanchor' || key === 'vanchor') {
         return readVariantProperty(node, key, variantIndex);
     }
-    switch (editor) {
-        case EditorType.String:
-        case EditorType.Font:
-            return getStr(node, key, '');
-        case EditorType.Int:
-            return getInt(node, key, 0);
-        case EditorType.Double:
-            return getFloat(node, key, 0);
-        case EditorType.Bool:
-            return getBool(node, key, false);
-        case EditorType.Color:
-        case EditorType.NullableColor:
-            return getColor(node, key);
-        case EditorType.Dropdown: {
-            // Dropdowns store int or string values
-            const v = node.properties.get(key);
-            if (!v) { return undefined; }
-            if (v.tag === TypeTag.Int32 || v.tag === TypeTag.Float || v.tag === TypeTag.Double) { return v.value; }
-            if (v.tag === TypeTag.String || v.tag === TypeTag.StringRef) { return v.value; }
-            if (v.tag === TypeTag.Bool) { return v.value; }
-            return undefined;
-        }
-        case EditorType.Rect:
-            return getRect(node, key);
+    const value = getPropertyAtPath(node, path);
+    if (!value) { return undefined; }
+    switch (value.tag) {
+        case TypeTag.String:
+        case TypeTag.StringRef:
+        case TypeTag.Int32:
+        case TypeTag.Float:
+        case TypeTag.Double:
+        case TypeTag.Bool:
+        case TypeTag.ErRef:
+            return value.value;
+        case TypeTag.Color:
+            return { a: value.a, r: value.r, g: value.g, b: value.b };
+        case TypeTag.Int32Rect:
+            return { x: value.x, y: value.y, width: value.width, height: value.height };
+        case TypeTag.Null:
+            return null;
         default:
             return undefined;
     }
+}
+
+function getPropertyAtPath(node: ControlNode, path: string[]): PropertyValue | undefined {
+    let properties = node.properties;
+    let value: PropertyValue | undefined;
+    for (let i = 0; i < path.length; i++) {
+        value = properties.get(path[i]);
+        if (!value) { return undefined; }
+        if (i < path.length - 1) {
+            if (value.tag !== TypeTag.Object) { return undefined; }
+            properties = value.value;
+        }
+    }
+    return value;
 }
 
 function readVariantProperty(node: ControlNode, key: string, variantIndex: number): number {
@@ -180,8 +200,7 @@ function readVariantProperty(node: ControlNode, key: string, variantIndex: numbe
 export function detectControlType(node: ControlNode): string {
     const cs = getStr(node, 'csType', '');
     if (cs) {
-        const parts = cs.split('.');
-        return parts[parts.length - 1]; // e.g. "MetaButton"
+        return getControlTypeByCsType(cs)?.metaType ?? cs.split('.').pop() ?? 'MetaControl';
     }
     const java = getStr(node, 'javaType', '');
     if (java.includes('ButtonWrapper')) { return 'MetaButton'; }
@@ -213,7 +232,7 @@ export function buildPropertyDescriptors(
     isRoot: boolean,
 ): PropertyDescriptor[] {
     const props: PropertyDescriptor[] = [];
-    const typeName = isRoot ? 'MetaMain' : detectControlType(node);
+    const typeName = detectControlType(node);
     const name = getStr(node, 'name', '') || getStr(node, 'eventName', '');
     const isB4A = platform === Platform.B4A;
     const isB4i = platform === Platform.B4i;
@@ -372,6 +391,9 @@ export function buildPropertyDescriptors(
     // ── Per-Type Properties ──────────────────────────────────────
     addTypeSpecificProperties(props, typeName, platform, node);
 
+    retainPresentProperties(props, node);
+    addDynamicProperties(props, node, typeName, isRoot);
+
     return props;
 }
 
@@ -451,31 +473,218 @@ function addCustomViewProperties(props: PropertyDescriptor[], node: ControlNode)
 
     const cat = `${shortType}`;
     for (const dp of cvDef.designerProperties) {
-        props.push(designerPropertyToDescriptor(dp, cat));
+        const nestedPath = ['customProperties', dp.key];
+        const path = getPropertyAtPath(node, nestedPath) ? nestedPath : [dp.key];
+        props.push(designerPropertyToDescriptor(dp, cat, path));
     }
 }
 
-function designerPropertyToDescriptor(dp: DesignerProperty, category: string): PropertyDescriptor {
+function designerPropertyToDescriptor(dp: DesignerProperty, category: string, path: string[]): PropertyDescriptor {
     const desc: PropertyDescriptor = {
-        key: dp.key,
+        key: propertyId(path),
         displayName: dp.displayName,
         category,
         description: dp.description ?? dp.displayName,
         editor: fieldTypeToEditor(dp.fieldType),
         isMergeable: true,
         isReadOnly: false,
+        path,
+        valueTag: fieldTypeToTag(dp.fieldType),
     };
 
     if (dp.minRange !== undefined) { desc.min = dp.minRange; }
     if (dp.maxRange !== undefined) { desc.max = dp.maxRange; }
 
-    // If the field is a string with a constrained list, show as dropdown
-    if (dp.fieldType === 'string' && dp.list && dp.list.length > 0) {
+    if (dp.list && dp.list.length > 0) {
         desc.editor = EditorType.Dropdown;
-        desc.options = dp.list.map(v => ({ label: v, value: v }));
+        desc.options = dp.list.map(v => ({ label: v, value: parseListValue(v, dp.fieldType) }));
     }
 
     return desc;
+}
+
+function fieldTypeToTag(fieldType: DesignerProperty['fieldType']): TypeTag {
+    switch (fieldType) {
+        case 'int': return TypeTag.Int32;
+        case 'float': return TypeTag.Float;
+        case 'boolean': return TypeTag.Bool;
+        case 'color': return TypeTag.Color;
+        default: return TypeTag.StringRef;
+    }
+}
+
+function parseListValue(value: string, fieldType: DesignerProperty['fieldType']): string | number | boolean {
+    if (fieldType === 'int') { return parseInt(value, 10); }
+    if (fieldType === 'float') { return parseFloat(value); }
+    if (fieldType === 'boolean') { return value.toLowerCase() === 'true'; }
+    return value;
+}
+
+const REQUIRED_PROPERTY_KEYS = new Set([
+    'name', '_type', 'eventName', 'parent',
+    'hanchor', 'vanchor', 'left', 'top', 'width', 'height',
+]);
+
+const INTERNAL_PROPERTY_KEYS = new Set([
+    'csType', 'javaType', 'type', 'customType', 'shortType',
+    'left', 'top', 'width', 'height', 'hanchor', 'vanchor',
+]);
+
+const INTERNAL_NESTED_KEYS = new Set(['csType', 'type', 'colorKey', 'customType', 'shortType']);
+const COMMON_DYNAMIC_KEYS = new Set(['padding', 'contextMenu', 'toolTip']);
+const APPEARANCE_DYNAMIC_KEYS = new Set(['alpha', 'elevation', 'extraCss']);
+const VARIANT_PROPERTY_KEYS = new Set(['left', 'top', 'width', 'height', 'hanchor', 'vanchor']);
+
+function retainPresentProperties(props: PropertyDescriptor[], node: ControlNode): void {
+    for (let i = props.length - 1; i >= 0; i--) {
+        const prop = props[i];
+        const path = prop.path ?? [prop.key];
+        prop.path = path;
+        prop.valueTag = getPropertyAtPath(node, path)?.tag ?? prop.valueTag;
+        if (!REQUIRED_PROPERTY_KEYS.has(prop.key) && !getPropertyAtPath(node, path)) {
+            props.splice(i, 1);
+        }
+    }
+}
+
+function addDynamicProperties(
+    props: PropertyDescriptor[],
+    node: ControlNode,
+    typeName: string,
+    isRoot: boolean,
+): void {
+    const knownPaths = new Set(props.map(prop => propertyId(prop.path ?? [prop.key])));
+    for (const [key, value] of node.properties) {
+        if (INTERNAL_PROPERTY_KEYS.has(key) || /^variant\d+$/.test(key)) { continue; }
+        addDynamicValue(props, knownPaths, node, [key], value, typeName, isRoot);
+    }
+}
+
+function addDynamicValue(
+    props: PropertyDescriptor[],
+    knownPaths: Set<string>,
+    node: ControlNode,
+    path: string[],
+    value: PropertyValue,
+    typeName: string,
+    isRoot: boolean,
+): void {
+    const id = propertyId(path);
+    if (knownPaths.has(id)) { return; }
+
+    if (value.tag === TypeTag.Object) {
+        for (const [key, child] of value.value) {
+            if (INTERNAL_NESTED_KEYS.has(key)) { continue; }
+            addDynamicValue(props, knownPaths, node, [...path, key], child, typeName, isRoot);
+        }
+        return;
+    }
+
+    const editor = editorForValue(value);
+    const category = categoryForPath(node, path, typeName, isRoot);
+    const descriptor: PropertyDescriptor = {
+        key: id,
+        displayName: displayNameForPath(path),
+        category,
+        description: `Serialized ${path.join('.')} property`,
+        editor,
+        isMergeable: true,
+        isReadOnly: value.tag === TypeTag.Null,
+        path,
+        valueTag: value.tag,
+        alphaEnabled: value.tag === TypeTag.Color,
+    };
+    addKnownOptions(descriptor, path[path.length - 1]);
+    props.push(descriptor);
+    knownPaths.add(id);
+}
+
+function editorForValue(value: PropertyValue): EditorType {
+    switch (value.tag) {
+        case TypeTag.Int32:
+        case TypeTag.ErRef:
+            return EditorType.Int;
+        case TypeTag.Float:
+        case TypeTag.Double:
+            return EditorType.Double;
+        case TypeTag.Bool:
+            return EditorType.Bool;
+        case TypeTag.Color:
+            return EditorType.Color;
+        case TypeTag.Int32Rect:
+            return EditorType.Rect;
+        default:
+            return EditorType.String;
+    }
+}
+
+function categoryForPath(node: ControlNode, path: string[], typeName: string, isRoot: boolean): string {
+    const first = path[0];
+    const key = path[path.length - 1];
+    if (first === 'customProperties') {
+        return `${getStr(node, 'shortType', 'Custom View')} Properties`;
+    }
+    if (first === 'drawable') { return 'Appearance Properties'; }
+    if (first === 'font') { return 'Font Properties'; }
+    if (first === 'shadow') { return 'Shadow Properties'; }
+    if (isRoot) { return typeName === 'MetaActivity' ? 'Activity Properties' : 'Form Properties'; }
+    if (COMMON_DYNAMIC_KEYS.has(key)) { return 'Common Properties'; }
+    if (APPEARANCE_DYNAMIC_KEYS.has(key)) { return 'Appearance Properties'; }
+    if (isTextProperty(key)) { return textCategory(typeName); }
+    return `${typeName.replace(/^Meta/, '') || 'View'} Properties`;
+}
+
+function isTextProperty(key: string): boolean {
+    return /^(text|hint|font|typeface|style|alignment|hAlignment|vAlignment|singleLine|wrap|wrapText|ellipsize|inputType|password|forceDone)/i.test(key);
+}
+
+function textCategory(typeName: string): string {
+    if (typeName === 'MetaLabel') { return 'Label Properties'; }
+    if (typeName === 'MetaButton') { return 'Button Properties'; }
+    return 'Text Properties';
+}
+
+function displayNameForPath(path: string[]): string {
+    const names: Record<string, string> = {
+        fontsize: 'Font Size',
+        hAlignment: 'Horizontal Alignment',
+        vAlignment: 'Vertical Alignment',
+        innerHeight: 'Content Height',
+        innerWidth: 'Content Width',
+        file: path[0] === 'drawable' ? 'Image File' : 'File',
+        color: path[0] === 'drawable' ? 'Background Color' : 'Color',
+    };
+    const leaf = path[path.length - 1];
+    const name = names[leaf] ?? humanizePropertyKey(leaf);
+    if (path.length <= 2 || path[0] === 'customProperties') { return name; }
+    return `${humanizePropertyKey(path[path.length - 2])} ${name}`;
+}
+
+function humanizePropertyKey(key: string): string {
+    return key
+        .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
+        .replace(/([A-Z])([A-Z][a-z])/g, '$1 $2')
+        .replace(/^./, first => first.toUpperCase());
+}
+
+function addKnownOptions(descriptor: PropertyDescriptor, key: string): void {
+    const options: Record<string, string[]> = {
+        alignment: ['LEFT', 'CENTER', 'RIGHT'],
+        hAlignment: ['LEFT', 'CENTER_HORIZONTAL', 'RIGHT'],
+        vAlignment: ['TOP', 'CENTER_VERTICAL', 'BOTTOM'],
+        ellipsize: ['NONE', 'START', 'MIDDLE', 'END', 'MARQUEE'],
+        style: ['NORMAL', 'BOLD', 'ITALIC', 'BOLD_ITALIC'],
+        typeface: ['DEFAULT', 'SANS_SERIF', 'SERIF', 'MONOSPACE'],
+        orientation: ['INHERIT', 'LEFT_TO_RIGHT', 'RIGHT_TO_LEFT'],
+    };
+    const values = options[key];
+    if (!values) { return; }
+    descriptor.editor = EditorType.Dropdown;
+    descriptor.options = values.map(value => ({ label: value, value }));
+}
+
+function propertyId(path: string[]): string {
+    return path.join('.');
 }
 
 function fieldTypeToEditor(fieldType: DesignerProperty['fieldType']): EditorType {
@@ -967,7 +1176,13 @@ export function buildPropertyDataForControl(
         if (d.key === '_type') {
             value = d.defaultValue;
         } else {
-            value = readPropertyValue(node, d.key, d.editor as unknown as EditorType, variantIndex);
+            value = readPropertyValue(
+                node,
+                d.key,
+                d.editor as unknown as EditorType,
+                variantIndex,
+                d.path ?? [d.key],
+            );
         }
         return {
             key: d.key,
@@ -983,6 +1198,8 @@ export function buildPropertyDataForControl(
             max: d.max,
             step: d.step,
             alphaEnabled: d.alphaEnabled,
+            path: d.path ?? [d.key],
+            valueTag: d.valueTag,
         };
     });
 }
@@ -1009,4 +1226,70 @@ export function findControlByName(root: ControlNode, name: string): ControlNode 
         if (found) { return found; }
     }
     return null;
+}
+
+export function applyPropertyValue(
+    node: ControlNode,
+    path: string[],
+    value: unknown,
+    variantIndex: number,
+    expectedTag?: TypeTag,
+): void {
+    const key = path[0];
+    if (path.length === 1 && VARIANT_PROPERTY_KEYS.has(key)) {
+        applyVariantProperty(node, key, value as number, variantIndex);
+        return;
+    }
+
+    let properties = node.properties;
+    for (let i = 0; i < path.length - 1; i++) {
+        const object = properties.get(path[i]);
+        if (!object || object.tag !== TypeTag.Object) { return; }
+        properties = object.value;
+    }
+    const leafKey = path[path.length - 1];
+    const existing = properties.get(leafKey);
+
+    if (value === null || value === undefined) {
+        properties.delete(leafKey);
+    } else if (typeof value === 'string') {
+        const tag = expectedTag === TypeTag.String || existing?.tag === TypeTag.String
+            ? TypeTag.String
+            : TypeTag.StringRef;
+        properties.set(leafKey, { tag, value });
+    } else if (typeof value === 'number') {
+        const tag = expectedTag ?? existing?.tag;
+        if (tag === TypeTag.Double) {
+            properties.set(leafKey, { tag: TypeTag.Double, value });
+        } else if (tag === TypeTag.Float) {
+            properties.set(leafKey, { tag: TypeTag.Float, value });
+        } else if (tag === TypeTag.ErRef) {
+            properties.set(leafKey, { tag: TypeTag.ErRef, value: Math.round(value) });
+        } else {
+            properties.set(leafKey, { tag: TypeTag.Int32, value: Math.round(value) });
+        }
+    } else if (typeof value === 'boolean') {
+        properties.set(leafKey, { tag: TypeTag.Bool, value });
+    } else if (typeof value === 'object' && 'r' in value && 'g' in value && 'b' in value) {
+        const color = value as { a: number; r: number; g: number; b: number };
+        properties.set(leafKey, { tag: TypeTag.Color, ...color });
+    } else if (typeof value === 'object' && 'x' in value && 'y' in value && 'width' in value && 'height' in value) {
+        const rect = value as { x: number; y: number; width: number; height: number };
+        properties.set(leafKey, { tag: TypeTag.Int32Rect, ...rect });
+    }
+}
+
+function applyVariantProperty(node: ControlNode, key: string, value: number, variantIndex: number): void {
+    const variantKey = `variant${variantIndex}`;
+    let variantObject = node.properties.get(variantKey);
+    if (!variantObject || variantObject.tag !== TypeTag.Object) {
+        variantObject = { tag: TypeTag.Object, value: new Map<string, PropertyValue>() };
+        node.properties.set(variantKey, variantObject);
+    }
+
+    const intValue = Math.round(value);
+    variantObject.value.set(key, { tag: TypeTag.Int32, value: intValue });
+    if (variantIndex === 0) {
+        node.properties.set(key, { tag: TypeTag.Int32, value: intValue });
+    }
 }
