@@ -35,6 +35,7 @@ const KEYWORDS = new Set([
 
 const BUILTINS = new Set([
     'autoscalerate', 'autoscaleall', 'portrait', 'landscape', 'activitysize',
+    'min', 'max',
 ]);
 
 const OPERATOR_CHARS = new Set([
@@ -96,10 +97,14 @@ export function tokenize(script: string): Token[][] {
                         num += line[i]; i++;
                     }
                 }
-                // Handle 'dip' suffix (density-independent pixels) — mark with suffix
+                // Handle B4X dimension suffixes — preserve for execution-time resolution
                 if (i + 3 <= line.length && line.substring(i, i + 3).toLowerCase() === 'dip') {
                     num += 'dip';
                     i += 3;
+                } else if (i + 2 <= line.length && line[i] === '%' &&
+                    (line[i + 1].toLowerCase() === 'x' || line[i + 1].toLowerCase() === 'y')) {
+                    num += line.substring(i, i + 2).toLowerCase();
+                    i += 2;
                 }
                 tokens.push({ type: TokenType.NumberLiteral, value: num, line: lineIdx, col });
                 continue;
@@ -308,10 +313,9 @@ export class ScriptEngine {
             this.designScale = designVariant.scale;
             this.platformIsB4A = platform === Platform.B4A;
 
-            // Calculate normalized screen dimensions
-            const scaleRatio = variant.scale / designVariant.scale;
-            this.screenWidth = Math.round(variant.width / scaleRatio);
-            this.screenHeight = Math.round(variant.height / scaleRatio);
+            // Script geometry uses the variant's physical coordinate space.
+            this.screenWidth = variant.width;
+            this.screenHeight = variant.height;
 
             // Build control name map and pre-calculate anchor positions
             this.controlNames.clear();
@@ -566,7 +570,7 @@ export class ScriptEngine {
                         continue;
 
                     case TokenType.NumberLiteral:
-                        text = this.resolveDipLiteral(tok.value);
+                        text = this.resolveNumberLiteral(tok.value);
                         sb.push(text);
                         continue;
 
@@ -980,6 +984,11 @@ export class ScriptEngine {
                 const h = this.currentVariant.height / this.currentVariant.scale;
                 return formatNumber(Math.sqrt(w * w + h * h) / dpiBase);
             }
+            case 'min':
+            case 'max': {
+                const [a, b] = this.readTwoArgs(cursor);
+                return formatNumber(name === 'min' ? Math.min(a, b) : Math.max(a, b));
+            }
             default:
                 return null;
         }
@@ -1098,20 +1107,8 @@ export class ScriptEngine {
             case 'false': return 'false';
             case 'min':
             case 'max': {
-                cursor.token++; // skip '('
-                const a = this.executeBlock(
-                    { line: cursor.line, token: cursor.token }, false, true,
-                );
-                cursor.line = a.cursor.line;
-                cursor.token = a.cursor.token;
-                this.consumeOperator(cursor, ',');
-                const b = this.executeBlock(
-                    { line: cursor.line, token: cursor.token }, false, true,
-                );
-                cursor.line = b.cursor.line;
-                cursor.token = b.cursor.token;
-                cursor.token++; // skip ')'
-                return formatNumber(func === 'min' ? Math.min(a.num, b.num) : Math.max(a.num, b.num));
+                const [a, b] = this.readTwoArgs(cursor);
+                return formatNumber(func === 'min' ? Math.min(a, b) : Math.max(a, b));
             }
             case 'diptocurrent': {
                 cursor.token++; // skip '('
@@ -1143,6 +1140,21 @@ export class ScriptEngine {
         cursor.line = r.cursor.line;
         cursor.token = r.cursor.token;
         return r.num;
+    }
+
+    private readTwoArgs(cursor: Cursor): [number, number] {
+        if (!this.consumeOperator(cursor, '(')) {
+            throw new Error('Expected opening parenthesis.');
+        }
+        const a = this.readSingleArg(cursor);
+        if (!this.consumeOperator(cursor, ',')) {
+            throw new Error('Expected comma between arguments.');
+        }
+        const b = this.readSingleArg(cursor);
+        if (!this.consumeOperator(cursor, ')')) {
+            throw new Error('Expected closing parenthesis.');
+        }
+        return [a, b];
     }
 
     // ── Module Method Calls ──────────────────────────────────────
@@ -1510,11 +1522,18 @@ export class ScriptEngine {
 
     // ── Token Navigation Helpers ─────────────────────────────────
 
-    /** Convert a number literal with optional 'dip' suffix to a plain number string. */
-    private resolveDipLiteral(value: string): string {
-        if (value.toLowerCase().endsWith('dip')) {
+    /** Convert a B4X dimension literal to the current variant's coordinate space. */
+    private resolveNumberLiteral(value: string): string {
+        const lower = value.toLowerCase();
+        if (lower.endsWith('dip')) {
             const num = parseFloat(value.substring(0, value.length - 3));
             return formatNumber(num * this.scale);
+        }
+        if (lower.endsWith('%x')) {
+            return formatNumber(parseFloat(value) / 100 * this.currentVariant.width);
+        }
+        if (lower.endsWith('%y')) {
+            return formatNumber(parseFloat(value) / 100 * this.currentVariant.height);
         }
         return value;
     }

@@ -35,6 +35,7 @@ export const KEYWORDS = new Set([
 
 export const BUILTINS = new Set([
     'autoscalerate', 'autoscaleall', 'portrait', 'landscape', 'activitysize',
+    'min', 'max',
 ]);
 
 /** Properties that can follow `controlName.` */
@@ -136,9 +137,12 @@ export function tokenizeLine(rawLine: string): ScriptToken[] {
                 if (i < line.length && (line[i] === '+' || line[i] === '-')) { i++; }
                 while (i < line.length && isDigit(line[i])) { i++; }
             }
-            // 'dip' suffix
+            // B4X dimension suffixes
             if (i + 3 <= line.length && line.substring(i, i + 3).toLowerCase() === 'dip') {
                 i += 3;
+            } else if (i + 2 <= line.length && line[i] === '%' &&
+                (line[i + 1].toLowerCase() === 'x' || line[i + 1].toLowerCase() === 'y')) {
+                i += 2;
             }
             tokens.push({ type: 'number', value: line.substring(start, i), col: start, rawLen: i - start });
             continue;

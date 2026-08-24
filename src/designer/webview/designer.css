@@ -252,6 +252,7 @@ html, body {
 .control-view.root-control {
     border: none;
     border-radius: 0;
+    overflow: visible;
     background: var(--vscode-editor-background, #1e1e1e);
     box-shadow: 0 0 0 1px var(--border), 0 2px 8px rgba(0,0,0,0.3);
 }

@@ -842,11 +842,12 @@ export class DesignerCanvas {
 
         if (ctrl.isRoot) {
             el.classList.add('root-control');
-            // Root uses full variant dimensions
+            // Keep raw layout dimensions for anchor calculations, but render in CSS pixels.
             displayW = this.layout!.variant.width;
             displayH = this.layout!.variant.height;
-            el.style.width = `${displayW}px`;
-            el.style.height = `${displayH}px`;
+            const scale = 1 / (this.layout!.variant.scale ?? 1);
+            el.style.width = `${displayW * scale}px`;
+            el.style.height = `${displayH * scale}px`;
             el.style.position = 'relative';
         } else {
             el.style.background = controlColor(ctrl.name);
@@ -1557,8 +1558,9 @@ export class DesignerCanvas {
         const viewW = containerRect.width || 800;
         const viewH = containerRect.height || 600;
 
-        const varW = this.layout.variant.width;
-        const varH = this.layout.variant.height;
+        const variantScale = this.layout.variant.scale || 1;
+        const varW = this.layout.variant.width / variantScale;
+        const varH = this.layout.variant.height / variantScale;
 
         if (varW <= 0 || varH <= 0) { return; }
 
